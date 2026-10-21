@@ -223,12 +223,12 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
     }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-3 sm:p-6 lg:p-10 relative overflow-x-hidden selection:bg-mauveAccent/30 selection:text-white">
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-4 lg:p-6 relative overflow-x-hidden selection:bg-mauveAccent/30 selection:text-white">
 <!-- Ambient Light Effects -->
 <div class="fixed inset-0 pointer-events-none ambient-glow-left"></div>
 <div class="fixed inset-0 pointer-events-none ambient-glow-right"></div>
 <!-- BEGIN: MainDashboardContainer -->
-<main class="relative z-10 w-full max-w-[1280px] bg-[#121017]/95 rounded-[2.2rem] border border-white/[0.07] shadow-2xl backdrop-blur-2xl p-5 md:p-7 flex flex-col lg:flex-row gap-6">
+<main class="relative z-10 w-full max-w-screen-2xl bg-[#121017]/95 rounded-[2.2rem] border border-white/[0.07] shadow-2xl backdrop-blur-2xl p-5 md:p-7 flex flex-col lg:flex-row gap-6">
 <!-- BEGIN: LeftSidebar -->
 <aside class="w-full lg:w-64 flex-shrink-0 flex flex-col justify-between py-2 border-b lg:border-b-0 lg:border-r border-white/[0.06] pr-0 lg:pr-5" data-purpose="app-navigation">
 <div class="space-y-8">
@@ -474,6 +474,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <span class="w-2 h-2 rounded-full flex-shrink-0 <?= $walletDots[$i % count($walletDots)] ?>"></span>
 <?php endif; ?>
 </div>
+</div>
 <?php endforeach; ?>
 <?php endif; ?>
 </div>
@@ -486,7 +487,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </div>
 <!-- END: BentoGridTopSection -->
 <!-- BEGIN: BottomWideCard (Cashflow Performance Line Chart) -->
-<section class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6 relative" data-purpose="performance-chart-card">
+<section class="w-full bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6 relative" data-purpose="performance-chart-card">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 <div>
 <h2 class="text-base font-semibold text-white">Cashflow Performance</h2>
