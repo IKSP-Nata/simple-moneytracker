@@ -40,17 +40,43 @@ function e(mixed $value): string
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
-/** Ubah input nominal ("50.000", "Rp 50,000") menjadi angka bulat. */
+/** Ubah input nominal ("50.000", "Rp 50,000", 50000) menjadi angka bulat float. */
 function parse_amount(mixed $raw): float
 {
-    $digits = preg_replace('/[^0-9]/', '', (string) $raw);
+    if (is_int($raw) || is_float($raw)) {
+        return (float) $raw;
+    }
+
+    $str = trim((string) $raw);
+    if ($str === '') {
+        return 0.0;
+    }
+
+    // Jika ada koma sebagai pemisah desimal/sen (contoh: "50.000,50")
+    if (strpos($str, ',') !== false) {
+        $str = str_replace('.', '', $str);
+        $str = str_replace(',', '.', $str);
+        return (float) preg_replace('/[^0-9.]/', '', $str);
+    }
+
+    // Format Rupiah standar: titik adalah pemisah ribuan (contoh: "50.000" -> 50000)
+    $digits = preg_replace('/[^0-9]/', '', $str);
     return $digits === '' ? 0.0 : (float) $digits;
 }
 
 /** Redirect ke index.php dengan pesan toast & tab tujuan. */
 function redirect_back(string $msg, string $tab = 'dashboard', bool $error = false): never
 {
-    $query = http_build_query(['msg' => $msg, 'status' => $error ? 'error' : 'success']);
-    header('Location: index.php?' . $query . '#' . $tab);
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    $_SESSION['flash_msg']   = $msg;
+    $_SESSION['flash_error'] = $error;
+
+    $target = 'index.php';
+    if ($tab !== 'dashboard' && in_array($tab, ['transactions', 'wallets', 'goals'], true)) {
+        $target .= '#' . $tab;
+    }
+    header('Location: ' . $target);
     exit;
 }

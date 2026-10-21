@@ -4,12 +4,22 @@
  */
 require __DIR__ . '/config.php';
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Tangani form jika disubmit langsung ke index.php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    require __DIR__ . '/process_transaction.php';
+    exit;
+}
+
 /* ---------- Data dompet ---------- */
-$wallets      = $pdo->query('SELECT * FROM wallets ORDER BY id')->fetchAll();
+$wallets      = $pdo->query('SELECT * FROM wallets ORDER BY id ASC')->fetchAll();
 $totalBalance = (float) $pdo->query('SELECT COALESCE(SUM(balance), 0) FROM wallets')->fetchColumn();
 
 /* ---------- Data target tabungan ---------- */
-$goals = $pdo->query('SELECT * FROM savings_goals ORDER BY id')->fetchAll();
+$goals = $pdo->query('SELECT * FROM savings_goals ORDER BY id ASC')->fetchAll();
 foreach ($goals as &$g) {
     $g['pct'] = (float) $g['target_amount'] > 0
         ? min(100, round(((float) $g['current_amount'] / (float) $g['target_amount']) * 100))
@@ -26,12 +36,12 @@ $featuredGoal ??= $goals[0] ?? null;
 
 /* ---------- Data transaksi (JOIN wallets) ---------- */
 $transactions = $pdo->query(
-    'SELECT t.*, w.wallet_name
+    'SELECT t.*, COALESCE(w.wallet_name, "Unknown") AS wallet_name
      FROM transactions t
-     JOIN wallets w ON w.id = t.wallet_id
+     LEFT JOIN wallets w ON w.id = t.wallet_id
      ORDER BY t.created_at DESC, t.id DESC'
 )->fetchAll();
-$recentTransactions = array_slice($transactions, 0, 30);
+$recentTransactions = array_slice($transactions, 0, 5);
 
 /* ---------- Ringkasan bulan ini ---------- */
 $monthTotals = ['income' => 0.0, 'expense' => 0.0, 'goal_saving' => 0.0];
@@ -117,8 +127,9 @@ function is_cash_type(string $type): bool
 }
 
 /* ---------- Flash message (setelah redirect) ---------- */
-$flashMsg   = isset($_GET['msg']) ? (string) $_GET['msg'] : null;
-$flashError = ($_GET['status'] ?? '') === 'error';
+$flashMsg   = $_SESSION['flash_msg'] ?? (isset($_GET['msg']) ? (string) $_GET['msg'] : null);
+$flashError = !empty($_SESSION['flash_error']) || (($_GET['status'] ?? '') === 'error');
+unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 ?>
 <!DOCTYPE html>
 
@@ -399,6 +410,9 @@ $flashError = ($_GET['status'] ?? '') === 'error';
 </div>
 <!-- Transactions Items (Clean Typographic) -->
 <div class="space-y-3.5" id="recent-list">
+<?php if (!$recentTransactions): ?>
+<p class="text-[11px] text-stone-500 py-6 text-center" id="recent-list-empty">Belum ada transaksi.</p>
+<?php else: ?>
 <?php foreach ($recentTransactions as $tx):
     $isIncome = $tx['type'] === 'income';
     $isGoal   = $tx['type'] === 'goal_saving';
@@ -416,8 +430,9 @@ $flashError = ($_GET['status'] ?? '') === 'error';
 </div>
 </div>
 <?php endforeach; ?>
-</div>
 <p class="hidden text-[11px] text-stone-500 py-6 text-center" id="recent-list-empty">Belum ada transaksi untuk filter ini.</p>
+<?php endif; ?>
+</div>
 </div>
 </div>
 <!-- END: Column 2 -->
@@ -433,6 +448,9 @@ $flashError = ($_GET['status'] ?? '') === 'error';
 </div>
 <!-- 2x2 Grid -->
 <div class="grid grid-cols-2 gap-2.5">
+<?php if (!$wallets): ?>
+<p class="text-[11px] text-stone-500 py-6 col-span-2 text-center">Belum ada dompet.</p>
+<?php else: ?>
 <?php foreach (array_slice($wallets, 0, 4) as $i => $w):
     $isPrimary = strtolower($w['wallet_type']) === 'primary';
     $share     = $totalBalance > 0 ? round(((float) $w['balance'] / $totalBalance) * 100, 1) : 0;
@@ -456,8 +474,8 @@ $flashError = ($_GET['status'] ?? '') === 'error';
 <span class="w-2 h-2 rounded-full flex-shrink-0 <?= $walletDots[$i % count($walletDots)] ?>"></span>
 <?php endif; ?>
 </div>
-</div>
 <?php endforeach; ?>
+<?php endif; ?>
 </div>
 <?php if (count($wallets) > 4): ?>
 <p class="text-[10px] text-stone-500 mt-3">+<?= count($wallets) - 4 ?> dompet lainnya</p>
