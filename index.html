@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MoneyTracker — Pelacak Keuangan Pribadi</title>
+  <meta name="description" content="Catat pemasukan dan pengeluaran harian, pantau saldo, anggaran, dan arus kas dalam Rupiah. Semua data tersimpan di perangkatmu.">
+  <meta name="theme-color" content="#0F0C13">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Urutan penting: utils → storage → charts → app -->
+  <script defer src="js/utils.js"></script>
+  <script defer src="js/storage.js"></script>
+  <script defer src="js/charts.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main" id="skip-link">Lewati ke konten utama</a>
+
+  <!-- ============ SVG ICON SPRITE (stroke 1.75, grid 24px) ============ -->
+  <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <!-- UI -->
+    <symbol id="i-logo" viewBox="0 0 24 24"><path d="M4 8V7a2 2 0 0 1 2-2h11"/><rect x="3" y="8" width="18" height="12" rx="3"/><path d="M16 14h2"/></symbol>
+    <symbol id="i-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1" fill="currentColor"/><circle cx="4.5" cy="12" r="1" fill="currentColor"/><circle cx="4.5" cy="18" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-pie" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4"/><path d="M13 3a8 8 0 0 1 8 8h-8V3z"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.5 12h-2M21.5 12h-2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><circle cx="12" cy="16.5" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></symbol>
+    <symbol id="i-arrow-down-left" viewBox="0 0 24 24"><path d="M17 7L7 17M16 17H7V8"/></symbol>
+    <symbol id="i-wallet-stack" viewBox="0 0 24 24"><path d="M12 3v18M16.5 7H10a2.5 2.5 0 0 0 0 5h4a2.5 2.5 0 0 1 0 5H7"/></symbol>
+    <symbol id="i-percent" viewBox="0 0 24 24"><path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.7-.9 1.4-1.8-.4-1.2.4-2.2 1.6-2.2H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1" fill="currentColor"/><circle cx="10.5" cy="7.5" r="1" fill="currentColor"/><circle cx="15" cy="8" r="1" fill="currentColor"/></symbol>
+
+    <!-- Kategori -->
+    <symbol id="cat-makan" viewBox="0 0 24 24"><path d="M3 12h18a9 8 0 0 1-18 0z"/><path d="M8.5 8.5c0-1 1-1.5 1-2.5M12 8.5c0-1 1-1.5 1-2.5M15.5 8.5c0-1 1-1.5 1-2.5"/></symbol>
+    <symbol id="cat-transport" viewBox="0 0 24 24"><path d="M5 11l1.6-4.2A2 2 0 0 1 8.5 5.5h7a2 2 0 0 1 1.9 1.3L19 11"/><rect x="3" y="11" width="18" height="6" rx="2"/><path d="M6 17v2M18 17v2"/><circle cx="7.5" cy="14" r="1" fill="currentColor"/><circle cx="16.5" cy="14" r="1" fill="currentColor"/></symbol>
+    <symbol id="cat-belanja" viewBox="0 0 24 24"><path d="M5 8h14l-1 12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 8z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></symbol>
+    <symbol id="cat-tagihan" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6M9 16h3"/></symbol>
+    <symbol id="cat-hiburan" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4.5-2.5L10 9.5z"/></symbol>
+    <symbol id="cat-kesehatan" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.5-7.5-10.2A4.2 4.2 0 0 1 12 7.2a4.2 4.2 0 0 1 7.5 2.6C19.5 15.5 12 20 12 20z"/><path d="M8 12.5h2l1-2 2 4 1-2h2"/></symbol>
+    <symbol id="cat-pendidikan" viewBox="0 0 24 24"><path d="M2.5 9L12 4.5 21.5 9 12 13.5 2.5 9z"/><path d="M6.5 11v4.5c0 1.2 2.5 3 5.5 3s5.5-1.8 5.5-3V11M21.5 9v5"/></symbol>
+    <symbol id="cat-gaji" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="6.5" cy="12" r=".9" fill="currentColor"/><circle cx="17.5" cy="12" r=".9" fill="currentColor"/></symbol>
+    <symbol id="cat-lainnya" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="8" cy="12" r="1.1" fill="currentColor"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/><circle cx="16" cy="12" r="1.1" fill="currentColor"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <!-- ============ SIDEBAR (desktop) / BOTTOM NAV (mobile) ============ -->
+    <aside class="sidebar" aria-label="Navigasi utama">
+      <a class="brand" href="#dashboard" id="brand-link" aria-label="MoneyTracker, ke dashboard">
+        <span class="brand__mark"><svg class="icon"><use href="#i-logo"/></svg></span>
+        <span class="brand__name">MoneyTracker</span>
+      </a>
+
+      <nav class="sidebar__nav">
+        <ul class="nav-list nav-list--main">
+          <li><a class="nav-link" href="#dashboard" data-view="dashboard" id="nav-dashboard">
+            <svg class="icon"><use href="#i-dashboard"/></svg><span class="nav-link__label">Dashboard</span></a></li>
+          <li><a class="nav-link" href="#transactions" data-view="transactions" id="nav-transactions">
+            <svg class="icon"><use href="#i-list"/></svg><span class="nav-link__label">Transaksi</span></a></li>
+          <li><a class="nav-link" href="#budget" data-view="budget" id="nav-budget">
+            <svg class="icon"><use href="#i-target"/></svg><span class="nav-link__label">Anggaran</span></a></li>
+          <li><a class="nav-link" href="#reports" data-view="reports" id="nav-reports">
+            <svg class="icon"><use href="#i-pie"/></svg><span class="nav-link__label">Laporan</span></a></li>
+        </ul>
+        <ul class="nav-list nav-list--footer">
+          <li><a class="nav-link" href="#settings" data-view="settings" id="nav-settings">
+            <svg class="icon"><use href="#i-settings"/></svg><span class="nav-link__label">Pengaturan</span></a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- ============ KONTEN UTAMA ============ -->
+    <main id="main" class="main" tabindex="-1">
+      <header class="topbar">
+        <div class="topbar__intro">
+          <h1 class="page-title" id="page-title">Selamat <span class="text-accent">datang</span></h1>
+          <p class="page-subtitle" id="page-subtitle">Ini ringkasan keuanganmu.</p>
+        </div>
+
+        <div class="topbar__actions">
+          <div class="period-switcher" role="group" aria-label="Pilih periode">
+            <button class="icon-btn icon-btn--sm" type="button" id="period-prev" aria-label="Bulan sebelumnya">
+              <svg class="icon"><use href="#i-chevron-left"/></svg>
+            </button>
+            <span class="period-switcher__label" id="period-label" aria-live="polite">—</span>
+            <button class="icon-btn icon-btn--sm" type="button" id="period-next" aria-label="Bulan berikutnya">
+              <svg class="icon"><use href="#i-chevron-right"/></svg>
+            </button>
+          </div>
+          <button class="pill" type="button" id="period-all" aria-pressed="false">Semua</button>
+          <button class="icon-btn" type="button" id="theme-toggle" aria-label="Ganti ke tema terang">
+            <svg class="icon"><use href="#i-sun"/></svg>
+          </button>
+          <button class="btn btn--primary btn-add" type="button" id="add-transaction-btn" data-action="add-transaction">
+            <svg class="icon"><use href="#i-plus"/></svg><span>Tambah Transaksi</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ===== VIEW: DASHBOARD ===== -->
+      <section class="view" id="view-dashboard" data-view-panel="dashboard" aria-label="Dashboard">
+        <div class="bento">
+          <!-- Total Saldo -->
+          <article class="card card--balance area-balance" aria-labelledby="balance-title">
+            <header class="card__header">
+              <h2 class="card__title" id="balance-title">Total Saldo</h2>
+              <span class="chip" id="balance-period-chip">—</span>
+            </header>
+            <p class="balance-amount" id="balance-amount">Rp 0</p>
+            <p class="card__meta" id="balance-delta">Belum ada data pembanding</p>
+          </article>
+
+          <!-- Insight & Tips -->
+          <article class="card card--insight area-insight" aria-labelledby="insight-title">
+            <span class="insight__icon"><svg class="icon"><use href="#i-bulb"/></svg></span>
+            <h2 class="card__title" id="insight-title">Insight &amp; Tips</h2>
+            <p class="insight__text" id="insight-text">Mulai catat transaksi pertamamu untuk mendapatkan insight otomatis tentang kebiasaan belanjamu.</p>
+            <a class="btn btn--glow" href="#reports" id="insight-cta">Lihat Rincian</a>
+          </article>
+
+          <!-- Transaksi Terbaru -->
+          <article class="card card--list area-recent" aria-labelledby="recent-title">
+            <header class="card__header">
+              <h2 class="card__title" id="recent-title">Transaksi Terbaru</h2>
+              <a class="link-subtle" href="#transactions" id="recent-see-all">Lihat semua</a>
+            </header>
+            <div class="pill-group" role="group" aria-label="Filter tipe transaksi terbaru">
+              <button class="pill" type="button" data-recent-type="all" aria-pressed="true">Semua</button>
+              <button class="pill" type="button" data-recent-type="income" aria-pressed="false">Masuk</button>
+              <button class="pill" type="button" data-recent-type="expense" aria-pressed="false">Keluar</button>
+            </div>
+            <ul class="tx-list" id="recent-list"></ul>
+            <div class="empty-state" id="recent-empty">
+              <span class="empty-state__icon"><svg class="icon"><use href="#i-list"/></svg></span>
+              <p class="empty-state__title" id="recent-empty-title">Belum ada transaksi</p>
+              <p class="empty-state__text" id="recent-empty-text">Catatan pemasukan dan pengeluaranmu akan muncul di sini.</p>
+              <button class="btn btn--ghost btn--sm" type="button" data-action="add-transaction" id="recent-empty-add">
+                <svg class="icon"><use href="#i-plus"/></svg>Tambah transaksi
+              </button>
+            </div>
+          </article>
+
+          <!-- Ringkasan Finansial -->
+          <article class="card area-summary" aria-labelledby="summary-title">
+            <header class="card__header">
+              <h2 class="card__title" id="summary-title">Ringkasan Finansial</h2>
+            </header>
+            <div class="stat-grid">
+              <div class="stat-tile">
+                <p class="stat-tile__value" id="stat-income">Rp 0</p>
+                <p class="stat-tile__delta" id="stat-income-delta">—</p>
+                <div class="stat-tile__foot">
+                  <span class="stat-tile__icon stat-tile__icon--income"><svg class="icon"><use href="#i-arrow-down-left"/></svg></span>
+                  <span class="stat-tile__label">Pemasukan</span>
+                </div>
+              </div>
+              <div class="stat-tile">
+                <p class="stat-tile__value" id="stat-expense">Rp 0</p>
+                <p class="stat-tile__delta" id="stat-expense-delta">—</p>
+                <div class="stat-tile__foot">
+                  <span class="stat-tile__icon stat-tile__icon--expense"><svg class="icon"><use href="#i-arrow-up-right"/></svg></span>
+                  <span class="stat-tile__label">Pengeluaran</span>
+                </div>
+              </div>
+              <div class="stat-tile">
+                <p class="stat-tile__value" id="stat-net">Rp 0</p>
+                <p class="stat-tile__delta" id="stat-net-delta">—</p>
+                <div class="stat-tile__foot">
+                  <span class="stat-tile__icon"><svg class="icon"><use href="#i-wallet-stack"/></svg></span>
+                  <span class="stat-tile__label">Sisa</span>
+                </div>
+              </div>
+              <div class="stat-tile">
+                <p class="stat-tile__value" id="stat-rate">0%</p>
+                <p class="stat-tile__delta" id="stat-rate-hint">dari pemasukan</p>
+                <div class="stat-tile__foot">
+                  <span class="stat-tile__icon"><svg class="icon"><use href="#i-percent"/></svg></span>
+                  <span class="stat-tile__label">Rasio Tabungan</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Arus Kas -->
+          <article class="card area-cashflow" aria-labelledby="cashflow-title">
+            <header class="card__header card__header--wrap">
+              <div class="card__heading">
+                <h2 class="card__title" id="cashflow-title">Arus Kas</h2>
+                <ul class="legend" aria-label="Keterangan grafik">
+                  <li class="legend__item"><span class="legend__dot legend__dot--income"></span>Pemasukan</li>
+                  <li class="legend__item"><span class="legend__dot legend__dot--expense"></span>Pengeluaran</li>
+                </ul>
+              </div>
+              <div class="pill-group" role="group" aria-label="Rentang grafik">
+                <button class="pill" type="button" data-cashflow-range="6" aria-pressed="true">6 Bln</button>
+                <button class="pill" type="button" data-cashflow-range="12" aria-pressed="false">12 Bln</button>
+              </div>
+            </header>
+            <div class="chart" id="cashflow-chart">
+              <div class="empty-state empty-state--chart">
+                <span class="empty-state__icon"><svg class="icon"><use href="#i-pie"/></svg></span>
+                <p class="empty-state__title">Grafik belum tersedia</p>
+                <p class="empty-state__text">Tambahkan transaksi untuk melihat perbandingan pemasukan dan pengeluaran per bulan.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===== VIEW: TRANSAKSI ===== -->
+      <section class="view" id="view-transactions" data-view-panel="transactions" aria-label="Transaksi" hidden>
+        <article class="card card--list">
+          <header class="card__header">
+            <div class="card__heading">
+              <h2 class="card__title" id="all-title">Daftar Transaksi</h2>
+              <span class="chip" id="all-count">0 transaksi</span>
+            </div>
+            <button class="btn btn--ghost btn--sm" type="button" data-action="add-transaction" id="all-add-btn">
+              <svg class="icon"><use href="#i-plus"/></svg>Tambah
+            </button>
+          </header>
+          <ul class="tx-groups" id="all-list" aria-labelledby="all-title"></ul>
+          <div class="empty-state" id="all-empty">
+            <span class="empty-state__icon"><svg class="icon"><use href="#i-list"/></svg></span>
+            <p class="empty-state__title" id="all-empty-title">Belum ada transaksi</p>
+            <p class="empty-state__text" id="all-empty-text">Mulai catat pemasukan dan pengeluaran harianmu.</p>
+            <button class="btn btn--ghost btn--sm" type="button" data-action="add-transaction" id="all-empty-add">
+              <svg class="icon"><use href="#i-plus"/></svg>Tambah transaksi
+            </button>
+          </div>
+        </article>
+      </section>
+
+      <!-- ===== VIEW: ANGGARAN ===== -->
+      <section class="view" id="view-budget" data-view-panel="budget" aria-label="Anggaran" hidden>
+        <article class="card">
+          <header class="card__header">
+            <h2 class="card__title">Anggaran Bulanan</h2>
+          </header>
+          <div class="empty-state">
+            <span class="empty-state__icon"><svg class="icon"><use href="#i-target"/></svg></span>
+            <p class="empty-state__title">Belum ada anggaran</p>
+            <p class="empty-state__text">Atur batas pengeluaran per kategori dan pantau progresnya setiap bulan.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ===== VIEW: LAPORAN ===== -->
+      <section class="view" id="view-reports" data-view-panel="reports" aria-label="Laporan" hidden>
+        <article class="card">
+          <header class="card__header">
+            <h2 class="card__title">Pengeluaran per Kategori</h2>
+          </header>
+          <div class="empty-state">
+            <span class="empty-state__icon"><svg class="icon"><use href="#i-pie"/></svg></span>
+            <p class="empty-state__title">Belum ada data</p>
+            <p class="empty-state__text">Komposisi pengeluaranmu per kategori akan tampil di sini.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ===== VIEW: PENGATURAN ===== -->
+      <section class="view" id="view-settings" data-view-panel="settings" aria-label="Pengaturan" hidden>
+        <article class="card">
+          <header class="card__header">
+            <h2 class="card__title">Pengaturan</h2>
+          </header>
+          <ul class="setting-list">
+            <li class="setting-row">
+              <span class="setting-row__icon"><svg class="icon"><use href="#i-palette"/></svg></span>
+              <div class="setting-row__body">
+                <p class="setting-row__title">Tema tampilan</p>
+                <p class="setting-row__desc">Gelap adalah tema utama. Tema terang tersedia sebagai opsi.</p>
+              </div>
+              <button class="btn btn--ghost" type="button" id="settings-theme-btn">Tema terang</button>
+            </li>
+            <li class="setting-row">
+              <span class="setting-row__icon"><svg class="icon"><use href="#i-database"/></svg></span>
+              <div class="setting-row__body">
+                <p class="setting-row__title">Isi data contoh</p>
+                <p class="setting-row__desc">Tambahkan transaksi contoh beberapa bulan terakhir untuk mencoba fitur.</p>
+              </div>
+              <button class="btn btn--ghost" type="button" id="seed-data-btn">Isi data contoh</button>
+            </li>
+            <li class="setting-row">
+              <span class="setting-row__icon setting-row__icon--danger"><svg class="icon"><use href="#i-refresh"/></svg></span>
+              <div class="setting-row__body">
+                <p class="setting-row__title">Reset data</p>
+                <p class="setting-row__desc">Hapus semua transaksi dan anggaran dari perangkat ini.</p>
+              </div>
+              <button class="btn btn--danger" type="button" id="reset-data-btn">Reset data</button>
+            </li>
+          </ul>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Tombol tambah melayang (mobile) -->
+  <button class="fab" type="button" id="fab-add" aria-label="Tambah transaksi" data-action="add-transaction">
+    <svg class="icon"><use href="#i-plus"/></svg>
+  </button>
+
+  <!-- ============ DIALOG: TAMBAH / EDIT TRANSAKSI ============ -->
+  <dialog class="modal" id="tx-dialog" aria-labelledby="tx-dialog-title">
+    <form class="modal__panel" id="tx-form" novalidate>
+      <header class="modal__header">
+        <h2 class="modal__title" id="tx-dialog-title">Tambah Transaksi</h2>
+        <button class="icon-btn icon-btn--sm" type="button" data-close-dialog aria-label="Tutup">
+          <svg class="icon"><use href="#i-close"/></svg>
+        </button>
+      </header>
+
+      <div class="modal__body">
+        <!-- Tipe -->
+        <fieldset class="field">
+          <legend class="field__label">Tipe transaksi</legend>
+          <div class="segmented">
+            <input class="segmented__input" type="radio" name="tipe" id="tx-type-expense" value="expense" checked>
+            <label class="segmented__option segmented__option--expense" for="tx-type-expense">
+              <svg class="icon"><use href="#i-arrow-up-right"/></svg>Pengeluaran
+            </label>
+            <input class="segmented__input" type="radio" name="tipe" id="tx-type-income" value="income">
+            <label class="segmented__option segmented__option--income" for="tx-type-income">
+              <svg class="icon"><use href="#i-arrow-down-left"/></svg>Pemasukan
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Nominal -->
+        <div class="field">
+          <label class="field__label" for="tx-amount">Nominal</label>
+          <div class="input-affix">
+            <span class="input-affix__prefix" aria-hidden="true">Rp</span>
+            <input class="input input--amount" type="text" id="tx-amount" name="nominal"
+                   inputmode="numeric" autocomplete="off" placeholder="0"
+                   aria-describedby="tx-amount-error">
+          </div>
+          <p class="field__error" id="tx-amount-error"></p>
+        </div>
+
+        <!-- Tanggal -->
+        <div class="field">
+          <label class="field__label" for="tx-date">Tanggal</label>
+          <input class="input" type="date" id="tx-date" name="tanggal" required aria-describedby="tx-date-error">
+          <p class="field__error" id="tx-date-error"></p>
+        </div>
+
+        <!-- Kategori -->
+        <fieldset class="field" id="tx-category-field" aria-describedby="tx-category-error">
+          <legend class="field__label">Kategori</legend>
+          <div class="category-grid" id="tx-category-grid"></div>
+          <p class="field__error" id="tx-category-error"></p>
+        </fieldset>
+
+        <!-- Catatan -->
+        <div class="field">
+          <div class="field__label-row">
+            <label class="field__label" for="tx-note">Catatan <span class="field__optional">(opsional)</span></label>
+            <span class="field__counter" id="tx-note-counter" aria-hidden="true">0/80</span>
+          </div>
+          <input class="input" type="text" id="tx-note" name="catatan" maxlength="80" autocomplete="off"
+                 placeholder="Contoh: Makan siang bareng tim" aria-describedby="tx-note-error">
+          <p class="field__error" id="tx-note-error"></p>
+        </div>
+      </div>
+
+      <footer class="modal__footer">
+        <button class="btn btn--ghost" type="button" data-close-dialog>Batal</button>
+        <button class="btn btn--primary" type="submit" id="tx-submit">Simpan</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Notifikasi singkat -->
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="false"></div>
+</body>
+</html>

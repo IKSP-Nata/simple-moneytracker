@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FlowTrack — Personal Money Tracker Dashboard</title>
+<!-- Tailwind CSS CDN with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration for Custom Mauve / Deep Dark Palette -->
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            appDark: '#0D0B10',
+            appCard: '#15131B',
+            appCardSecondary: '#1C1924',
+            appBorder: 'rgba(255, 255, 255, 0.06)',
+            appBorderSubtle: 'rgba(255, 255, 255, 0.03)',
+            mauveGlow: '#C49BBB',
+            mauveAccent: '#D6A4E8',
+            mauveDark: '#4A3245',
+            mauveMuted: '#9B8599',
+            mauveActivePill: '#281F2B',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+          boxShadow: {
+            'glow-mauve': '0 0 35px -5px rgba(214, 164, 232, 0.35)',
+            'inner-glow': 'inset 0 1px 1px 0 rgba(255, 255, 255, 0.1)',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Google Font Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<!-- Custom Styles for Ambient Background & Specific Gradients -->
+<style data-purpose="custom-theme-styles">
+    body {
+      background-color: #08060A;
+      color: #E2DFE7;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Ambient Outer Glows */
+    .ambient-glow-left {
+      background: radial-gradient(circle at 10% 20%, rgba(138, 77, 126, 0.12) 0%, transparent 50%);
+    }
+    .ambient-glow-right {
+      background: radial-gradient(circle at 90% 70%, rgba(196, 155, 187, 0.08) 0%, transparent 60%);
+    }
+
+    /* Glow Card Special Gradient */
+    .card-purple-ambient {
+      background: radial-gradient(130% 90% at 50% 115%, rgba(196, 155, 187, 0.32) 0%, rgba(85, 48, 80, 0.22) 45%, rgba(22, 19, 27, 0.95) 85%);
+    }
+
+    /* Active Nav Item Soft Gradient */
+    .active-nav-pill {
+      background: linear-gradient(90deg, rgba(74, 50, 69, 0.55) 0%, rgba(35, 26, 37, 0.8) 100%);
+      border: 1px solid rgba(214, 164, 232, 0.18);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #110e16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2b2433;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-3 sm:p-6 lg:p-10 relative overflow-x-hidden selection:bg-mauveAccent/30 selection:text-white">
+<!-- Ambient Light Effects -->
+<div class="fixed inset-0 pointer-events-none ambient-glow-left"></div>
+<div class="fixed inset-0 pointer-events-none ambient-glow-right"></div>
+<!-- BEGIN: MainDashboardContainer -->
+<main class="relative z-10 w-full max-w-[1280px] bg-[#121017]/95 rounded-[2.2rem] border border-white/[0.07] shadow-2xl backdrop-blur-2xl p-5 md:p-7 flex flex-col lg:flex-row gap-6">
+<!-- BEGIN: LeftSidebar -->
+<aside class="w-full lg:w-64 flex-shrink-0 flex flex-col justify-between py-2 border-b lg:border-b-0 lg:border-r border-white/[0.06] pr-0 lg:pr-5" data-purpose="app-navigation">
+<div class="space-y-8">
+<!-- Logo & Brand Name -->
+<div class="flex items-center gap-3 px-2">
+<div class="w-8 h-8 rounded-xl bg-gradient-to-br from-mauveAccent via-mauveGlow to-mauveDark flex items-center justify-center shadow-lg shadow-mauveAccent/20">
+<!-- Sleek Minimal Geometric Monogram Icon -->
+<svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+</svg>
+</div>
+<span class="text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
+            FlowTrack
+          </span>
+</div>
+<!-- Navigation Links -->
+<nav class="space-y-1.5"><!-- Active Dashboard Item -->
+<a class="active-nav-pill flex items-center px-4 py-3 rounded-2xl text-sm font-medium text-white shadow-sm transition-all duration-200" href="#">
+<span class="">Dashboard</span>
+</a>
+<!-- Transactions Item -->
+<a class="flex items-center px-4 py-3 rounded-2xl text-sm font-medium text-stone-400 hover:text-stone-200 hover:bg-white/[0.03] transition-all" href="#">
+<span class="">Transactions</span>
+</a>
+<!-- Wallets Item -->
+<a class="flex items-center px-4 py-3 rounded-2xl text-sm font-medium text-stone-400 hover:text-stone-200 hover:bg-white/[0.03] transition-all" href="#">
+<span class="">My Wallets</span>
+</a>
+<!-- Savings Goals -->
+<a class="flex items-center px-4 py-3 rounded-2xl text-sm font-medium text-stone-400 hover:text-stone-200 hover:bg-white/[0.03] transition-all" href="#">
+<span class="">Savings Goals</span>
+</a>
+<!-- Budget Analysis -->
+<a class="flex items-center px-4 py-3 rounded-2xl text-sm font-medium text-stone-400 hover:text-stone-200 hover:bg-white/[0.03] transition-all" href="#">
+<span class="">Analysis</span>
+</a></nav>
+</div>
+<!-- Bottom Settings & Help Section -->
+<div class="pt-6 border-t border-white/[0.05] space-y-1.5 mt-6 lg:mt-0"><a class="flex items-center px-4 py-2.5 rounded-xl text-sm font-medium text-stone-400 hover:text-white hover:bg-white/[0.03] transition" href="#">
+<span class="">Settings</span>
+</a>
+<a class="flex items-center px-4 py-2.5 rounded-xl text-sm font-medium text-stone-400 hover:text-white hover:bg-white/[0.03] transition" href="#">
+<span class="">Help &amp; Support</span>
+</a></div>
+</aside>
+<!-- END: LeftSidebar -->
+<!-- BEGIN: DashboardBody -->
+<div class="flex-1 flex flex-col gap-6 overflow-hidden">
+<!-- BEGIN: TopHeader -->
+<header class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<!-- User Greeting & Subtitle -->
+<div>
+<h1 class="text-2xl md:text-3xl font-semibold text-white tracking-tight">Welcome, Kadek Nata</h1>
+<p class="text-xs md:text-sm text-stone-400 mt-0.5">
+            Here's your personal financial overview today
+          </p>
+</div>
+<!-- Right Header Items: Pills, Search, Notifications, Profile, and Add Transaction Button -->
+<div class="flex flex-wrap items-center gap-3">
+<!-- Add Transaction Button -->
+<button class="btn-add-transaction flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-semibold bg-gradient-to-r from-[#C49BBB] to-[#A374A0] text-[#0D0B10] shadow-md shadow-[#C49BBB]/20 hover:opacity-95 active:scale-[0.98] transition-all" type="button">
+<svg class="w-3.5 h-3.5" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+<span>Add Transaction</span>
+</button>
+<!-- Command Prompt / Search Bar -->
+<div class="relative flex items-center bg-[#17141E] border border-white/[0.07] px-3.5 py-2 rounded-2xl w-full sm:w-60 focus-within:border-mauveAccent/50 transition">
+<svg aria-hidden="true" class="lucide lucide-sparkles w-4 h-4 text-mauveAccent mr-2 flex-shrink-0" data-lucide="sparkles" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+<input class="bg-transparent text-xs text-white placeholder-stone-400 focus:outline-none w-full border-none p-0" placeholder="Ask flow.ai anything..." type="text"/>
+<span class="text-[10px] bg-white/[0.06] text-stone-400 px-1.5 py-0.5 rounded border border-white/[0.05]">⌘K</span>
+</div>
+<!-- Notification Bell -->
+<button aria-label="Notifications" class="w-9 h-9 rounded-2xl bg-[#17141E] border border-white/[0.07] flex items-center justify-center text-stone-300 hover:text-white hover:border-white/20 transition" type="button">
+<svg aria-hidden="true" class="lucide lucide-bell w-4 h-4" data-lucide="bell" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg>
+</button>
+<!-- Settings Cog -->
+<button aria-label="Quick Settings" class="w-9 h-9 rounded-2xl bg-[#17141E] border border-white/[0.07] flex items-center justify-center text-stone-300 hover:text-white hover:border-white/20 transition" type="button">
+<svg aria-hidden="true" class="lucide lucide-sliders-horizontal w-4 h-4" data-lucide="sliders-horizontal" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M10 5H3"></path><path d="M12 19H3"></path><path d="M14 3v4"></path><path d="M16 17v4"></path><path d="M21 12h-9"></path><path d="M21 19h-5"></path><path d="M21 5h-7"></path><path d="M8 10v4"></path><path d="M8 12H3"></path></svg>
+</button>
+<!-- User Profile Badge -->
+<div class="flex items-center gap-2.5 pl-1.5 py-1 pr-3 bg-[#17141E] border border-white/[0.07] rounded-2xl"><div class="text-left px-3 py-1">
+<p class="text-xs font-semibold text-white leading-tight">Kadek Nata</p>
+<p class="text-[10px] text-stone-400 leading-tight">kadek.nata@gmail.com</p>
+</div></div>
+</div>
+</header>
+<!-- END: TopHeader -->
+<!-- Secondary Filter Pills Row -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<button class="px-5 py-1.5 rounded-full text-xs font-medium bg-black/60 text-white border border-white/10 hover:border-mauveAccent/40 transition">
+          Overview
+        </button>
+<button class="px-5 py-1.5 rounded-full text-xs font-medium bg-[#1F1923] text-mauveAccent border border-mauveAccent/20 hover:bg-[#251D2A] transition">
+          Wallets
+        </button>
+<button class="px-5 py-1.5 rounded-full text-xs font-medium bg-black/40 text-stone-400 border border-white/[0.06] hover:text-white transition">
+          Goals
+        </button>
+</div>
+<!-- Inline Quick Add Transaction trigger -->
+<button class="btn-add-transaction hidden sm:flex items-center gap-1.5 text-xs text-mauveAccent hover:text-white transition font-medium" type="button">
+<span class="text-stone-400 hover:text-stone-200">+ Add Transaction</span>
+</button>
+</div>
+<!-- BEGIN: BentoGridTopSection -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full items-stretch">
+<!-- Column 1: Total Balance Card & Wishlist Goal Saver Card -->
+<div class="flex flex-col gap-6 justify-between h-full">
+<!-- Top Card: Total Balance -->
+<div class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 flex flex-col justify-between" data-purpose="total-balance-card">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs text-stone-400 font-medium tracking-wide">Total Balance</span>
+<button class="flex items-center gap-1.5 text-xs bg-black/40 text-stone-300 border border-white/[0.08] px-3 py-1 rounded-full hover:border-white/20 transition">
+<span class="">This Month</span>
+<i class="w-3.5 h-3.5 text-stone-400" data-lucide="chevron-down"></i>
+</button>
+</div>
+<div>
+<div class="text-3xl lg:text-4xl font-bold tracking-tight text-white mb-2">
+                Rp 4.850.000
+              </div>
+<div class="flex items-center gap-2 text-xs">
+<span class="inline-flex items-center gap-0.5 text-emerald-400 font-medium">
+<i class="w-3.5 h-3.5" data-lucide="trending-up"></i>
+                  +12.4%
+                </span>
+<span class="text-stone-400">vs last month</span>
+</div>
+</div>
+</div>
+<!-- Bottom Card: Glowing Goal Card -->
+<div class="card-purple-ambient border border-mauveAccent/20 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden flex-1 min-h-[190px]" data-purpose="wishlist-goal-card">
+<div class="relative z-10">
+<div class="flex items-center justify-between">
+<h3 class="text-base font-semibold text-white tracking-wide">Wishlist Goal Saver</h3>
+<span class="text-[10px] font-semibold text-mauveAccent bg-mauveAccent/10 px-2 py-0.5 rounded-full border border-mauveAccent/25">60% Reached</span>
+</div>
+<p class="text-xs text-stone-300/80 mt-1.5 leading-relaxed">
+                Upgrade PC Setup — Rp 6.000.000 saved of Rp 10.000.000 target.
+              </p>
+<!-- Subtle Progress Track -->
+<div class="w-full bg-black/40 h-1.5 rounded-full mt-4 overflow-hidden border border-white/5">
+<div class="bg-gradient-to-r from-mauveGlow to-mauveAccent h-full rounded-full w-[60%]"></div>
+</div>
+</div>
+<div class="relative z-10 mt-5 flex justify-center">
+<button class="w-full max-w-[210px] py-2 px-4 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-[#AF77A4] to-[#C991BE] shadow-lg shadow-[#8E5281]/40 hover:opacity-95 transition-opacity active:scale-[0.98]">
+                Explore Goals
+              </button>
+</div>
+</div>
+</div>
+<!-- END: Column 1 -->
+<!-- Column 2: Recent Transactions List -->
+<div class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 flex flex-col justify-between h-full" data-purpose="transactions-list-card">
+<div>
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-sm font-semibold text-white">Recent Transactions</h2>
+<button class="btn-add-transaction flex items-center gap-1 text-[11px] text-mauveAccent hover:text-white transition font-medium" type="button">
+<span>+ Add</span>
+</button>
+</div>
+<!-- Filter Pills -->
+<div class="flex items-center gap-1.5 mb-4 text-[11px]">
+<button class="bg-[#2A2331] text-white px-3 py-1 rounded-full font-medium">All</button>
+<button class="bg-black/30 text-stone-400 hover:text-white px-3 py-1 rounded-full transition">Income</button>
+<button class="bg-black/30 text-stone-400 hover:text-white px-3 py-1 rounded-full transition">Expense</button>
+</div>
+<!-- Transactions Items (Clean Typographic) -->
+<div class="space-y-3.5">
+<!-- Item 1: Netflix -->
+<div class="flex items-center justify-between text-xs py-1 border-b border-white/[0.04]">
+<div>
+<p class="font-medium text-stone-200">Netflix</p>
+<p class="text-[10px] text-stone-400">Entertainment</p>
+</div>
+<div class="text-right">
+<p class="font-semibold text-stone-200">-Rp 186.000</p>
+<p class="text-[10px] text-stone-400">Monthly</p>
+</div>
+</div>
+<!-- Item 2: Tokopedia -->
+<div class="flex items-center justify-between text-xs py-1 border-b border-white/[0.04]">
+<div>
+<p class="font-medium text-stone-200">Tokopedia</p>
+<p class="text-[10px] text-stone-400">Shopping</p>
+</div>
+<div class="text-right">
+<p class="font-semibold text-stone-200">-Rp 450.000</p>
+<p class="text-[10px] text-stone-400">Gadgets</p>
+</div>
+</div>
+<!-- Item 3: Client Retainer (Income) -->
+<div class="flex items-center justify-between text-xs py-1 border-b border-white/[0.04]">
+<div>
+<p class="font-medium text-stone-200">UI Project</p>
+<p class="text-[10px] text-stone-400">Client Retainer</p>
+</div>
+<div class="text-right">
+<p class="font-semibold text-emerald-400">+Rp 3.500.000</p>
+<p class="text-[10px] text-emerald-500/80 font-medium">Received</p>
+</div>
+</div>
+<!-- Item 4: Kopi Kenangan -->
+<div class="flex items-center justify-between text-xs py-1">
+<div>
+<p class="font-medium text-stone-200">Kopi Kenangan</p>
+<p class="text-[10px] text-stone-400">Food &amp; Beverage</p>
+</div>
+<div class="text-right">
+<p class="font-semibold text-stone-200">-Rp 38.000</p>
+<p class="text-[10px] text-stone-400">QRIS</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: Column 2 -->
+<!-- Column 3: 2x2 Mini Grid - My Wallets -->
+<div class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 flex flex-col justify-between h-full" data-purpose="wallets-grid-card">
+<div>
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-sm font-semibold text-white">My Wallets</h2>
+<button class="flex items-center gap-1 text-[11px] bg-black/40 text-stone-300 border border-white/[0.08] px-2.5 py-1 rounded-full hover:border-white/20 transition">
+<span class="">See all</span>
+<i class="w-3 h-3 text-stone-400" data-lucide="arrow-up-right"></i>
+</button>
+</div>
+<!-- 2x2 Grid -->
+<div class="grid grid-cols-2 gap-2.5">
+<!-- Wallet 1: BCA -->
+<div class="bg-black/40 border border-white/[0.05] rounded-2xl p-3 flex flex-col justify-between hover:border-mauveAccent/30 transition">
+<div>
+<p class="text-[11px] font-semibold text-white tracking-tight">Rp 2.450k</p>
+<p class="text-[9px] text-emerald-400 mt-0.5">+4.2%</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-[10px] font-medium text-stone-300">Bank BCA</span>
+<span class="text-[8px] bg-blue-500/10 text-blue-300 px-1 py-0.5 rounded">Primary</span>
+</div>
+</div>
+<!-- Wallet 2: GoPay -->
+<div class="bg-black/40 border border-white/[0.05] rounded-2xl p-3 flex flex-col justify-between hover:border-mauveAccent/30 transition">
+<div>
+<p class="text-[11px] font-semibold text-white tracking-tight">Rp 450.000</p>
+<p class="text-[9px] text-stone-400 mt-0.5">E-Wallet</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-[10px] font-medium text-stone-300">GoPay</span>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+</div>
+</div>
+<!-- Wallet 3: DANA -->
+<div class="bg-black/40 border border-white/[0.05] rounded-2xl p-3 flex flex-col justify-between hover:border-mauveAccent/30 transition">
+<div>
+<p class="text-[11px] font-semibold text-white tracking-tight">Rp 750.000</p>
+<p class="text-[9px] text-stone-400 mt-0.5">E-Wallet</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-[10px] font-medium text-stone-300">DANA</span>
+<span class="w-2 h-2 rounded-full bg-blue-400"></span>
+</div>
+</div>
+<!-- Wallet 4: Cash Vault -->
+<div class="bg-black/40 border border-white/[0.05] rounded-2xl p-3 flex flex-col justify-between hover:border-mauveAccent/30 transition">
+<div>
+<p class="text-[11px] font-semibold text-white tracking-tight">Rp 1.200k</p>
+<p class="text-[9px] text-stone-400 mt-0.5">Physical</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-[10px] font-medium text-stone-300">Cash</span>
+<i class="w-3 h-3 text-stone-400" data-lucide="wallet"></i>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: Column 3 -->
+</div>
+<!-- END: BentoGridTopSection -->
+<!-- BEGIN: BottomWideCard (Cashflow Performance Line Chart) -->
+<section class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6 relative" data-purpose="performance-chart-card">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+<div>
+<h2 class="text-base font-semibold text-white">Cashflow Performance</h2>
+<p class="text-xs text-stone-400">Net savings &amp; cash growth over the year</p>
+</div>
+<!-- Timeframe Selector -->
+<div class="flex items-center bg-black/50 border border-white/[0.06] rounded-full p-1 self-start sm:self-auto text-xs">
+<button class="px-3 py-1 rounded-full text-stone-400 hover:text-white transition">1D</button>
+<button class="px-3 py-1 rounded-full text-stone-400 hover:text-white transition">1W</button>
+<button class="px-3 py-1 rounded-full bg-[#352538] text-mauveAccent font-semibold border border-mauveAccent/30 shadow-sm transition">1M</button>
+<button class="px-3 py-1 rounded-full text-stone-400 hover:text-white transition">6M</button>
+<button class="px-3 py-1 rounded-full text-stone-400 hover:text-white transition">1Y</button>
+</div>
+</div>
+<!-- Chart Container with SVG Curve -->
+<div class="relative w-full h-56 md:h-64 pt-2">
+<!-- Background Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-7">
+<div class="border-b border-white/[0.04] w-full flex items-center justify-between">
+<span class="text-[10px] text-stone-600 pl-1">200k</span>
+</div>
+<div class="border-b border-white/[0.04] w-full flex items-center justify-between">
+<span class="text-[10px] text-stone-600 pl-1">150k</span>
+</div>
+<div class="border-b border-white/[0.04] w-full flex items-center justify-between">
+<span class="text-[10px] text-stone-600 pl-1">100k</span>
+</div>
+<div class="border-b border-white/[0.04] w-full flex items-center justify-between">
+<span class="text-[10px] text-stone-600 pl-1">50k</span>
+</div>
+<div class="border-b border-white/[0.04] w-full flex items-center justify-between">
+<span class="text-[10px] text-stone-600 pl-1">10k</span>
+</div>
+</div>
+<!-- Interactive Tooltip Overlay (1st Jun Peak) -->
+<div class="absolute left-[54%] top-[14%] -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none">
+<div class="bg-[#241C29] border border-mauveAccent/40 shadow-xl shadow-black/60 rounded-xl px-3 py-2 text-center backdrop-blur-md">
+<div class="flex items-center gap-2">
+<span class="text-[10px] text-stone-300 font-medium">1st Jun 2025</span>
+<span class="w-1.5 h-1.5 rounded-full bg-mauveAccent"></span>
+</div>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="text-xs font-bold text-white tracking-tight">Rp 16.500.000</span>
+<span class="text-[9px] font-semibold text-emerald-400 bg-emerald-500/10 px-1 py-0.2 rounded border border-emerald-500/20">+35%</span>
+</div>
+</div>
+<!-- Vertical Dashed Line -->
+<div class="w-[1px] h-28 border-l border-dashed border-mauveAccent/70 my-1"></div>
+<!-- Glowing Point Node -->
+<div class="w-3 h-3 rounded-full bg-mauveAccent border-2 border-[#121017] shadow-lg shadow-mauveAccent"></div>
+</div>
+<!-- SVG Smooth Curved Line Chart -->
+<svg class="w-full h-[calc(100%-24px)] overflow-visible" preserveaspectratio="none" viewbox="0 0 1000 220">
+<defs>
+<!-- Mauve Fill Area Gradient -->
+<lineargradient id="chartGlowArea" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#C49BBB" stop-opacity="0.25"></stop>
+<stop offset="50%" stop-color="#8E5281" stop-opacity="0.10"></stop>
+<stop offset="100%" stop-color="#17141E" stop-opacity="0.0"></stop>
+</lineargradient>
+<!-- Stroke Gradient -->
+<lineargradient id="chartStroke" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#A5709B"></stop>
+<stop offset="50%" stop-color="#E1B8DF"></stop>
+<stop offset="100%" stop-color="#A5709B"></stop>
+</lineargradient>
+</defs>
+<!-- Gradient Area Fill -->
+<path d="M 0 60
+                     C 60 70, 90 95, 150 90
+                     C 210 85, 240 105, 300 100
+                     C 370 95, 420 120, 500 115
+                     C 520 115, 540 140, 545 140
+                     C 555 140, 570 95, 620 90
+                     C 680 85, 710 130, 770 125
+                     C 830 120, 870 155, 930 150
+                     C 960 148, 985 165, 1000 160
+                     L 1000 220 L 0 220 Z" fill="url(#chartGlowArea)"></path>
+<!-- Smooth Main Path -->
+<path d="M 0 60
+                     C 60 70, 90 95, 150 90
+                     C 210 85, 240 105, 300 100
+                     C 370 95, 420 120, 500 115
+                     C 520 115, 540 140, 545 140
+                     C 555 140, 570 95, 620 90
+                     C 680 85, 710 130, 770 125
+                     C 830 120, 870 155, 930 150
+                     C 960 148, 985 165, 1000 160" fill="none" stroke="url(#chartStroke)" stroke-linecap="round" stroke-width="2.5"></path>
+</svg>
+<!-- Month Labels Jan - Dec -->
+<div class="flex justify-between items-center text-[10px] text-stone-500 pt-3 px-2 font-medium">
+<span class="">Jan</span>
+<span class="">Feb</span>
+<span class="">Mar</span>
+<span class="">Apr</span>
+<span class="">May</span>
+<span class="text-mauveAccent font-semibold">Jun</span>
+<span class="">Jul</span>
+<span class="">Aug</span>
+<span class="">Sep</span>
+<span class="">Oct</span>
+<span class="">Nov</span>
+<span class="">Dec</span>
+</div>
+</div>
+</section>
+<!-- END: BottomWideCard -->
+</div>
+<!-- END: DashboardBody -->
+</main>
+<!-- END: MainDashboardContainer -->
+<!-- BEGIN: Add Transaction Modal Popup -->
+<div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300" id="transaction-modal" role="dialog">
+<!-- Modal Card -->
+<div class="bg-[#16141C] border border-white/[0.08] rounded-2xl max-w-md w-full p-6 relative shadow-2xl shadow-black/80 transition-all duration-300 transform scale-95 opacity-0" id="modal-card">
+<!-- Header -->
+<div class="flex items-start justify-between mb-5">
+<div>
+<h3 class="text-lg font-semibold text-white tracking-tight" id="modal-title">Add Transaction</h3>
+<p class="text-xs text-stone-400 mt-0.5">Log a new cashflow entry</p>
+</div>
+<button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-stone-400 hover:text-white flex items-center justify-center border border-white/[0.06] transition text-sm" id="modal-close-btn" type="button">
+        ✕
+      </button>
+</div>
+<!-- Form -->
+<form class="space-y-4" id="transaction-form" onsubmit="event.preventDefault();">
+<!-- 1. Transaction Title -->
+<div>
+<label class="block text-xs font-medium text-stone-300 mb-1.5" for="tx-title">Transaction Title</label>
+<input class="w-full bg-[#1F1B27] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="tx-title" placeholder="e.g. Makan Siang, Beli Kopi" required="" type="text"/>
+</div>
+<!-- 2. Amount in Rupiah -->
+<div>
+<label class="block text-xs font-medium text-stone-300 mb-1.5" for="tx-amount">Amount (Rp)</label>
+<div class="relative flex items-center">
+<span class="absolute left-3.5 text-xs font-medium text-stone-400 pointer-events-none">Rp</span>
+<input class="w-full bg-[#1F1B27] border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="tx-amount" placeholder="50.000" required="" type="text"/>
+</div>
+</div>
+<!-- 3. Transaction Type Pills -->
+<div>
+<label class="block text-xs font-medium text-stone-300 mb-1.5">Transaction Type</label>
+<div class="grid grid-cols-3 gap-2" id="type-pills">
+<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent" data-type="Expense" type="button">
+            Expense
+          </button>
+<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15" data-type="Income" type="button">
+            Income
+          </button>
+<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15" data-type="Save to Goal" type="button">
+            Save to Goal
+          </button>
+</div>
+</div>
+<!-- 4. Wallet Source Selector -->
+<div>
+<label class="block text-xs font-medium text-stone-300 mb-1.5">Wallet Source</label>
+<div class="grid grid-cols-4 gap-2" id="wallet-pills">
+<button class="wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent truncate" data-wallet="Bank BCA" type="button">
+            Bank BCA
+          </button>
+<button class="wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15 truncate" data-wallet="GoPay" type="button">
+            GoPay
+          </button>
+<button class="wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15 truncate" data-wallet="DANA" type="button">
+            DANA
+          </button>
+<button class="wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15 truncate" data-wallet="Cash" type="button">
+            Cash
+          </button>
+</div>
+</div>
+<!-- 5. Action Buttons -->
+<div class="pt-3 flex items-center gap-3">
+<button class="w-1/3 py-2.5 px-4 rounded-xl text-xs font-medium text-stone-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition" id="modal-cancel-btn" type="button">
+          Cancel
+        </button>
+<button class="w-2/3 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all" id="modal-submit-btn" type="submit">
+          Save Transaction
+        </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Subtle Success Toast Notification -->
+<div class="fixed bottom-6 right-6 z-50 pointer-events-none transform translate-y-12 opacity-0 transition-all duration-300 bg-[#1F1923] border border-mauveAccent/30 rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3" id="tx-toast">
+<div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">✓</div>
+<p class="text-xs font-medium text-white">Transaction recorded successfully!</p>
+</div>
+<!-- Initialize Lucide Icons & Modal Interactivity -->
+<script data-purpose="icon-initialization">
+    lucide.createIcons();
+
+    // Modal interaction logic
+    const modal = document.getElementById('transaction-modal');
+    const modalCard = document.getElementById('modal-card');
+    const openBtns = document.querySelectorAll('.btn-add-transaction');
+    const closeBtn = document.getElementById('modal-close-btn');
+    const cancelBtn = document.getElementById('modal-cancel-btn');
+    const form = document.getElementById('transaction-form');
+    const toast = document.getElementById('tx-toast');
+
+    function openModal() {
+      modal.classList.remove('pointer-events-none', 'opacity-0');
+      modalCard.classList.remove('scale-95', 'opacity-0');
+      modalCard.classList.add('scale-100', 'opacity-100');
+      document.body.classList.add('overflow-hidden');
+    }
+
+    function closeModal() {
+      modalCard.classList.remove('scale-100', 'opacity-100');
+      modalCard.classList.add('scale-95', 'opacity-0');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    openBtns.forEach(btn => btn.addEventListener('click', openModal));
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+    // Click outside on backdrop
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    // Escape key listener
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('pointer-events-none')) {
+        closeModal();
+      }
+    });
+
+    // Toggle Type Pills
+    const typePills = document.querySelectorAll('.type-pill');
+    typePills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        typePills.forEach(p => {
+          p.className = 'type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15';
+        });
+        pill.className = 'type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent';
+      });
+    });
+
+    // Toggle Wallet Pills
+    const walletPills = document.querySelectorAll('.wallet-pill');
+    walletPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        walletPills.forEach(p => {
+          p.className = 'wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15 truncate';
+        });
+        pill.className = 'wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent truncate';
+      });
+    });
+
+    // Form submission
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      closeModal();
+      form.reset();
+
+      // Show toast
+      if (toast) {
+        toast.classList.remove('translate-y-12', 'opacity-0');
+        setTimeout(() => {
+          toast.classList.add('translate-y-12', 'opacity-0');
+        }, 3200);
+      }
+    });
+</script>
+</body></html>
