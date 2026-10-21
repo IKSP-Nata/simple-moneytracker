@@ -23,9 +23,32 @@ try {
             PDO::ATTR_EMULATE_PREPARES   => false,
         ]
     );
+
+    // Auto-create settings table jika belum ada (Open Source localhost)
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS settings (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_name VARCHAR(100) NOT NULL DEFAULT 'User'
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        INSERT INTO settings (id, user_name)
+        SELECT 1, 'User'
+        WHERE NOT EXISTS (SELECT 1 FROM settings WHERE id = 1);
+    ");
 } catch (PDOException $e) {
     http_response_code(500);
     exit('Koneksi database gagal: ' . htmlspecialchars($e->getMessage()));
+}
+
+/** Ambil nama user aktif dari tabel settings */
+function get_user_name(PDO $pdo): string
+{
+    try {
+        $name = (string) $pdo->query('SELECT user_name FROM settings WHERE id = 1 LIMIT 1')->fetchColumn();
+        return $name !== '' ? $name : 'User';
+    } catch (Throwable) {
+        return 'User';
+    }
 }
 
 /** Format angka ke Rupiah, contoh: Rp 2.450.000 */

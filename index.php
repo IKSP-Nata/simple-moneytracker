@@ -7,6 +7,7 @@ require __DIR__ . '/config.php';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+$userName = get_user_name($pdo);
 
 // Tangani form jika disubmit langsung ke index.php
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -223,14 +224,14 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
     }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-2 sm:p-4 lg:p-6 relative overflow-x-hidden selection:bg-mauveAccent/30 selection:text-white">
+<body class="w-full min-h-screen bg-[#0f0f13] text-[#E2DFE7] relative overflow-x-hidden selection:bg-mauveAccent/30 selection:text-white">
 <!-- Ambient Light Effects -->
 <div class="fixed inset-0 pointer-events-none ambient-glow-left"></div>
 <div class="fixed inset-0 pointer-events-none ambient-glow-right"></div>
-<!-- BEGIN: MainDashboardContainer -->
-<main class="relative z-10 w-full max-w-screen-2xl bg-[#121017]/95 rounded-[2.2rem] border border-white/[0.07] shadow-2xl backdrop-blur-2xl p-5 md:p-7 flex flex-col lg:flex-row gap-6">
+<!-- BEGIN: MainDashboardContainer (Full Screen, No Outer Border/Margin) -->
+<main class="relative z-10 w-full min-h-screen flex flex-col md:flex-row bg-[#0f0f13]">
 <!-- BEGIN: LeftSidebar -->
-<aside class="w-full lg:w-64 flex-shrink-0 flex flex-col py-2 border-b lg:border-b-0 lg:border-r border-white/[0.06] pr-0 lg:pr-5" data-purpose="app-navigation">
+<aside class="w-full md:w-64 flex-shrink-0 flex flex-col bg-[#14121a] md:min-h-screen p-5 md:p-6 border-b md:border-b-0 md:border-r border-white/5" data-purpose="app-navigation">
 <div class="space-y-8">
 <!-- Logo & Brand Name -->
 <div class="flex items-center gap-3 px-2">
@@ -257,12 +258,15 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </aside>
 <!-- END: LeftSidebar -->
 <!-- BEGIN: DashboardBody -->
-<div class="flex-1 flex flex-col gap-6 overflow-hidden">
+<div class="flex-1 flex flex-col gap-6 p-4 sm:p-6 lg:p-8 min-w-0 overflow-y-auto">
 <!-- BEGIN: TopHeader -->
 <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
 <!-- User Greeting & Subtitle -->
 <div class="flex-1 min-w-0">
-<h1 class="text-2xl md:text-3xl font-semibold text-white tracking-tight">Welcome, Kadek Nata</h1>
+<h1 class="text-2xl md:text-3xl font-semibold text-white tracking-tight cursor-pointer hover:text-mauveGlow transition inline-flex items-center gap-2 group" id="greeting-title" title="Klik untuk ubah nama">
+  <span>Welcome, <span id="header-user-name"><?= e($userName) ?></span></span>
+  <svg class="w-4 h-4 text-stone-500 group-hover:text-mauveAccent transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"/></svg>
+</h1>
 <p class="text-xs md:text-sm text-stone-400 mt-0.5" id="page-subtitle">
             Here's your personal financial overview today
           </p>
@@ -274,13 +278,16 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <svg class="w-3.5 h-3.5" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
 <span>Add Transaction</span>
 </button>
-<!-- User Profile Badge -->
-<div class="flex items-center gap-2.5 px-3.5 py-2 bg-[#17141E] border border-white/[0.07] rounded-2xl">
+<!-- User Profile Badge (Clickable to Edit Name) -->
+<button type="button" id="profile-btn" class="flex items-center gap-2.5 px-3.5 py-2 bg-[#17141E] border border-white/[0.07] hover:border-mauveAccent/40 rounded-2xl transition cursor-pointer text-left group" title="Klik untuk mengubah nama profil">
+<div class="w-7 h-7 rounded-full bg-mauveAccent/15 border border-mauveAccent/30 flex items-center justify-center text-mauveAccent text-xs font-semibold">
+<?= strtoupper(mb_substr($userName, 0, 1)) ?>
+</div>
 <div class="text-left">
-<p class="text-xs font-semibold text-white leading-tight">Kadek Nata</p>
-<p class="text-[10px] text-stone-400 leading-tight">kadek.nata@gmail.com</p>
+<p class="text-xs font-semibold text-white group-hover:text-mauveGlow transition leading-tight" id="profile-display-name"><?= e($userName) ?></p>
+<p class="text-[10px] text-stone-400 leading-tight">Edit Profile ✎</p>
 </div>
-</div>
+</button>
 </div>
 </header>
 <!-- END: TopHeader -->
@@ -591,7 +598,8 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <td class="px-2 py-3"><span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border <?= $badge[1] ?>"><?= $badge[0] ?></span></td>
 <td class="px-2 py-3 text-stone-400"><?= $tx['source'] === 'bot' ? 'Bot' : 'Web' ?></td>
 <td class="px-2 py-3 text-right font-semibold whitespace-nowrap <?= $isIncome ? 'text-emerald-400' : ($isGoal ? 'text-mauveAccent' : 'text-stone-200') ?>"><?= $isIncome ? '+' : '-' ?><?= rupiah($tx['amount']) ?></td>
-<td class="px-2 py-3 text-right">
+<td class="px-2 py-3 text-right whitespace-nowrap">
+<button type="button" class="btn-edit-tx text-[11px] text-stone-300 bg-black/40 border border-white/[0.08] px-2.5 py-1 rounded-full hover:text-white hover:border-white/20 transition mr-1" data-id="<?= (int) $tx['id'] ?>" data-title="<?= e($tx['title']) ?>" data-amount="<?= (float) $tx['amount'] ?>" data-type="<?= e($tx['type']) ?>" data-wallet-id="<?= (int) $tx['wallet_id'] ?>" id="edit-tx-<?= (int) $tx['id'] ?>">Edit</button>
 <form action="process_transaction.php" method="post" class="inline" onsubmit="return confirm('Hapus transaksi ini? Saldo dompet akan dikembalikan.');">
 <input type="hidden" name="action" value="delete"/>
 <input type="hidden" name="id" value="<?= (int) $tx['id'] ?>"/>
@@ -707,6 +715,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <?php if ($g['pct'] < 100): ?>
 <button class="btn-save-goal text-[11px] font-medium text-mauveAccent hover:text-white transition" data-goal-id="<?= (int) $g['id'] ?>" type="button" id="save-goal-<?= (int) $g['id'] ?>">+ Nabung</button>
 <?php endif; ?>
+<button class="btn-edit-goal text-[11px] font-medium text-indigo-400 hover:text-indigo-300 transition" type="button" data-goal-id="<?= (int) $g['id'] ?>" data-goal-title="<?= e($g['goal_title']) ?>" data-goal-target="<?= (float) $g['target_amount'] ?>" id="edit-goal-<?= (int) $g['id'] ?>">Edit</button>
 <form action="delete_goal.php" method="post" class="inline" onsubmit="return confirm('Hapus target tabungan &quot;<?= e($g['goal_title']) ?>&quot;?');">
 <input type="hidden" name="id" value="<?= (int) $g['id'] ?>"/>
 <button class="text-[11px] font-medium text-red-400 hover:text-red-300 transition" type="submit" id="delete-goal-<?= (int) $g['id'] ?>">Hapus</button>
@@ -756,7 +765,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </main>
 <!-- END: MainDashboardContainer -->
 <!-- BEGIN: Add Transaction Modal Popup -->
-<div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300" id="transaction-modal" role="dialog">
+<div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="transaction-modal" role="dialog">
 <!-- Modal Card -->
 <div class="bg-[#16141C] border border-white/[0.08] rounded-2xl max-w-md w-full p-6 relative shadow-2xl shadow-black/80 transition-all duration-300 transform scale-95 opacity-0" id="modal-card">
 <!-- Header -->
@@ -844,6 +853,147 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </div>
 </form>
 </div>
+</div>
+<!-- BEGIN: Edit Profile Name Modal Popup -->
+<div aria-labelledby="profile-modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="profile-modal" role="dialog">
+  <div class="bg-[#16141C] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 relative shadow-2xl shadow-black/80 transition-all duration-300 transform scale-95 opacity-0" id="profile-card">
+    <div class="flex items-start justify-between mb-5">
+      <div>
+        <h3 class="text-lg font-semibold text-white tracking-tight" id="profile-modal-title">Edit Profile Name</h3>
+        <p class="text-xs text-stone-400 mt-0.5">Ubah nama yang ditampilkan di FlowTrack</p>
+      </div>
+      <button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-stone-400 hover:text-white flex items-center justify-center border border-white/[0.06] transition text-sm" id="profile-close-btn" type="button">
+        ✕
+      </button>
+    </div>
+    <form class="space-y-4" id="profile-form" action="update_profile.php" method="post">
+      <div>
+        <label class="block text-xs font-medium text-stone-300 mb-1.5" for="profile-user-name">Nama Profil / Pengguna</label>
+        <input class="w-full bg-[#1F1B27] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="profile-user-name" name="user_name" maxlength="100" value="<?= e($userName) ?>" required type="text" placeholder="e.g. Kadek Nata"/>
+      </div>
+      <div class="pt-3 flex items-center gap-3">
+        <button class="w-1/3 py-2.5 px-4 rounded-xl text-xs font-medium text-stone-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition" id="profile-cancel-btn" type="button">
+          Cancel
+        </button>
+        <button class="w-2/3 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all" type="submit">
+          Simpan Nama
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- BEGIN: Edit Savings Goal Modal Popup -->
+<div aria-labelledby="edit-goal-modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="edit-goal-modal" role="dialog">
+  <div class="bg-[#16141C] border border-white/[0.08] rounded-2xl max-w-md w-full p-6 relative shadow-2xl shadow-black/80 transition-all duration-300 transform scale-95 opacity-0" id="edit-goal-card">
+    <div class="flex items-start justify-between mb-5">
+      <div>
+        <h3 class="text-lg font-semibold text-white tracking-tight" id="edit-goal-modal-title">Edit Savings Goal</h3>
+        <p class="text-xs text-stone-400 mt-0.5">Perbarui nama dan nominal target tabungan</p>
+      </div>
+      <button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-stone-400 hover:text-white flex items-center justify-center border border-white/[0.06] transition text-sm" id="edit-goal-close-btn" type="button">
+        ✕
+      </button>
+    </div>
+    <form class="space-y-4" id="edit-goal-form" action="edit_goal.php" method="post">
+      <input type="hidden" name="id" id="edit-goal-id" value=""/>
+      <div>
+        <label class="block text-xs font-medium text-stone-300 mb-1.5" for="edit-goal-title">Nama Target</label>
+        <input class="w-full bg-[#1F1B27] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="edit-goal-title" name="goal_title" maxlength="100" required type="text"/>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-stone-300 mb-1.5" for="edit-goal-target">Nominal Target (Rp)</label>
+        <div class="relative flex items-center">
+          <span class="absolute left-3.5 text-xs font-medium text-stone-400 pointer-events-none">Rp</span>
+          <input class="money-input w-full bg-[#1F1B27] border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="edit-goal-target" name="target_amount" inputmode="numeric" autocomplete="off" required type="text"/>
+        </div>
+      </div>
+      <div class="pt-3 flex items-center gap-3">
+        <button class="w-1/3 py-2.5 px-4 rounded-xl text-xs font-medium text-stone-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition" id="edit-goal-cancel-btn" type="button">
+          Cancel
+        </button>
+        <button class="w-2/3 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all" type="submit">
+          Update Target
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- BEGIN: Edit Transaction Modal Popup -->
+<div aria-labelledby="edit-tx-modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="edit-transaction-modal" role="dialog">
+  <div class="bg-[#16141C] border border-white/[0.08] rounded-2xl max-w-md w-full p-6 relative shadow-2xl shadow-black/80 transition-all duration-300 transform scale-95 opacity-0" id="edit-tx-card">
+    <div class="flex items-start justify-between mb-5">
+      <div>
+        <h3 class="text-lg font-semibold text-white tracking-tight" id="edit-tx-modal-title">Edit Transaction</h3>
+        <p class="text-xs text-stone-400 mt-0.5">Ubah rincian transaksi &amp; sesuaikan saldo</p>
+      </div>
+      <button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-stone-400 hover:text-white flex items-center justify-center border border-white/[0.06] transition text-sm" id="edit-tx-close-btn" type="button">
+        ✕
+      </button>
+    </div>
+    <form class="space-y-4" id="edit-transaction-form" action="edit_transaction.php" method="post">
+      <input type="hidden" name="id" id="edit-tx-id" value=""/>
+      <input type="hidden" name="type" id="edit-tx-type" value="expense"/>
+      <input type="hidden" name="wallet_id" id="edit-tx-wallet-id" value="<?= (int) ($wallets[0]['id'] ?? 0) ?>"/>
+      <input type="hidden" name="goal_id" id="edit-tx-goal-id" value="<?= (int) ($featuredGoal['id'] ?? 0) ?>"/>
+      <input type="hidden" name="return_tab" value="transactions"/>
+
+      <div>
+        <label class="block text-xs font-medium text-stone-300 mb-1.5" for="edit-tx-title">Transaction Title</label>
+        <input class="w-full bg-[#1F1B27] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="edit-tx-title" name="title" maxlength="100" required type="text"/>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-stone-300 mb-1.5" for="edit-tx-amount">Amount (Rp)</label>
+        <div class="relative flex items-center">
+          <span class="absolute left-3.5 text-xs font-medium text-stone-400 pointer-events-none">Rp</span>
+          <input class="money-input w-full bg-[#1F1B27] border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="edit-tx-amount" name="amount" inputmode="numeric" autocomplete="off" required type="text"/>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-stone-300 mb-1.5">Transaction Type</label>
+        <div class="grid grid-cols-3 gap-2" id="edit-type-pills">
+          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent" data-type="expense" type="button">Expense</button>
+          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15" data-type="income" type="button">Income</button>
+          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15" data-type="goal_saving" type="button">Save to Goal</button>
+        </div>
+      </div>
+
+      <div class="hidden" id="edit-goal-field">
+        <label class="block text-xs font-medium text-stone-300 mb-1.5">Savings Goal</label>
+        <?php if ($goals): ?>
+        <div class="grid grid-cols-2 gap-2" id="edit-goal-pills">
+          <?php foreach ($goals as $g): ?>
+          <button class="edit-goal-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15" data-goal-id="<?= (int) $g['id'] ?>" type="button">
+            <?= e($g['goal_title']) ?>
+          </button>
+          <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-stone-300 mb-1.5">Wallet Source</label>
+        <div class="grid grid-cols-4 gap-2" id="edit-wallet-pills">
+          <?php foreach ($wallets as $i => $w): ?>
+          <button class="edit-wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate <?= $i === 0 ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15' ?>" data-wallet-id="<?= (int) $w['id'] ?>" title="<?= e($w['wallet_name']) ?>" type="button">
+            <?= e($w['wallet_name']) ?>
+          </button>
+          <?php endforeach; ?>
+        </div>
+      </div>
+
+      <div class="pt-3 flex items-center gap-3">
+        <button class="w-1/3 py-2.5 px-4 rounded-xl text-xs font-medium text-stone-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition" id="edit-tx-cancel-btn" type="button">
+          Cancel
+        </button>
+        <button class="w-2/3 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all" type="submit">
+          Update Transaction
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 <!-- Subtle Success Toast Notification -->
 <div class="fixed bottom-6 right-6 z-50 pointer-events-none transform translate-y-12 opacity-0 transition-all duration-300 bg-[#1F1923] border border-mauveAccent/30 rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3" id="tx-toast" <?= $flashMsg !== null ? 'data-show="1"' : '' ?>>
@@ -1044,10 +1194,161 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 
     // Escape key listener
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !modal.classList.contains('pointer-events-none')) {
-        closeModal();
+      if (e.key === 'Escape') {
+        if (!modal.classList.contains('pointer-events-none')) closeModal();
+        if (profileModal && !profileModal.classList.contains('pointer-events-none')) closeProfileModal();
+        if (editGoalModal && !editGoalModal.classList.contains('pointer-events-none')) closeEditGoal();
+        if (editTxModal && !editTxModal.classList.contains('pointer-events-none')) closeEditTx();
       }
     });
+
+    /* ================= PROFILE NAME MODAL ================= */
+    const profileModal  = document.getElementById('profile-modal');
+    const profileCard   = document.getElementById('profile-card');
+    const profileBtn    = document.getElementById('profile-btn');
+    const greetingTitle = document.getElementById('greeting-title');
+    const profileClose  = document.getElementById('profile-close-btn');
+    const profileCancel = document.getElementById('profile-cancel-btn');
+    const profileInput  = document.getElementById('profile-user-name');
+
+    function openProfileModal() {
+      if (!profileModal) return;
+      profileModal.classList.remove('pointer-events-none', 'opacity-0');
+      profileCard.classList.remove('scale-95', 'opacity-0');
+      profileCard.classList.add('scale-100', 'opacity-100');
+      document.body.classList.add('overflow-hidden');
+      setTimeout(() => { if (profileInput) { profileInput.focus(); profileInput.select(); } }, 150);
+    }
+
+    function closeProfileModal() {
+      if (!profileModal) return;
+      profileCard.classList.remove('scale-100', 'opacity-100');
+      profileCard.classList.add('scale-95', 'opacity-0');
+      profileModal.classList.add('opacity-0', 'pointer-events-none');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    if (profileBtn) profileBtn.addEventListener('click', openProfileModal);
+    if (greetingTitle) greetingTitle.addEventListener('click', openProfileModal);
+    if (profileClose) profileClose.addEventListener('click', closeProfileModal);
+    if (profileCancel) profileCancel.addEventListener('click', closeProfileModal);
+    if (profileModal) {
+      profileModal.addEventListener('click', (e) => {
+        if (e.target === profileModal) closeProfileModal();
+      });
+    }
+
+    /* ================= EDIT GOAL MODAL ================= */
+    const editGoalModal = document.getElementById('edit-goal-modal');
+    const editGoalCard  = document.getElementById('edit-goal-card');
+    const editGoalClose = document.getElementById('edit-goal-close-btn');
+    const editGoalCancel= document.getElementById('edit-goal-cancel-btn');
+    const editGoalId    = document.getElementById('edit-goal-id');
+    const editGoalTitle = document.getElementById('edit-goal-title');
+    const editGoalTarget= document.getElementById('edit-goal-target');
+
+    function openEditGoal(id, title, target) {
+      editGoalId.value    = id;
+      editGoalTitle.value = title;
+      editGoalTarget.value= target ? Number(target).toLocaleString('id-ID') : '';
+      editGoalModal.classList.remove('pointer-events-none', 'opacity-0');
+      editGoalCard.classList.remove('scale-95', 'opacity-0');
+      editGoalCard.classList.add('scale-100', 'opacity-100');
+      document.body.classList.add('overflow-hidden');
+      setTimeout(() => editGoalTitle.focus(), 150);
+    }
+
+    function closeEditGoal() {
+      editGoalCard.classList.remove('scale-100', 'opacity-100');
+      editGoalCard.classList.add('scale-95', 'opacity-0');
+      editGoalModal.classList.add('opacity-0', 'pointer-events-none');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    document.querySelectorAll('.btn-edit-goal').forEach(btn => {
+      btn.addEventListener('click', () => {
+        openEditGoal(btn.dataset.goalId, btn.dataset.goalTitle, btn.dataset.goalTarget);
+      });
+    });
+    if (editGoalClose) editGoalClose.addEventListener('click', closeEditGoal);
+    if (editGoalCancel) editGoalCancel.addEventListener('click', closeEditGoal);
+    if (editGoalModal) {
+      editGoalModal.addEventListener('click', (e) => {
+        if (e.target === editGoalModal) closeEditGoal();
+      });
+    }
+
+    /* ================= EDIT TRANSACTION MODAL ================= */
+    const editTxModal     = document.getElementById('edit-transaction-modal');
+    const editTxCard      = document.getElementById('edit-tx-card');
+    const editTxClose     = document.getElementById('edit-tx-close-btn');
+    const editTxCancel    = document.getElementById('edit-tx-cancel-btn');
+    const editTxId        = document.getElementById('edit-tx-id');
+    const editTxTitle     = document.getElementById('edit-tx-title');
+    const editTxAmount    = document.getElementById('edit-tx-amount');
+    const editTxType      = document.getElementById('edit-tx-type');
+    const editTxWalletId  = document.getElementById('edit-tx-wallet-id');
+    const editTxGoalId    = document.getElementById('edit-tx-goal-id');
+    const editGoalField   = document.getElementById('edit-goal-field');
+
+    const editTypePills   = document.querySelectorAll('.edit-type-pill');
+    const editWalletPills = document.querySelectorAll('.edit-wallet-pill');
+    const editGoalPills   = document.querySelectorAll('.edit-goal-pill');
+
+    function selectEditType(type) {
+      editTxType.value = type;
+      selectPill(editTypePills, document.querySelector(`.edit-type-pill[data-type="${type}"]`), TYPE_BASE);
+      if (editGoalField) editGoalField.classList.toggle('hidden', type !== 'goal_saving');
+    }
+    function selectEditWallet(id) {
+      editTxWalletId.value = id;
+      selectPill(editWalletPills, document.querySelector(`.edit-wallet-pill[data-wallet-id="${id}"]`), WALLET_BASE);
+    }
+    function selectEditGoal(id) {
+      if (!id) return;
+      editTxGoalId.value = id;
+      selectPill(editGoalPills, document.querySelector(`.edit-goal-pill[data-goal-id="${id}"]`), GOAL_BASE);
+    }
+
+    editTypePills.forEach(p => p.addEventListener('click', () => selectEditType(p.dataset.type)));
+    editWalletPills.forEach(p => p.addEventListener('click', () => selectEditWallet(p.dataset.walletId)));
+    editGoalPills.forEach(p => p.addEventListener('click', () => selectEditGoal(p.dataset.goalId)));
+
+    function openEditTx(id, title, amount, type, walletId) {
+      editTxId.value     = id;
+      editTxTitle.value  = title;
+      editTxAmount.value = amount ? Number(amount).toLocaleString('id-ID') : '';
+      selectEditType(type || 'expense');
+      selectEditWallet(walletId);
+      const firstEditGoal = document.querySelector('.edit-goal-pill');
+      if (firstEditGoal) selectEditGoal(firstEditGoal.dataset.goalId);
+
+      editTxModal.classList.remove('pointer-events-none', 'opacity-0');
+      editTxCard.classList.remove('scale-95', 'opacity-0');
+      editTxCard.classList.add('scale-100', 'opacity-100');
+      document.body.classList.add('overflow-hidden');
+      setTimeout(() => editTxTitle.focus(), 150);
+    }
+
+    function closeEditTx() {
+      editTxCard.classList.remove('scale-100', 'opacity-100');
+      editTxCard.classList.add('scale-95', 'opacity-0');
+      editTxModal.classList.add('opacity-0', 'pointer-events-none');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    document.querySelectorAll('.btn-edit-tx').forEach(btn => {
+      btn.addEventListener('click', () => {
+        openEditTx(btn.dataset.id, btn.dataset.title, btn.dataset.amount, btn.dataset.type, btn.dataset.walletId);
+      });
+    });
+    if (editTxClose) editTxClose.addEventListener('click', closeEditTx);
+    if (editTxCancel) editTxCancel.addEventListener('click', closeEditTx);
+    if (editTxModal) {
+      editTxModal.addEventListener('click', (e) => {
+        if (e.target === editTxModal) closeEditTx();
+      });
+    }
 
     // Validasi sebelum dikirim ke process_transaction.php
     form.addEventListener('submit', (e) => {
