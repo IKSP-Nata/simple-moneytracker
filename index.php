@@ -230,16 +230,10 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- BEGIN: MainDashboardContainer -->
 <main class="relative z-10 w-full max-w-screen-2xl bg-[#121017]/95 rounded-[2.2rem] border border-white/[0.07] shadow-2xl backdrop-blur-2xl p-5 md:p-7 flex flex-col lg:flex-row gap-6">
 <!-- BEGIN: LeftSidebar -->
-<aside class="w-full lg:w-64 flex-shrink-0 flex flex-col justify-between py-2 border-b lg:border-b-0 lg:border-r border-white/[0.06] pr-0 lg:pr-5" data-purpose="app-navigation">
+<aside class="w-full lg:w-64 flex-shrink-0 flex flex-col py-2 border-b lg:border-b-0 lg:border-r border-white/[0.06] pr-0 lg:pr-5" data-purpose="app-navigation">
 <div class="space-y-8">
 <!-- Logo & Brand Name -->
 <div class="flex items-center gap-3 px-2">
-<div class="w-8 h-8 rounded-xl bg-gradient-to-br from-mauveAccent via-mauveGlow to-mauveDark flex items-center justify-center shadow-lg shadow-mauveAccent/20">
-<!-- Sleek Minimal Geometric Monogram Icon -->
-<svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
-<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-</svg>
-</div>
 <span class="text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
             FlowTrack
           </span>
@@ -258,56 +252,35 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <a class="flex items-center px-4 py-3 rounded-2xl text-sm font-medium text-stone-400 hover:text-stone-200 hover:bg-white/[0.03] transition-all" href="#goals" data-tab="goals" id="nav-goals">
 <span class="">Savings Goals</span>
 </a>
-<a class="flex items-center px-4 py-3 rounded-2xl text-sm font-medium text-stone-400 hover:text-stone-200 hover:bg-white/[0.03] transition-all" href="#" id="nav-analysis" onclick="event.preventDefault()">
-<span class="">Analysis</span>
-</a></nav>
+</nav>
 </div>
-<!-- Bottom Settings & Help Section -->
-<div class="pt-6 border-t border-white/[0.05] space-y-1.5 mt-6 lg:mt-0"><a class="flex items-center px-4 py-2.5 rounded-xl text-sm font-medium text-stone-400 hover:text-white hover:bg-white/[0.03] transition" href="#" onclick="event.preventDefault()">
-<span class="">Settings</span>
-</a>
-<a class="flex items-center px-4 py-2.5 rounded-xl text-sm font-medium text-stone-400 hover:text-white hover:bg-white/[0.03] transition" href="#" onclick="event.preventDefault()">
-<span class="">Help &amp; Support</span>
-</a></div>
 </aside>
 <!-- END: LeftSidebar -->
 <!-- BEGIN: DashboardBody -->
 <div class="flex-1 flex flex-col gap-6 overflow-hidden">
 <!-- BEGIN: TopHeader -->
-<header class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
 <!-- User Greeting & Subtitle -->
-<div>
+<div class="flex-1 min-w-0">
 <h1 class="text-2xl md:text-3xl font-semibold text-white tracking-tight">Welcome, Kadek Nata</h1>
 <p class="text-xs md:text-sm text-stone-400 mt-0.5" id="page-subtitle">
             Here's your personal financial overview today
           </p>
 </div>
-<!-- Right Header Items: Pills, Search, Notifications, Profile, and Add Transaction Button -->
-<div class="flex flex-wrap items-center gap-3">
+<!-- Right Header Items: Add Transaction Button & Profile -->
+<div class="flex items-center gap-3 flex-shrink-0">
 <!-- Add Transaction Button -->
-<button class="btn-add-transaction flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-semibold bg-gradient-to-r from-[#C49BBB] to-[#A374A0] text-[#0D0B10] shadow-md shadow-[#C49BBB]/20 hover:opacity-95 active:scale-[0.98] transition-all" type="button" id="header-add-btn">
+<button class="btn-add-transaction flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-semibold bg-gradient-to-r from-[#C49BBB] to-[#A374A0] text-[#0D0B10] shadow-md shadow-[#C49BBB]/20 hover:opacity-95 active:scale-[0.98] transition-all" type="button" id="header-add-btn">
 <svg class="w-3.5 h-3.5" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
 <span>Add Transaction</span>
 </button>
-<!-- Command Prompt / Search Bar -->
-<div class="relative flex items-center bg-[#17141E] border border-white/[0.07] px-3.5 py-2 rounded-2xl w-full sm:w-60 focus-within:border-mauveAccent/50 transition">
-<svg aria-hidden="true" class="lucide lucide-sparkles w-4 h-4 text-mauveAccent mr-2 flex-shrink-0" data-lucide="sparkles" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
-<input class="bg-transparent text-xs text-white placeholder-stone-400 focus:outline-none w-full border-none p-0" placeholder="Ask flow.ai anything..." type="text" id="search-input"/>
-<span class="text-[10px] bg-white/[0.06] text-stone-400 px-1.5 py-0.5 rounded border border-white/[0.05]">⌘K</span>
-</div>
-<!-- Notification Bell -->
-<button aria-label="Notifications" class="w-9 h-9 rounded-2xl bg-[#17141E] border border-white/[0.07] flex items-center justify-center text-stone-300 hover:text-white hover:border-white/20 transition" type="button" id="notif-btn">
-<svg aria-hidden="true" class="lucide lucide-bell w-4 h-4" data-lucide="bell" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg>
-</button>
-<!-- Settings Cog -->
-<button aria-label="Quick Settings" class="w-9 h-9 rounded-2xl bg-[#17141E] border border-white/[0.07] flex items-center justify-center text-stone-300 hover:text-white hover:border-white/20 transition" type="button" id="quick-settings-btn">
-<svg aria-hidden="true" class="lucide lucide-sliders-horizontal w-4 h-4" data-lucide="sliders-horizontal" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M10 5H3"></path><path d="M12 19H3"></path><path d="M14 3v4"></path><path d="M16 17v4"></path><path d="M21 12h-9"></path><path d="M21 19h-5"></path><path d="M21 5h-7"></path><path d="M8 10v4"></path><path d="M8 12H3"></path></svg>
-</button>
 <!-- User Profile Badge -->
-<div class="flex items-center gap-2.5 pl-1.5 py-1 pr-3 bg-[#17141E] border border-white/[0.07] rounded-2xl"><div class="text-left px-3 py-1">
+<div class="flex items-center gap-2.5 px-3.5 py-2 bg-[#17141E] border border-white/[0.07] rounded-2xl">
+<div class="text-left">
 <p class="text-xs font-semibold text-white leading-tight">Kadek Nata</p>
 <p class="text-[10px] text-stone-400 leading-tight">kadek.nata@gmail.com</p>
-</div></div>
+</div>
+</div>
 </div>
 </header>
 <!-- END: TopHeader -->
@@ -315,7 +288,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- ================================================================
      TAB: DASHBOARD
      ================================================================ -->
-<section class="flex flex-col gap-6" data-panel="dashboard" id="panel-dashboard" aria-label="Dashboard">
+<div id="tab-dashboard" class="tab-content flex flex-col gap-6" data-panel="dashboard">
 <!-- Secondary Filter Pills Row -->
 <div class="flex items-center justify-between">
 <div class="flex items-center gap-2">
@@ -563,13 +536,13 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </div>
 </section>
 <!-- END: BottomWideCard -->
-</section>
+</div>
 <!-- END TAB: DASHBOARD -->
 
 <!-- ================================================================
      TAB: TRANSACTIONS
      ================================================================ -->
-<section class="hidden flex flex-col gap-6" data-panel="transactions" id="panel-transactions" aria-label="Transactions">
+<div id="tab-transactions" class="tab-content hidden flex flex-col gap-6" data-panel="transactions">
 <div class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
 <div>
@@ -633,13 +606,13 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <p class="<?= $transactions ? 'hidden' : '' ?> text-xs text-stone-500 py-10 text-center" id="all-tx-list-empty">Belum ada transaksi.</p>
 </div>
 </div>
-</section>
+</div>
 <!-- END TAB: TRANSACTIONS -->
 
 <!-- ================================================================
      TAB: MY WALLETS
      ================================================================ -->
-<section class="hidden flex flex-col gap-6" data-panel="wallets" id="panel-wallets" aria-label="My Wallets">
+<div id="tab-wallets" class="tab-content hidden flex flex-col gap-6" data-panel="wallets">
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 <!-- Wallet list -->
 <div class="lg:col-span-2 bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6">
@@ -701,13 +674,13 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </form>
 </div>
 </div>
-</section>
+</div>
 <!-- END TAB: MY WALLETS -->
 
 <!-- ================================================================
      TAB: SAVINGS GOALS
      ================================================================ -->
-<section class="hidden flex flex-col gap-6" data-panel="goals" id="panel-goals" aria-label="Savings Goals">
+<div id="tab-goals" class="tab-content hidden flex flex-col gap-6" data-panel="goals">
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 <!-- Goals list -->
 <div class="lg:col-span-2 bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6">
@@ -770,7 +743,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </form>
 </div>
 </div>
-</section>
+</div>
 <!-- END TAB: SAVINGS GOALS -->
 </div>
 <!-- END: DashboardBody -->
@@ -875,7 +848,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <script data-purpose="icon-initialization">
     lucide.createIcons();
 
-    /* ================= TAB NAVIGATION ================= */
+    /* ================= TAB NAVIGATION (SPA) ================= */
     const NAV_ACTIVE = 'active-nav-pill flex items-center px-4 py-3 rounded-2xl text-sm font-medium text-white shadow-sm transition-all duration-200';
     const NAV_IDLE   = 'flex items-center px-4 py-3 rounded-2xl text-sm font-medium text-stone-400 hover:text-stone-200 hover:bg-white/[0.03] transition-all';
     const SUBTITLES  = {
@@ -885,33 +858,51 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       goals:        'Track progress toward your wishlist & savings targets',
     };
 
-    const navLinks   = document.querySelectorAll('[data-tab]');
-    const panels     = document.querySelectorAll('[data-panel]');
-    const subtitleEl = document.getElementById('page-subtitle');
-    const returnTab  = document.getElementById('tx-return-tab');
+    const navLinks      = document.querySelectorAll('#sidebar-nav [data-tab]');
+    const tabContainers = document.querySelectorAll('.tab-content');
+    const subtitleEl    = document.getElementById('page-subtitle');
+    const returnTab     = document.getElementById('tx-return-tab');
 
-    function showTab(tab, updateHash = true) {
+    function switchTab(tab, updateHash = true) {
       if (!SUBTITLES[tab]) tab = 'dashboard';
-      panels.forEach(p => p.classList.toggle('hidden', p.dataset.panel !== tab));
-      navLinks.forEach(a => {
-        a.className = a.dataset.tab === tab ? NAV_ACTIVE : NAV_IDLE;
-        a.toggleAttribute('aria-current', a.dataset.tab === tab);
+
+      // 1. Sembunyikan semua tab kontainer, lalu hapus class 'hidden' hanya pada tab yang dipilih
+      tabContainers.forEach(container => {
+        const isMatch = container.id === `tab-${tab}` || container.dataset.panel === tab;
+        container.classList.toggle('hidden', !isMatch);
       });
-      subtitleEl.textContent = SUBTITLES[tab];
-      returnTab.value = tab;
-      if (updateHash) history.replaceState(null, '', '#' + tab);
+
+      // 2. Pindahkan indikator 'active' (highlight ungu) pada menu sidebar yang sedang diklik
+      navLinks.forEach(link => {
+        const isActive = link.dataset.tab === tab;
+        link.className = isActive ? NAV_ACTIVE : NAV_IDLE;
+        link.toggleAttribute('aria-current', isActive);
+      });
+
+      // 3. Update subtitle & hidden return_tab form
+      if (subtitleEl && SUBTITLES[tab]) {
+        subtitleEl.textContent = SUBTITLES[tab];
+      }
+      if (returnTab) {
+        returnTab.value = tab;
+      }
+      if (updateHash) {
+        history.replaceState(null, '', '#' + tab);
+      }
     }
 
-    navLinks.forEach(a => a.addEventListener('click', e => {
+    navLinks.forEach(link => link.addEventListener('click', e => {
       e.preventDefault();
-      showTab(a.dataset.tab);
+      switchTab(link.dataset.tab);
     }));
+
     document.querySelectorAll('[data-goto]').forEach(btn => btn.addEventListener('click', e => {
       e.preventDefault();
-      showTab(btn.dataset.goto);
+      switchTab(btn.dataset.goto);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }));
-    window.addEventListener('hashchange', () => showTab(location.hash.slice(1), false));
+
+    window.addEventListener('hashchange', () => switchTab(location.hash.slice(1) || 'dashboard', false));
 
     /* ================= FILTER PILLS (All / Income / Expense) ================= */
     const PILL_ACTIVE = 'bg-[#2A2331] text-white px-3 py-1 rounded-full font-medium';
@@ -1079,6 +1070,6 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
     }
 
     // Tab awal dari hash URL (#transactions, #wallets, #goals)
-    showTab(location.hash.slice(1) || 'dashboard', false);
+    switchTab(location.hash.slice(1) || 'dashboard', false);
 </script>
 </body></html>
