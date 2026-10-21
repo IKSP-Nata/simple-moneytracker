@@ -703,9 +703,15 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </div>
 <div class="flex items-center justify-between mt-3">
 <span class="text-[10px] text-stone-400"><?= $remaining > 0 ? 'Sisa ' . rupiah($remaining) : 'Target tercapai' ?></span>
+<div class="flex items-center gap-3">
 <?php if ($g['pct'] < 100): ?>
 <button class="btn-save-goal text-[11px] font-medium text-mauveAccent hover:text-white transition" data-goal-id="<?= (int) $g['id'] ?>" type="button" id="save-goal-<?= (int) $g['id'] ?>">+ Nabung</button>
 <?php endif; ?>
+<form action="delete_goal.php" method="post" class="inline" onsubmit="return confirm('Hapus target tabungan &quot;<?= e($g['goal_title']) ?>&quot;?');">
+<input type="hidden" name="id" value="<?= (int) $g['id'] ?>"/>
+<button class="text-[11px] font-medium text-red-400 hover:text-red-300 transition" type="submit" id="delete-goal-<?= (int) $g['id'] ?>">Hapus</button>
+</form>
+</div>
 </div>
 </div>
 <?php endforeach; ?>
