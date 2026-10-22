@@ -1,25 +1,27 @@
 <?php
 /**
- * index.php — FlowTrack Personal Money Tracker (dinamis dari db_money)
+ * FlowTrack — Personal Money Tracker
  */
+
 require __DIR__ . '/config.php';
 
+// --- Session & User Profile ---
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 $userName = get_user_name($pdo);
 
-// Tangani form jika disubmit langsung ke index.php
+// --- Direct Form Submission Handler ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     require __DIR__ . '/process_transaction.php';
     exit;
 }
 
-/* ---------- Data dompet ---------- */
+// --- Wallets Data ---
 $wallets      = $pdo->query('SELECT * FROM wallets ORDER BY id ASC')->fetchAll();
 $totalBalance = (float) $pdo->query('SELECT COALESCE(SUM(balance), 0) FROM wallets')->fetchColumn();
 
-/* ---------- Data target tabungan ---------- */
+// --- Savings Goals Data ---
 $goals = $pdo->query('SELECT * FROM savings_goals ORDER BY id ASC')->fetchAll();
 foreach ($goals as &$g) {
     $g['pct'] = (float) $g['target_amount'] > 0
@@ -28,14 +30,14 @@ foreach ($goals as &$g) {
 }
 unset($g);
 
-// Goal unggulan untuk kartu Wishlist: goal pertama yang belum tercapai
+// Featured goal: first active goal with progress < 100%
 $featuredGoal = null;
 foreach ($goals as $g) {
     if ($g['pct'] < 100) { $featuredGoal = $g; break; }
 }
 $featuredGoal ??= $goals[0] ?? null;
 
-/* ---------- Data transaksi (JOIN wallets) ---------- */
+// --- Transactions Data ---
 $transactions = $pdo->query(
     'SELECT t.*, COALESCE(w.wallet_name, "Unknown") AS wallet_name
      FROM transactions t
@@ -44,7 +46,7 @@ $transactions = $pdo->query(
 )->fetchAll();
 $recentTransactions = array_slice($transactions, 0, 5);
 
-/* ---------- Ringkasan bulan ini ---------- */
+// --- Current Month Summary ---
 $monthTotals = ['income' => 0.0, 'expense' => 0.0, 'goal_saving' => 0.0];
 $stmt = $pdo->query(
     "SELECT type, SUM(amount) AS total FROM transactions
@@ -55,7 +57,7 @@ foreach ($stmt as $row) {
     $monthTotals[$row['type']] = (float) $row['total'];
 }
 
-/* ---------- Grafik arus kas (net income - expense per bulan, tahun ini) ---------- */
+// --- Cashflow Performance Metric (Net Income vs Expense) ---
 $monthlyNet = array_fill(1, 12, 0.0);
 $stmt = $pdo->query(
     "SELECT MONTH(created_at) AS m,
@@ -80,7 +82,7 @@ foreach ($monthlyNet as $m => $v) {
     $points[] = [$x, $y];
 }
 
-// Kurva halus (Catmull-Rom → Bezier), titik kontrol di-clamp agar tidak overshoot
+// Catmull-Rom to Bezier curve smoothing
 $linePath = sprintf('M %.1f %.1f', $points[0][0], $points[0][1]);
 for ($i = 0; $i < 11; $i++) {
     $p0 = $points[$i - 1] ?? $points[$i];
@@ -104,7 +106,7 @@ $prevNet     = $curMonth > 1 ? $monthlyNet[$curMonth - 1] : 0.0;
 $netChange   = $prevNet != 0 ? (($curNet - $prevNet) / abs($prevNet)) * 100 : null;
 $tipX        = max(7, min(93, $points[$curMonth - 1][0] / 10));
 $tipY        = $points[$curMonth - 1][1] / 220 * 100;
-$tipBelow    = $tipY < 45; // titik tinggi → tooltip ditaruh di bawah titik
+$tipBelow    = $tipY < 45;
 
 function short_rp(float $v): string
 {
@@ -115,7 +117,7 @@ function short_rp(float $v): string
     return $sign . round($a);
 }
 
-/* ---------- Helper tampilan ---------- */
+// --- UI Helpers ---
 $walletDots  = ['bg-emerald-500', 'bg-blue-400', 'bg-mauveAccent', 'bg-amber-400'];
 $walletTypes = array_values(array_unique(array_merge(
     ['Bank', 'E-Wallet', 'Tunai'],
@@ -127,7 +129,7 @@ function is_cash_type(string $type): bool
     return in_array(strtolower($type), ['tunai', 'cash', 'physical'], true);
 }
 
-/* ---------- Flash message (setelah redirect) ---------- */
+// --- Flash Messages ---
 $flashMsg   = $_SESSION['flash_msg'] ?? (isset($_GET['msg']) ? (string) $_GET['msg'] : null);
 $flashError = !empty($_SESSION['flash_error']) || (($_GET['status'] ?? '') === 'error');
 unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
@@ -222,12 +224,66 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       background: #2b2433;
       border-radius: 9999px;
     }
+
+    /* Interactive Mascot / Pet */
+    @media (hover: none) or (pointer: coarse) {
+      #flow-pet-container {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body class="w-full min-h-screen bg-[#0f0f13] text-[#E2DFE7] relative overflow-x-hidden selection:bg-mauveAccent/30 selection:text-white">
 <!-- Ambient Light Effects -->
 <div class="fixed inset-0 pointer-events-none ambient-glow-left"></div>
 <div class="fixed inset-0 pointer-events-none ambient-glow-right"></div>
+
+<!-- Interactive Mascot / Pet -->
+<div id="flow-pet-container" class="hidden md:block fixed pointer-events-none z-50 transition-opacity duration-300 opacity-0" style="top: 0; left: 0; will-change: transform;">
+  <div id="flow-pet" class="relative w-10 h-10 select-none">
+    <!-- Idle "Zzz" Bubble -->
+    <div id="flow-pet-zzz" class="absolute -top-3.5 -right-2 px-1.5 py-0.5 rounded-full bg-[#241a28] border border-mauveAccent/30 text-[9px] font-bold text-mauveAccent shadow-md shadow-black/50 opacity-0 transition-all duration-300 transform scale-75">
+      Zzz
+    </div>
+    <!-- Pet SVG Character -->
+    <div id="flow-pet-sprite" class="w-full h-full transform transition-transform duration-100 ease-out">
+      <svg viewBox="0 0 40 40" class="w-full h-full filter drop-shadow-[0_4px_10px_rgba(214,164,232,0.45)]" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="petGradient" x1="20" y1="4" x2="20" y2="36" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#EED5EA" />
+            <stop offset="50%" stop-color="#D6A4E8" />
+            <stop offset="100%" stop-color="#9E689C" />
+          </linearGradient>
+        </defs>
+        <!-- Ghost / Slime Body -->
+        <path d="M20 5C11.5 5 7 12 7 20C7 26.5 8.5 35 12 35C14.5 35 16 32 20 32C24 32 25.5 35 28 35C31.5 35 33 26.5 33 20C33 12 28.5 5 20 5Z" fill="url(#petGradient)" />
+        <!-- Floating Hands / Nubs -->
+        <ellipse cx="6" cy="21" rx="2.5" ry="3.5" transform="rotate(-15 6 21)" fill="#D6A4E8" />
+        <ellipse cx="34" cy="21" rx="2.5" ry="3.5" transform="rotate(15 34 21)" fill="#D6A4E8" />
+        <!-- Cheeks / Blush -->
+        <ellipse cx="12" cy="22" rx="2.2" ry="1.2" fill="#FFA5C8" opacity="0.8" />
+        <ellipse cx="28" cy="22" rx="2.2" ry="1.2" fill="#FFA5C8" opacity="0.8" />
+        <!-- Normal Eyes (Awake) -->
+        <g id="pet-eyes-awake">
+          <ellipse cx="14.5" cy="18" rx="2" ry="2.6" fill="#1C1424" />
+          <circle cx="15.2" cy="17" r="0.9" fill="#FFFFFF" />
+          <ellipse cx="25.5" cy="18" rx="2" ry="2.6" fill="#1C1424" />
+          <circle cx="26.2" cy="17" r="0.9" fill="#FFFFFF" />
+        </g>
+        <!-- Sleep Eyes (Closed Curves) -->
+        <g id="pet-eyes-sleep" class="hidden">
+          <path d="M12.5 18C13.5 19.5 15.5 19.5 16.5 18" stroke="#1C1424" stroke-width="1.6" stroke-linecap="round" />
+          <path d="M23.5 18C24.5 19.5 26.5 19.5 27.5 18" stroke="#1C1424" stroke-width="1.6" stroke-linecap="round" />
+        </g>
+        <!-- Mouth: Happy smile -->
+        <path id="pet-mouth" d="M18.5 22.5C19.2 23.6 20.8 23.6 21.5 22.5" stroke="#1C1424" stroke-width="1.4" stroke-linecap="round" />
+        <!-- Tiny Sparkle Star on Head -->
+        <path d="M25 8L26 5L27 8L30 9L27 10L26 13L25 10L22 9L25 8Z" fill="#FFF275" opacity="0.9" />
+      </svg>
+    </div>
+  </div>
+</div>
+
 <!-- BEGIN: MainDashboardContainer (Full Screen, No Outer Border/Margin) -->
 <main class="relative z-10 w-full min-h-screen flex flex-col md:flex-row bg-[#0f0f13]">
 <!-- BEGIN: LeftSidebar -->
@@ -1022,20 +1078,20 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
     function switchTab(tab, updateHash = true) {
       if (!SUBTITLES[tab]) tab = 'dashboard';
 
-      // 1. Sembunyikan semua tab kontainer, lalu hapus class 'hidden' hanya pada tab yang dipilih
+      // Toggle tab container visibility
       tabContainers.forEach(container => {
         const isMatch = container.id === `tab-${tab}` || container.dataset.panel === tab;
         container.classList.toggle('hidden', !isMatch);
       });
 
-      // 2. Pindahkan indikator 'active' (highlight ungu) pada menu sidebar yang sedang diklik
+      // Update sidebar nav pill states
       navLinks.forEach(link => {
         const isActive = link.dataset.tab === tab;
         link.className = isActive ? NAV_ACTIVE : NAV_IDLE;
         link.toggleAttribute('aria-current', isActive);
       });
 
-      // 3. Update subtitle & hidden return_tab form
+      // Update page subtitle and form return tab
       if (subtitleEl && SUBTITLES[tab]) {
         subtitleEl.textContent = SUBTITLES[tab];
       }
@@ -1350,7 +1406,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       });
     }
 
-    // Validasi sebelum dikirim ke process_transaction.php
+    // Client-side transaction form validation
     form.addEventListener('submit', (e) => {
       let error = '';
       const amount = Number(document.getElementById('tx-amount').value.replace(/\D/g, ''));
@@ -1369,14 +1425,121 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       submitBtn.textContent = 'Saving...';
     });
 
-    /* ================= TOAST (setelah redirect) ================= */
+    // --- Toast Notification ---
     if (toast && toast.dataset.show) {
       requestAnimationFrame(() => toast.classList.remove('translate-y-12', 'opacity-0'));
       setTimeout(() => toast.classList.add('translate-y-12', 'opacity-0'), 3200);
       history.replaceState(null, '', location.pathname + location.hash);
     }
 
-    // Tab awal dari hash URL (#transactions, #wallets, #goals)
+    // Initialize active tab from URL hash
     switchTab(location.hash.slice(1) || 'dashboard', false);
+
+    /* ================= INTERACTIVE MASCOT / PET ================= */
+    (function initMascotPet() {
+      // Disable on touch devices & mobile screens
+      if (window.matchMedia('(hover: none) or (pointer: coarse)').matches) {
+        return;
+      }
+
+      const petContainer = document.getElementById('flow-pet-container');
+      const petSprite    = document.getElementById('flow-pet-sprite');
+      const petZzz       = document.getElementById('flow-pet-zzz');
+      const eyesAwake    = document.getElementById('pet-eyes-awake');
+      const eyesSleep    = document.getElementById('pet-eyes-sleep');
+
+      if (!petContainer || !petSprite) return;
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let petX = mouseX;
+      let petY = mouseY;
+      let facingRight = true;
+      let isIdle = false;
+      let idleTimeout = null;
+      let hasInteracted = false;
+
+      function setIdleState(idle) {
+        if (isIdle === idle) return;
+        isIdle = idle;
+        if (idle) {
+          if (petZzz) {
+            petZzz.classList.remove('opacity-0', 'scale-75');
+            petZzz.classList.add('opacity-100', 'scale-100');
+          }
+          if (eyesAwake) eyesAwake.classList.add('hidden');
+          if (eyesSleep) eyesSleep.classList.remove('hidden');
+        } else {
+          if (petZzz) {
+            petZzz.classList.add('opacity-0', 'scale-75');
+            petZzz.classList.remove('opacity-100', 'scale-100');
+          }
+          if (eyesAwake) eyesAwake.classList.remove('hidden');
+          if (eyesSleep) eyesSleep.classList.add('hidden');
+        }
+      }
+
+      function resetIdleTimer() {
+        setIdleState(false);
+        clearTimeout(idleTimeout);
+        idleTimeout = setTimeout(() => {
+          setIdleState(true);
+        }, 2000);
+      }
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        if (!hasInteracted) {
+          hasInteracted = true;
+          petX = mouseX + 24;
+          petY = mouseY + 24;
+          petContainer.classList.remove('opacity-0');
+        }
+
+        resetIdleTimer();
+      }, { passive: true });
+
+      function animatePet(time) {
+        if (hasInteracted) {
+          const targetOffsetX = facingRight ? 24 : -24;
+          const targetOffsetY = 22;
+          const targetX = mouseX + targetOffsetX;
+          const targetY = mouseY + targetOffsetY;
+
+          const ease = isIdle ? 0.045 : 0.09;
+          const dx = targetX - petX;
+          const dy = targetY - petY;
+          petX += dx * ease;
+          petY += dy * ease;
+
+          if (dx > 2.5) {
+            facingRight = true;
+          } else if (dx < -2.5) {
+            facingRight = false;
+          }
+
+          const scaleX = facingRight ? 1 : -1;
+          const dist = Math.hypot(dx, dy);
+
+          if (isIdle) {
+            const breatheY = Math.sin(time * 0.003) * 3.5;
+            const scaleY = 1 + Math.sin(time * 0.003) * 0.04;
+            petSprite.style.transform = `scaleX(${scaleX}) translateY(${breatheY}px) scaleY(${scaleY})`;
+          } else {
+            const bobY = Math.sin(time * 0.014) * Math.min(dist * 0.16, 5);
+            const tilt = Math.max(-14, Math.min(14, (dx * 0.45)));
+            petSprite.style.transform = `scaleX(${scaleX}) rotate(${facingRight ? tilt : -tilt}deg) translateY(${bobY}px)`;
+          }
+
+          petContainer.style.transform = `translate3d(${petX - 20}px, ${petY - 20}px, 0)`;
+        }
+
+        requestAnimationFrame(animatePet);
+      }
+
+      requestAnimationFrame(animatePet);
+    })();
 </script>
 </body></html>

@@ -1,13 +1,13 @@
 <?php
 /**
- * delete_goal.php — Hapus target tabungan dari tabel savings_goals
- * Mendukung request method POST maupun GET.
+ * Delete Savings Goal Handler
  */
 
 declare(strict_types=1);
 
 require __DIR__ . '/config.php';
 
+// --- Request Handling ---
 $id = 0;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $id = (int) $_POST['id'];
@@ -36,7 +36,7 @@ if ($id > 0) {
     }
 }
 
-// Jika ID tidak valid, redirect kembali
+// Fallback redirect for invalid ID
 if (function_exists('redirect_back')) {
     redirect_back('ID target tabungan tidak valid.', 'goals', true);
 } else {

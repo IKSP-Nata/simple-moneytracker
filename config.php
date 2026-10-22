@@ -1,12 +1,13 @@
 <?php
 /**
- * config.php — Koneksi database db_money (PDO) + helper umum.
+ * Database connection (PDO) & global helper functions.
  */
 
 declare(strict_types=1);
 
 date_default_timezone_set('Asia/Makassar');
 
+// --- Database Configuration ---
 const DB_HOST = 'localhost';
 const DB_NAME = 'db_money';
 const DB_USER = 'root';
@@ -24,7 +25,7 @@ try {
         ]
     );
 
-    // Auto-create settings table jika belum ada (Open Source localhost)
+    // Initialize settings table if not present
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS settings (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -37,10 +38,11 @@ try {
     ");
 } catch (PDOException $e) {
     http_response_code(500);
-    exit('Koneksi database gagal: ' . htmlspecialchars($e->getMessage()));
+    exit('Database connection failed: ' . htmlspecialchars($e->getMessage()));
 }
 
-/** Ambil nama user aktif dari tabel settings */
+// --- Helper Functions ---
+
 function get_user_name(PDO $pdo): string
 {
     try {
@@ -51,19 +53,16 @@ function get_user_name(PDO $pdo): string
     }
 }
 
-/** Format angka ke Rupiah, contoh: Rp 2.450.000 */
 function rupiah(float|int|string|null $value): string
 {
     return 'Rp ' . number_format((float) $value, 0, ',', '.');
 }
 
-/** Escape output HTML. */
 function e(mixed $value): string
 {
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
-/** Ubah input nominal ("50.000", "Rp 50,000", 50000) menjadi angka bulat float. */
 function parse_amount(mixed $raw): float
 {
     if (is_int($raw) || is_float($raw)) {
@@ -75,19 +74,16 @@ function parse_amount(mixed $raw): float
         return 0.0;
     }
 
-    // Jika ada koma sebagai pemisah desimal/sen (contoh: "50.000,50")
     if (strpos($str, ',') !== false) {
         $str = str_replace('.', '', $str);
         $str = str_replace(',', '.', $str);
         return (float) preg_replace('/[^0-9.]/', '', $str);
     }
 
-    // Format Rupiah standar: titik adalah pemisah ribuan (contoh: "50.000" -> 50000)
     $digits = preg_replace('/[^0-9]/', '', $str);
     return $digits === '' ? 0.0 : (float) $digits;
 }
 
-/** Redirect ke index.php dengan pesan toast & tab tujuan. */
 function redirect_back(string $msg, string $tab = 'dashboard', bool $error = false): never
 {
     if (session_status() === PHP_SESSION_NONE) {

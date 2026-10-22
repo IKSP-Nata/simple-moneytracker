@@ -1,19 +1,13 @@
 <?php
 /**
- * process_transaction.php — Logika CRUD transaksi FlowTrack.
- *
- * Form + Add Transaction:
- * - Tangkap: title, amount, type (expense | income | goal_saving), wallet_id, goal_id (opsional)
- * - INSERT ke tabel `transactions` dengan source = 'web'
- * - UPDATE tabel `wallets`: kurangi balance jika expense, tambah jika income
- * - Jika type adalah 'goal_saving': kurangi balance di `wallets` DAN tambah current_amount di tabel `savings_goals`
- * - Redirect (header location) kembali ke halaman utama (index.php)
+ * Process Transaction Handler (Add & Delete)
  */
 
 declare(strict_types=1);
 
 require __DIR__ . '/config.php';
 
+// --- Request Method Validation ---
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php');
     exit;
@@ -24,18 +18,15 @@ $returnTab = in_array($_POST['return_tab'] ?? '', ['dashboard', 'transactions', 
     ? (string) $_POST['return_tab']
     : 'dashboard';
 
-/* ============================================================
- * 1. TAMBAH TRANSAKSI
- * ============================================================ */
+// --- Action: Add Transaction ---
 if ($action === 'add') {
-    // 1. Tangkap nilai dari form
     $title    = trim((string) ($_POST['title'] ?? ''));
     $amount   = parse_amount($_POST['amount'] ?? 0);
     $typeRaw  = trim((string) ($_POST['type'] ?? ''));
     $walletId = (int) ($_POST['wallet_id'] ?? 0);
     $goalId   = (int) ($_POST['goal_id'] ?? 0);
 
-    // Normalisasi tipe transaksi (expense | income | goal_saving)
+    // Normalize transaction type
     $typeLower = strtolower($typeRaw);
     if ($typeLower === 'expense') {
         $type = 'expense';
@@ -47,7 +38,7 @@ if ($action === 'add') {
         $type = '';
     }
 
-    // Validasi dasar
+    // Input validation
     if ($title === '' || mb_strlen($title) > 100) {
         redirect_back('Judul transaksi wajib diisi (maks. 100 karakter).', $returnTab, true);
     }
@@ -61,7 +52,7 @@ if ($action === 'add') {
     try {
         $pdo->beginTransaction();
 
-        // Cari dompet yang dipilih (atau fallback ke dompet pertama jika belum dipilih)
+        // Ensure wallet exists
         if ($walletId <= 0) {
             $walletId = (int) $pdo->query('SELECT id FROM wallets ORDER BY id ASC LIMIT 1')->fetchColumn();
         }
@@ -72,28 +63,24 @@ if ($action === 'add') {
             throw new RuntimeException('Dompet tidak ditemukan.');
         }
 
-        // Simpan data transaksi ke tabel `transactions` dengan source = 'web'
+        // Insert transaction record
         $stmt = $pdo->prepare(
             "INSERT INTO transactions (wallet_id, title, amount, type, source, created_at)
              VALUES (?, ?, ?, ?, 'web', NOW())"
         );
         $stmt->execute([$walletId, $title, $amount, $type]);
 
-        // Update saldo dompet (wallets) & target tabungan (savings_goals)
+        // Adjust wallet and savings goal balances
         if ($type === 'income') {
-            // Tambah balance jika income
             $stmt = $pdo->prepare('UPDATE wallets SET balance = balance + ? WHERE id = ?');
             $stmt->execute([$amount, $walletId]);
         } elseif ($type === 'expense') {
-            // Kurangi balance jika expense
             $stmt = $pdo->prepare('UPDATE wallets SET balance = balance - ? WHERE id = ?');
             $stmt->execute([$amount, $walletId]);
         } elseif ($type === 'goal_saving') {
-            // Jika type adalah 'goal_saving': kurangi balance di wallets
             $stmt = $pdo->prepare('UPDATE wallets SET balance = balance - ? WHERE id = ?');
             $stmt->execute([$amount, $walletId]);
 
-            // DAN tambah current_amount di tabel savings_goals
             $targetGoalId = 0;
             if ($goalId > 0) {
                 $stmt = $pdo->prepare('SELECT id FROM savings_goals WHERE id = ? FOR UPDATE');
@@ -101,7 +88,6 @@ if ($action === 'add') {
                 $targetGoalId = (int) ($stmt->fetchColumn() ?: 0);
             }
             if ($targetGoalId <= 0) {
-                // Fallback ke target tabungan pertama jika goal_id tidak dikirim atau tidak ditemukan
                 $targetGoalId = (int) $pdo->query('SELECT id FROM savings_goals ORDER BY id ASC LIMIT 1 FOR UPDATE')->fetchColumn();
             }
 
@@ -112,8 +98,6 @@ if ($action === 'add') {
         }
 
         $pdo->commit();
-
-        // 2. Redirect (header location) kembali ke halaman utama agar ter-refresh
         redirect_back('Transaksi berhasil disimpan!', $returnTab);
     } catch (Throwable $ex) {
         if ($pdo->inTransaction()) {
@@ -124,9 +108,7 @@ if ($action === 'add') {
     }
 }
 
-/* ============================================================
- * 2. HAPUS TRANSAKSI (DELETE)
- * ============================================================ */
+// --- Action: Delete Transaction ---
 if ($action === 'delete') {
     $id = (int) ($_POST['id'] ?? 0);
 
@@ -142,7 +124,7 @@ if ($action === 'delete') {
 
         $amount = (float) $tx['amount'];
 
-        // Kembalikan saldo dompet
+        // Revert wallet balance
         if ($tx['type'] === 'income') {
             $pdo->prepare('UPDATE wallets SET balance = balance - ? WHERE id = ?')
                 ->execute([$amount, $tx['wallet_id']]);
@@ -151,7 +133,7 @@ if ($action === 'delete') {
                 ->execute([$amount, $tx['wallet_id']]);
         }
 
-        // Kembalikan progres target tabungan jika tipe goal_saving
+        // Revert savings goal progress if goal_saving
         if ($tx['type'] === 'goal_saving') {
             $stmt = $pdo->prepare(
                 "SELECT id FROM savings_goals
@@ -182,6 +164,5 @@ if ($action === 'delete') {
     }
 }
 
-// Redirect fallback
 header('Location: index.php');
 exit;

@@ -1,17 +1,20 @@
 <?php
 /**
- * edit_transaction.php — Edit transaksi dengan perhitungan revert & apply saldo yang presisi.
+ * Edit Transaction Handler
+ * Reverts previous financial impact and applies updated values atomically.
  */
 
 declare(strict_types=1);
 
 require __DIR__ . '/config.php';
 
+// --- Request Method Validation ---
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php#transactions');
     exit;
 }
 
+// --- Input Processing ---
 $id        = (int) ($_POST['id'] ?? 0);
 $title     = trim((string) ($_POST['title'] ?? ''));
 $amount    = parse_amount($_POST['amount'] ?? 0);
@@ -22,7 +25,7 @@ $returnTab = in_array($_POST['return_tab'] ?? '', ['dashboard', 'transactions', 
     ? (string) $_POST['return_tab']
     : 'transactions';
 
-// Normalisasi tipe transaksi
+// Normalize transaction type
 $typeLower = strtolower($typeRaw);
 if ($typeLower === 'expense') {
     $type = 'expense';
@@ -34,6 +37,7 @@ if ($typeLower === 'expense') {
     $type = '';
 }
 
+// --- Input Validation ---
 if ($id <= 0) {
     redirect_back('ID transaksi tidak valid.', $returnTab, true);
 }
@@ -50,10 +54,11 @@ if ($walletId <= 0) {
     redirect_back('Pilih dompet yang valid.', $returnTab, true);
 }
 
+// --- Atomic Transaction Processing ---
 try {
     $pdo->beginTransaction();
 
-    // 1. Ambil data transaksi lama dengan lock baris
+    // 1. Fetch current transaction record with row lock
     $stmt = $pdo->prepare('SELECT * FROM transactions WHERE id = ? FOR UPDATE');
     $stmt->execute([$id]);
     $oldTx = $stmt->fetch();
@@ -66,21 +71,17 @@ try {
     $oldType     = (string) $oldTx['type'];
     $oldTitle    = (string) $oldTx['title'];
 
-    // 2. TAHAP REVERT (Kembalikan dampak keuangan transaksi lama)
+    // 2. Revert impact of existing transaction
     if ($oldType === 'income') {
-        // Karena sebelumnya menambah saldo, revert = kurangi saldo dari dompet lama
         $pdo->prepare('UPDATE wallets SET balance = balance - ? WHERE id = ?')
             ->execute([$oldAmount, $oldWalletId]);
     } elseif ($oldType === 'expense') {
-        // Karena sebelumnya mengurangi saldo, revert = tambah saldo kembali ke dompet lama
         $pdo->prepare('UPDATE wallets SET balance = balance + ? WHERE id = ?')
             ->execute([$oldAmount, $oldWalletId]);
     } elseif ($oldType === 'goal_saving') {
-        // Kembalikan saldo dompet lama
         $pdo->prepare('UPDATE wallets SET balance = balance + ? WHERE id = ?')
             ->execute([$oldAmount, $oldWalletId]);
 
-        // Kurangi kembali progres savings_goals yang sebelumnya ditambah
         $stmt = $pdo->prepare(
             "SELECT id FROM savings_goals
              WHERE ? LIKE CONCAT('%', goal_title, '%')
@@ -97,28 +98,24 @@ try {
         }
     }
 
-    // Pastikan dompet baru valid
+    // Verify new target wallet exists
     $stmt = $pdo->prepare('SELECT id FROM wallets WHERE id = ? FOR UPDATE');
     $stmt->execute([$walletId]);
     if (!$stmt->fetch()) {
         throw new RuntimeException('Dompet tujuan tidak ditemukan.');
     }
 
-    // 3. TAHAP APPLY (Terapkan dampak keuangan transaksi baru)
+    // 3. Apply impact of updated transaction
     if ($type === 'income') {
-        // Tambah saldo ke dompet baru
         $pdo->prepare('UPDATE wallets SET balance = balance + ? WHERE id = ?')
             ->execute([$amount, $walletId]);
     } elseif ($type === 'expense') {
-        // Kurangi saldo dari dompet baru
         $pdo->prepare('UPDATE wallets SET balance = balance - ? WHERE id = ?')
             ->execute([$amount, $walletId]);
     } elseif ($type === 'goal_saving') {
-        // Kurangi saldo dari dompet baru
         $pdo->prepare('UPDATE wallets SET balance = balance - ? WHERE id = ?')
             ->execute([$amount, $walletId]);
 
-        // Tambah progres target tabungan
         $targetGoalId = $goalId;
         if ($targetGoalId <= 0) {
             $stmt = $pdo->prepare(
@@ -138,7 +135,7 @@ try {
         }
     }
 
-    // 4. Update data transaksi di tabel transactions
+    // 4. Update transaction row
     $stmt = $pdo->prepare('UPDATE transactions SET title = ?, amount = ?, type = ?, wallet_id = ? WHERE id = ?');
     $stmt->execute([$title, $amount, $type, $walletId, $id]);
 

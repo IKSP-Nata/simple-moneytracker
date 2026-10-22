@@ -1,17 +1,19 @@
 <?php
 /**
- * edit_goal.php — Memperbarui data target tabungan (goal_title & target_amount).
+ * Edit Savings Goal Handler
  */
 
 declare(strict_types=1);
 
 require __DIR__ . '/config.php';
 
+// --- Request Method Validation ---
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php#goals');
     exit;
 }
 
+// --- Input Processing & Validation ---
 $id     = (int) ($_POST['id'] ?? 0);
 $title  = trim((string) ($_POST['goal_title'] ?? ''));
 $target = parse_amount($_POST['target_amount'] ?? 0);
@@ -26,6 +28,7 @@ if ($target <= 0) {
     redirect_back('Nominal target tabungan harus lebih dari 0.', 'goals', true);
 }
 
+// --- Update Database ---
 try {
     $stmt = $pdo->prepare('UPDATE savings_goals SET goal_title = ?, target_amount = ? WHERE id = ?');
     $stmt->execute([$title, $target, $id]);

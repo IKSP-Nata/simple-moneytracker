@@ -1,16 +1,19 @@
 <?php
 /**
- * process_wallet.php — Tambah dompet baru.
- * POST: wallet_name, wallet_type, balance
+ * Create Wallet Handler
  */
+
+declare(strict_types=1);
 
 require __DIR__ . '/config.php';
 
+// --- Request Method Validation ---
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php#wallets');
     exit;
 }
 
+// --- Input Processing & Validation ---
 $name    = trim((string) ($_POST['wallet_name'] ?? ''));
 $type    = trim((string) ($_POST['wallet_type'] ?? ''));
 $balance = parse_amount($_POST['balance'] ?? '0');
@@ -22,6 +25,7 @@ if ($type === '' || mb_strlen($type) > 30) {
     redirect_back('Tipe dompet wajib diisi (maks. 30 karakter).', 'wallets', true);
 }
 
+// --- Database Insertion ---
 try {
     $pdo->prepare('INSERT INTO wallets (wallet_name, wallet_type, balance) VALUES (?, ?, ?)')
         ->execute([$name, $type, $balance]);

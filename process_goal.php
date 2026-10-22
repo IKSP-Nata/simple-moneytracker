@@ -1,16 +1,19 @@
 <?php
 /**
- * process_goal.php — Tambah target tabungan baru.
- * POST: goal_title, target_amount, current_amount (opsional)
+ * Create Savings Goal Handler
  */
+
+declare(strict_types=1);
 
 require __DIR__ . '/config.php';
 
+// --- Request Method Validation ---
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php#goals');
     exit;
 }
 
+// --- Input Processing & Validation ---
 $title   = trim((string) ($_POST['goal_title'] ?? ''));
 $target  = parse_amount($_POST['target_amount'] ?? '');
 $current = parse_amount($_POST['current_amount'] ?? '0');
@@ -22,6 +25,7 @@ if ($target <= 0) {
     redirect_back('Nominal target harus lebih dari 0.', 'goals', true);
 }
 
+// --- Database Insertion ---
 try {
     $pdo->prepare('INSERT INTO savings_goals (goal_title, target_amount, current_amount) VALUES (?, ?, ?)')
         ->execute([$title, $target, $current]);
