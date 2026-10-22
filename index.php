@@ -205,6 +205,20 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       border: 1px solid rgba(214, 164, 232, 0.18);
     }
 
+    /* Modern Liquid Glass Component */
+    .liquid-glass {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .liquid-glass:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
     /* Tab panel fade-in */
     [data-panel] { animation: panelIn .28s ease both; }
     @keyframes panelIn {
@@ -346,22 +360,22 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- Column 1: Total Balance Card & Wishlist Goal Saver Card -->
 <div class="flex flex-col gap-6 justify-between h-full">
 <!-- Top Card: Total Balance -->
-<div class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 flex flex-col justify-between relative" data-purpose="total-balance-card">
+<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 flex flex-col justify-between relative transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);" data-purpose="total-balance-card">
   <div class="flex items-center justify-between mb-3">
-    <span class="text-xs text-stone-400 font-medium tracking-wide">Total Balance</span>
+    <span class="text-xs text-zinc-300 font-medium tracking-wide">Total Balance</span>
     
     <!-- Pacing / Budget Allowance Selector Dropdown -->
     <div class="relative" id="pacing-dropdown-wrapper">
       <button
         id="pacing-btn"
-        class="flex items-center gap-1.5 text-xs bg-black/40 text-stone-300 border border-white/[0.08] px-3 py-1 rounded-full hover:border-white/20 hover:text-white transition cursor-pointer select-none"
+        class="flex items-center gap-1.5 text-xs bg-white/[0.06] text-zinc-200 border border-white/15 px-3 py-1 rounded-full hover:border-white/30 hover:bg-white/10 hover:text-white transition cursor-pointer select-none"
         type="button"
         aria-expanded="false"
         aria-haspopup="true"
         title="Ubah mode tampilan saldo &amp; jatah anggaran"
       >
         <span id="pacing-label">This Month</span>
-        <svg id="pacing-chevron" class="w-3.5 h-3.5 text-stone-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg id="pacing-chevron" class="w-3.5 h-3.5 text-zinc-300 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
@@ -369,41 +383,41 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       <!-- Custom Dropdown Menu -->
       <div
         id="pacing-menu"
-        class="hidden absolute right-0 mt-1.5 w-52 bg-[#1a1a24] border border-white/10 rounded-xl shadow-2xl py-1 text-xs z-30 transition-all duration-150 transform opacity-0 translate-y-1"
+        class="hidden absolute right-0 mt-1.5 w-52 bg-[#1a1a24]/95 backdrop-blur-xl border border-white/15 rounded-2xl shadow-2xl py-1 text-xs z-30 transition-all duration-150 transform opacity-0 translate-y-1"
         role="menu"
       >
         <button
           type="button"
-          class="pacing-option w-full text-left px-3 py-2 flex items-center justify-between text-stone-300 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
+          class="pacing-option w-full text-left px-3 py-2 flex items-center justify-between text-zinc-200 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
           data-mode="month"
         >
           <div class="flex flex-col">
             <span class="font-medium text-white">This Month</span>
-            <span class="text-[10px] text-stone-400">Total saldo bulanan</span>
+            <span class="text-[10px] text-zinc-400">Total saldo bulanan</span>
           </div>
           <span class="pacing-check text-mauveAccent font-bold text-sm">✓</span>
         </button>
 
         <button
           type="button"
-          class="pacing-option w-full text-left px-3 py-2 flex items-center justify-between text-stone-300 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
+          class="pacing-option w-full text-left px-3 py-2 flex items-center justify-between text-zinc-200 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
           data-mode="week"
         >
           <div class="flex flex-col">
-            <span class="font-medium text-stone-200">This Week</span>
-            <span class="text-[10px] text-stone-400">Estimasi jatah per minggu</span>
+            <span class="font-medium text-zinc-200">This Week</span>
+            <span class="text-[10px] text-zinc-400">Estimasi jatah per minggu</span>
           </div>
           <span class="pacing-check text-mauveAccent font-bold text-sm hidden">✓</span>
         </button>
 
         <button
           type="button"
-          class="pacing-option w-full text-left px-3 py-2 flex items-center justify-between text-stone-300 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
+          class="pacing-option w-full text-left px-3 py-2 flex items-center justify-between text-zinc-200 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
           data-mode="daily"
         >
           <div class="flex flex-col">
-            <span class="font-medium text-stone-200">Today / Daily</span>
-            <span class="text-[10px] text-stone-400">Estimasi jatah per hari</span>
+            <span class="font-medium text-zinc-200">Today / Daily</span>
+            <span class="text-[10px] text-zinc-400">Estimasi jatah per hari</span>
           </div>
           <span class="pacing-check text-mauveAccent font-bold text-sm hidden">✓</span>
         </button>
@@ -425,45 +439,45 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
         +<?= rupiah($monthTotals['income']) ?>
       </span>
-      <span class="text-stone-300 font-medium">-<?= rupiah($monthTotals['expense']) ?></span>
-      <span class="text-stone-400">this month</span>
+      <span class="text-rose-400 font-medium">-<?= rupiah($monthTotals['expense']) ?></span>
+      <span class="text-zinc-300">this month</span>
     </div>
   </div>
 </div>
-<!-- Bottom Card: Glowing Goal Card -->
-<div class="card-purple-ambient border border-mauveAccent/20 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden flex-1 min-h-[190px]" data-purpose="wishlist-goal-card">
+<!-- Bottom Card: Wishlist Goal Saver Card -->
+<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden flex-1 min-h-[190px] transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);" data-purpose="wishlist-goal-card">
 <div class="relative z-10">
 <div class="flex items-center justify-between">
 <h3 class="text-base font-semibold text-white tracking-wide">Wishlist Goal Saver</h3>
 <?php if ($featuredGoal): ?>
-<span class="text-[10px] font-semibold text-mauveAccent bg-mauveAccent/10 px-2 py-0.5 rounded-full border border-mauveAccent/25"><?= $featuredGoal['pct'] ?>% Reached</span>
+<span class="text-[10px] font-semibold text-mauveAccent bg-mauveAccent/15 px-2.5 py-0.5 rounded-full border border-mauveAccent/30"><?= $featuredGoal['pct'] ?>% Reached</span>
 <?php endif; ?>
 </div>
 <?php if ($featuredGoal): ?>
-<p class="text-xs text-stone-300/80 mt-1.5 leading-relaxed">
-                <?= e($featuredGoal['goal_title']) ?> — <?= rupiah($featuredGoal['current_amount']) ?> saved of <?= rupiah($featuredGoal['target_amount']) ?> target.
-              </p>
+<p class="text-xs text-zinc-300 mt-1.5 leading-relaxed font-normal">
+  <?= e($featuredGoal['goal_title']) ?> — <span class="text-white font-medium"><?= rupiah($featuredGoal['current_amount']) ?></span> saved of <?= rupiah($featuredGoal['target_amount']) ?> target.
+</p>
 <!-- Subtle Progress Track -->
-<div class="w-full bg-black/40 h-1.5 rounded-full mt-4 overflow-hidden border border-white/5">
+<div class="w-full bg-black/40 h-1.5 rounded-full mt-4 overflow-hidden border border-white/10">
 <div class="bg-gradient-to-r from-mauveGlow to-mauveAccent h-full rounded-full transition-all duration-700" style="width: <?= $featuredGoal['pct'] ?>%"></div>
 </div>
 <?php if (count($goals) > 1): ?>
-<p class="text-[10px] text-stone-400 mt-2">+<?= count($goals) - 1 ?> other goal<?= count($goals) > 2 ? 's' : '' ?> in progress</p>
+<p class="text-[10px] text-zinc-300 mt-2 font-medium">+<?= count($goals) - 1 ?> other goal<?= count($goals) > 2 ? 's' : '' ?> in progress</p>
 <?php endif; ?>
 <?php else: ?>
-<p class="text-xs text-stone-300/80 mt-1.5 leading-relaxed">Belum ada target tabungan. Buat target pertamamu untuk mulai menabung.</p>
+<p class="text-xs text-zinc-300 mt-1.5 leading-relaxed font-normal">Belum ada target tabungan. Buat target pertamamu untuk mulai menabung.</p>
 <?php endif; ?>
 </div>
 <div class="relative z-10 mt-5 flex justify-center">
 <button class="w-full max-w-[210px] py-2 px-4 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-[#AF77A4] to-[#C991BE] shadow-lg shadow-[#8E5281]/40 hover:opacity-95 transition-opacity active:scale-[0.98]" data-goto="goals" type="button" id="explore-goals-btn">
-                <?= $featuredGoal ? 'Explore Goals' : 'Create Goal' ?>
-              </button>
+  <?= $featuredGoal ? 'Explore Goals' : 'Create Goal' ?>
+</button>
 </div>
 </div>
 </div>
 <!-- END: Column 1 -->
 <!-- Column 2: Recent Transactions List -->
-<div class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 flex flex-col justify-between h-full" data-purpose="transactions-list-card">
+<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 flex flex-col justify-between h-full transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);" data-purpose="transactions-list-card">
 <div>
 <div class="flex items-center justify-between mb-4">
 <h2 class="text-sm font-semibold text-white">Recent Transactions</h2>
@@ -474,24 +488,24 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- Filter Pills -->
 <div class="flex items-center gap-1.5 mb-4 text-[11px]" data-filter-group="recent-list" data-limit="5">
 <button class="bg-[#2A2331] text-white px-3 py-1 rounded-full font-medium" data-filter="all" type="button" id="recent-filter-all">All</button>
-<button class="bg-black/30 text-stone-400 hover:text-white px-3 py-1 rounded-full transition" data-filter="income" type="button" id="recent-filter-income">Income</button>
-<button class="bg-black/30 text-stone-400 hover:text-white px-3 py-1 rounded-full transition" data-filter="expense" type="button" id="recent-filter-expense">Expense</button>
+<button class="bg-black/30 text-zinc-300 hover:text-white px-3 py-1 rounded-full transition" data-filter="income" type="button" id="recent-filter-income">Income</button>
+<button class="bg-black/30 text-zinc-300 hover:text-white px-3 py-1 rounded-full transition" data-filter="expense" type="button" id="recent-filter-expense">Expense</button>
 </div>
 <!-- Transactions Items (Clean Typographic) -->
 <div class="space-y-3.5" id="recent-list">
 <?php if (!$recentTransactions): ?>
-<p class="text-[11px] text-stone-500 py-6 text-center" id="recent-list-empty">Belum ada transaksi.</p>
+<p class="text-[11px] text-zinc-400 py-6 text-center" id="recent-list-empty">Belum ada transaksi.</p>
 <?php else: ?>
 <?php foreach ($recentTransactions as $tx):
     $isIncome = $tx['type'] === 'income';
     $isGoal   = $tx['type'] === 'goal_saving';
-    $amtClass = $isIncome ? 'text-emerald-400' : ($isGoal ? 'text-mauveAccent' : 'text-stone-200');
-    $subClass = $isIncome ? 'text-emerald-500/80 font-medium' : 'text-stone-400';
+    $amtClass = $isIncome ? 'text-emerald-400' : ($isGoal ? 'text-mauveAccent' : 'text-rose-400');
+    $subClass = $isIncome ? 'text-emerald-400/90 font-medium' : 'text-zinc-300';
 ?>
-<div class="flex items-center justify-between text-xs py-1 border-b border-white/[0.04]" data-type="<?= e($tx['type']) ?>">
+<div class="flex items-center justify-between text-xs py-1 border-b border-white/[0.06]" data-type="<?= e($tx['type']) ?>">
 <div class="min-w-0 pr-3">
-<p class="font-medium text-stone-200 truncate"><?= e($tx['title']) ?></p>
-<p class="text-[10px] text-stone-400"><?= e($tx['wallet_name']) ?><?= $isGoal ? ' · Goal Saving' : '' ?></p>
+<p class="font-medium text-white truncate"><?= e($tx['title']) ?></p>
+<p class="text-[10px] text-zinc-300"><?= e($tx['wallet_name']) ?><?= $isGoal ? ' · Goal Saving' : '' ?></p>
 </div>
 <div class="text-right flex-shrink-0">
 <p class="font-semibold <?= $amtClass ?>"><?= $isIncome ? '+' : '-' ?><?= rupiah($tx['amount']) ?></p>
@@ -499,46 +513,46 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </div>
 </div>
 <?php endforeach; ?>
-<p class="hidden text-[11px] text-stone-500 py-6 text-center" id="recent-list-empty">Belum ada transaksi untuk filter ini.</p>
+<p class="hidden text-[11px] text-zinc-400 py-6 text-center" id="recent-list-empty">Belum ada transaksi untuk filter ini.</p>
 <?php endif; ?>
 </div>
 </div>
 </div>
 <!-- END: Column 2 -->
 <!-- Column 3: 2x2 Mini Grid - My Wallets -->
-<div class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 flex flex-col justify-between h-full" data-purpose="wallets-grid-card">
+<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 flex flex-col justify-between h-full transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);" data-purpose="wallets-grid-card">
 <div>
 <div class="flex items-center justify-between mb-4">
 <h2 class="text-sm font-semibold text-white">My Wallets</h2>
-<button class="flex items-center gap-1 text-[11px] bg-black/40 text-stone-300 border border-white/[0.08] px-2.5 py-1 rounded-full hover:border-white/20 transition" data-goto="wallets" type="button" id="wallets-see-all">
+<button class="flex items-center gap-1 text-[11px] bg-white/[0.06] text-zinc-200 border border-white/15 px-2.5 py-1 rounded-full hover:border-white/30 hover:bg-white/10 hover:text-white transition" data-goto="wallets" type="button" id="wallets-see-all">
 <span class="">See all</span>
-<i class="w-3 h-3 text-stone-400" data-lucide="arrow-up-right"></i>
+<i class="w-3 h-3 text-zinc-300" data-lucide="arrow-up-right"></i>
 </button>
 </div>
 <!-- 2x2 Grid -->
 <div class="grid grid-cols-2 gap-2.5">
 <?php if (!$wallets): ?>
-<p class="text-[11px] text-stone-500 py-6 col-span-2 text-center">Belum ada dompet.</p>
+<p class="text-[11px] text-zinc-400 py-6 col-span-2 text-center">Belum ada dompet.</p>
 <?php else: ?>
 <?php foreach (array_slice($wallets, 0, 4) as $i => $w):
     $isPrimary = strtolower($w['wallet_type']) === 'primary';
     $share     = $totalBalance > 0 ? round(((float) $w['balance'] / $totalBalance) * 100, 1) : 0;
 ?>
-<div class="bg-black/40 border border-white/[0.05] rounded-2xl p-3 flex flex-col justify-between hover:border-mauveAccent/30 transition">
+<div class="bg-black/30 border border-white/10 rounded-2xl p-3 flex flex-col justify-between hover:border-mauveAccent/40 hover:bg-white/[0.03] transition">
 <div>
 <p class="text-[11px] font-semibold text-white tracking-tight"><?= rupiah($w['balance']) ?></p>
 <?php if ($isPrimary): ?>
-<p class="text-[9px] text-emerald-400 mt-0.5"><?= $share ?>% of total</p>
+<p class="text-[9px] text-emerald-400 mt-0.5 font-medium"><?= $share ?>% of total</p>
 <?php else: ?>
-<p class="text-[9px] text-stone-400 mt-0.5"><?= e($w['wallet_type']) ?></p>
+<p class="text-[9px] text-zinc-300 mt-0.5"><?= e($w['wallet_type']) ?></p>
 <?php endif; ?>
 </div>
 <div class="mt-4 flex items-center justify-between gap-1">
-<span class="text-[10px] font-medium text-stone-300 truncate"><?= e($w['wallet_name']) ?></span>
+<span class="text-[10px] font-medium text-zinc-200 truncate"><?= e($w['wallet_name']) ?></span>
 <?php if ($isPrimary): ?>
-<span class="text-[8px] bg-blue-500/10 text-blue-300 px-1 py-0.5 rounded">Primary</span>
+<span class="text-[8px] bg-blue-500/15 text-blue-300 border border-blue-500/30 px-1 py-0.5 rounded">Primary</span>
 <?php elseif (is_cash_type($w['wallet_type'])): ?>
-<i class="w-3 h-3 text-stone-400" data-lucide="wallet"></i>
+<i class="w-3 h-3 text-zinc-300" data-lucide="wallet"></i>
 <?php else: ?>
 <span class="w-2 h-2 rounded-full flex-shrink-0 <?= $walletDots[$i % count($walletDots)] ?>"></span>
 <?php endif; ?>
@@ -548,7 +562,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <?php endif; ?>
 </div>
 <?php if (count($wallets) > 4): ?>
-<p class="text-[10px] text-stone-500 mt-3">+<?= count($wallets) - 4 ?> dompet lainnya</p>
+<p class="text-[10px] text-zinc-300 mt-3 font-medium">+<?= count($wallets) - 4 ?> dompet lainnya</p>
 <?php endif; ?>
 </div>
 </div>
@@ -557,29 +571,29 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- END: BentoGridTopSection -->
 
 <!-- BEGIN: Kokonut UI Spending Ring Card -->
-<section class="w-full bg-[#1a1a24]/90 border border-white/5 rounded-2xl p-5 md:p-6 shadow-xl relative" id="spending-ring-card">
+<section class="liquid-glass w-full bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 relative transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);" id="spending-ring-card">
   <!-- Card Header -->
-  <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-white/[0.05]">
+  <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-white/[0.08]">
     <div>
       <h2 class="text-base font-semibold text-white tracking-tight flex flex-wrap items-center gap-2">
         <span>Spending by Category</span>
-        <span class="text-[10px] font-semibold text-mauveAccent bg-mauveAccent/10 px-2 py-0.5 rounded-full border border-mauveAccent/20">Interactive Ring</span>
+        <span class="text-[10px] font-semibold text-mauveAccent bg-mauveAccent/15 px-2.5 py-0.5 rounded-full border border-mauveAccent/30">Interactive Ring</span>
         <button
           type="button"
           id="sr-open-modal-btn"
-          class="text-xs px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300 hover:text-white transition inline-flex items-center gap-1.5 cursor-pointer ml-0.5"
+          class="text-xs px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/15 text-zinc-200 hover:text-white transition inline-flex items-center gap-1.5 cursor-pointer ml-0.5"
           title="Edit Kategori &amp; Pengeluaran"
         >
-          <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-3.5 h-3.5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
           </svg>
           <span>Edit Kategori</span>
         </button>
       </h2>
-      <p class="text-xs text-stone-400 mt-0.5">Drag or flick the ring to inspect categories, or click any item below</p>
+      <p class="text-xs text-zinc-300 mt-0.5 font-normal">Drag or flick the ring to inspect categories, or click any item below</p>
     </div>
     <div class="sm:text-right">
-      <span class="text-[10px] uppercase tracking-wider text-stone-500 font-medium block">Total Spending</span>
+      <span class="text-[10px] uppercase tracking-wider text-zinc-400 font-medium block">Total Spending</span>
       <span class="font-bold text-lg text-white tabular-nums" id="sr-total-display">Rp 0</span>
     </div>
   </div>
@@ -609,17 +623,17 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       <!-- Center Readout -->
       <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-4">
         <div id="sr-readout-content" class="transition-all duration-200 ease-out">
-          <p class="flex items-center justify-center gap-1.5 text-xs text-stone-400 font-medium truncate">
+          <p class="flex items-center justify-center gap-1.5 text-xs text-zinc-200 font-medium truncate">
             <span id="sr-readout-dot" class="size-2 rounded-full bg-sky-400 shrink-0"></span>
             <span id="sr-readout-name">Housing</span>
           </p>
           <p id="sr-readout-amount" class="mt-1 font-bold text-xl sm:text-2xl text-white tabular-nums tracking-tight">
             Rp 0
           </p>
-          <p id="sr-readout-share" class="mt-0.5 text-xs text-stone-400 tabular-nums">
+          <p id="sr-readout-share" class="mt-0.5 text-xs text-zinc-300 tabular-nums">
             0% of total
           </p>
-          <p id="sr-readout-change" class="mt-1 text-[11px] tabular-nums font-medium text-stone-400">
+          <p id="sr-readout-change" class="mt-1 text-[11px] tabular-nums font-medium text-zinc-300">
             Same as last month
           </p>
         </div>
@@ -637,18 +651,18 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- END: Kokonut UI Spending Ring Card -->
 
 <!-- BEGIN: BottomWideCard (Cashflow Performance Line Chart) -->
-<section class="w-full bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6 relative" data-purpose="performance-chart-card" id="cashflow-performance-card">
+<section class="liquid-glass w-full bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 relative transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);" data-purpose="performance-chart-card" id="cashflow-performance-card">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 <div>
 <h2 class="text-base font-semibold text-white">Cashflow Performance</h2>
-<p class="text-xs text-stone-400 transition-opacity duration-200" id="cashflow-subtitle">Net cashflow (income − expense) per month in <?= date('Y') ?></p>
+<p class="text-xs text-zinc-300 transition-opacity duration-200" id="cashflow-subtitle">Net cashflow (income − expense) per month in <?= date('Y') ?></p>
 </div>
 <!-- Timeframe Selector -->
-<div class="flex items-center bg-black/50 border border-white/[0.06] rounded-full p-1 self-start sm:self-auto text-xs" id="cashflow-timeframe-group">
-<button class="cashflow-tf-btn px-3 py-1 rounded-full text-stone-400 hover:text-white transition cursor-pointer" data-tf="1D" type="button" id="tf-btn-1D">1D</button>
-<button class="cashflow-tf-btn px-3 py-1 rounded-full text-stone-400 hover:text-white transition cursor-pointer" data-tf="1W" type="button" id="tf-btn-1W">1W</button>
-<button class="cashflow-tf-btn px-3 py-1 rounded-full text-stone-400 hover:text-white transition cursor-pointer" data-tf="1M" type="button" id="tf-btn-1M">1M</button>
-<button class="cashflow-tf-btn px-3 py-1 rounded-full text-stone-400 hover:text-white transition cursor-pointer" data-tf="6M" type="button" id="tf-btn-6M">6M</button>
+<div class="flex items-center bg-black/40 border border-white/15 rounded-full p-1 self-start sm:self-auto text-xs" id="cashflow-timeframe-group">
+<button class="cashflow-tf-btn px-3 py-1 rounded-full text-zinc-300 hover:text-white transition cursor-pointer" data-tf="1D" type="button" id="tf-btn-1D">1D</button>
+<button class="cashflow-tf-btn px-3 py-1 rounded-full text-zinc-300 hover:text-white transition cursor-pointer" data-tf="1W" type="button" id="tf-btn-1W">1W</button>
+<button class="cashflow-tf-btn px-3 py-1 rounded-full text-zinc-300 hover:text-white transition cursor-pointer" data-tf="1M" type="button" id="tf-btn-1M">1M</button>
+<button class="cashflow-tf-btn px-3 py-1 rounded-full text-zinc-300 hover:text-white transition cursor-pointer" data-tf="6M" type="button" id="tf-btn-6M">6M</button>
 <button class="cashflow-tf-btn px-3 py-1 rounded-full bg-[#352538] text-mauveAccent font-semibold border border-mauveAccent/30 shadow-sm transition cursor-pointer" data-tf="1Y" type="button" id="tf-btn-1Y">1Y</button>
 </div>
 </div>
@@ -658,7 +672,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-7" id="cf-grid-lines">
 <?php for ($k = 0; $k < 5; $k++): ?>
 <div class="border-b border-white/[0.04] w-full flex items-center justify-between">
-<span class="text-[10px] text-stone-600 pl-1 cf-y-axis-val"><?= short_rp($chartMax - $k * ($chartMax - $chartMin) / 4) ?></span>
+<span class="text-[10px] text-zinc-400 pl-1 cf-y-axis-val"><?= short_rp($chartMax - $k * ($chartMax - $chartMin) / 4) ?></span>
 </div>
 <?php endfor; ?>
 </div>
@@ -667,7 +681,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <div id="cf-tooltip" class="absolute z-20 flex <?= $tipBelow ? 'flex-col-reverse' : 'flex-col' ?> items-center pointer-events-none transition-[left,top] duration-300 ease-out" style="left: <?= round($tipX, 2) ?>%; top: <?= round($tipY, 2) ?>%; transform: translate(-50%, <?= $tipBelow ? '-6px' : 'calc(-100% + 6px)' ?>);">
 <div class="bg-[#241C29] border border-mauveAccent/40 shadow-xl shadow-black/60 rounded-xl px-3 py-2 text-center backdrop-blur-md whitespace-nowrap">
 <div class="flex items-center justify-center gap-2">
-<span class="text-[10px] text-stone-300 font-medium" id="cf-tooltip-label"><?= date('M Y') ?></span>
+<span class="text-[10px] text-zinc-200 font-medium" id="cf-tooltip-label"><?= date('M Y') ?></span>
 <span class="w-1.5 h-1.5 rounded-full bg-mauveAccent"></span>
 </div>
 <div class="flex items-center gap-1.5 mt-0.5">
@@ -703,7 +717,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </svg>
 </div>
 <!-- Month Labels Jan - Dec -->
-<div id="cf-x-labels" class="flex justify-between items-center text-[10px] text-stone-500 pt-3 px-2 font-medium transition-opacity duration-200">
+<div id="cf-x-labels" class="flex justify-between items-center text-[10px] text-zinc-300 pt-3 px-2 font-medium transition-opacity duration-200">
 <?php foreach (['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] as $mi => $mLabel): ?>
 <span class="<?= $mi + 1 === $curMonth ? 'text-mauveAccent font-semibold' : '' ?>"><?= $mLabel ?></span>
 <?php endforeach; ?>
@@ -718,18 +732,18 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
      TAB: TRANSACTIONS
      ================================================================ -->
 <div id="tab-transactions" class="tab-content hidden flex flex-col gap-6" data-panel="transactions">
-<div class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6">
+<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
 <div>
 <h2 class="text-base font-semibold text-white">Transaction History</h2>
-<p class="text-xs text-stone-400"><?= count($transactions) ?> transaksi tercatat</p>
+<p class="text-xs text-zinc-300"><?= count($transactions) ?> transaksi tercatat</p>
 </div>
 <div class="flex items-center gap-3">
 <div class="flex items-center gap-1.5 text-[11px]" data-filter-group="all-tx-list">
 <button class="bg-[#2A2331] text-white px-3 py-1 rounded-full font-medium" data-filter="all" type="button" id="tx-filter-all">All</button>
-<button class="bg-black/30 text-stone-400 hover:text-white px-3 py-1 rounded-full transition" data-filter="income" type="button" id="tx-filter-income">Income</button>
-<button class="bg-black/30 text-stone-400 hover:text-white px-3 py-1 rounded-full transition" data-filter="expense" type="button" id="tx-filter-expense">Expense</button>
-<button class="bg-black/30 text-stone-400 hover:text-white px-3 py-1 rounded-full transition" data-filter="goal_saving" type="button" id="tx-filter-goal">Goal</button>
+<button class="bg-black/30 text-zinc-300 hover:text-white px-3 py-1 rounded-full transition" data-filter="income" type="button" id="tx-filter-income">Income</button>
+<button class="bg-black/30 text-zinc-300 hover:text-white px-3 py-1 rounded-full transition" data-filter="expense" type="button" id="tx-filter-expense">Expense</button>
+<button class="bg-black/30 text-zinc-300 hover:text-white px-3 py-1 rounded-full transition" data-filter="goal_saving" type="button" id="tx-filter-goal">Goal</button>
 </div>
 <button class="btn-add-transaction flex items-center gap-1 text-[11px] text-mauveAccent hover:text-white transition font-medium" type="button" id="tx-tab-add-btn">
 <span>+ Add</span>
@@ -739,14 +753,14 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <div class="overflow-x-auto -mx-1">
 <table class="w-full text-xs min-w-[640px]">
 <thead>
-<tr class="text-[10px] uppercase tracking-wider text-stone-500 border-b border-white/[0.06]">
-<th class="text-left font-medium px-2 py-2.5">Date</th>
-<th class="text-left font-medium px-2 py-2.5">Title</th>
-<th class="text-left font-medium px-2 py-2.5">Wallet</th>
-<th class="text-left font-medium px-2 py-2.5">Type</th>
-<th class="text-left font-medium px-2 py-2.5">Source</th>
-<th class="text-right font-medium px-2 py-2.5">Amount</th>
-<th class="text-right font-medium px-2 py-2.5"><span class="sr-only">Action</span></th>
+<tr class="text-[10px] uppercase tracking-wider text-zinc-300 border-b border-white/10 font-semibold">
+<th class="text-left font-semibold px-2 py-2.5">Date</th>
+<th class="text-left font-semibold px-2 py-2.5">Title</th>
+<th class="text-left font-semibold px-2 py-2.5">Wallet</th>
+<th class="text-left font-semibold px-2 py-2.5">Type</th>
+<th class="text-left font-semibold px-2 py-2.5">Source</th>
+<th class="text-right font-semibold px-2 py-2.5">Amount</th>
+<th class="text-right font-semibold px-2 py-2.5"><span class="sr-only">Action</span></th>
 </tr>
 </thead>
 <tbody id="all-tx-list">
@@ -754,32 +768,32 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
     $isIncome = $tx['type'] === 'income';
     $isGoal   = $tx['type'] === 'goal_saving';
     $badge = $isIncome
-        ? ['Income', 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20']
+        ? ['Income', 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30']
         : ($isGoal
-            ? ['Goal Saving', 'text-mauveAccent bg-mauveAccent/10 border-mauveAccent/25']
-            : ['Expense', 'text-stone-300 bg-white/[0.04] border-white/[0.08]']);
+            ? ['Goal Saving', 'text-mauveAccent bg-mauveAccent/15 border-mauveAccent/30']
+            : ['Expense', 'text-rose-300 bg-rose-500/10 border-rose-500/20']);
 ?>
-<tr class="border-b border-white/[0.04] hover:bg-white/[0.02] transition" data-type="<?= e($tx['type']) ?>">
-<td class="px-2 py-3 text-stone-400 whitespace-nowrap"><?= date('d M Y, H:i', strtotime($tx['created_at'])) ?></td>
-<td class="px-2 py-3 font-medium text-stone-200"><?= e($tx['title']) ?></td>
-<td class="px-2 py-3 text-stone-300"><?= e($tx['wallet_name']) ?></td>
+<tr class="border-b border-white/[0.06] hover:bg-white/[0.04] transition" data-type="<?= e($tx['type']) ?>">
+<td class="px-2 py-3 text-zinc-300 whitespace-nowrap"><?= date('d M Y, H:i', strtotime($tx['created_at'])) ?></td>
+<td class="px-2 py-3 font-medium text-white"><?= e($tx['title']) ?></td>
+<td class="px-2 py-3 text-zinc-200"><?= e($tx['wallet_name']) ?></td>
 <td class="px-2 py-3"><span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border <?= $badge[1] ?>"><?= $badge[0] ?></span></td>
-<td class="px-2 py-3 text-stone-400"><?= $tx['source'] === 'bot' ? 'Bot' : 'Web' ?></td>
-<td class="px-2 py-3 text-right font-semibold whitespace-nowrap <?= $isIncome ? 'text-emerald-400' : ($isGoal ? 'text-mauveAccent' : 'text-stone-200') ?>"><?= $isIncome ? '+' : '-' ?><?= rupiah($tx['amount']) ?></td>
+<td class="px-2 py-3 text-zinc-300"><?= $tx['source'] === 'bot' ? 'Bot' : 'Web' ?></td>
+<td class="px-2 py-3 text-right font-semibold whitespace-nowrap <?= $isIncome ? 'text-emerald-400' : ($isGoal ? 'text-mauveAccent' : 'text-rose-400') ?>"><?= $isIncome ? '+' : '-' ?><?= rupiah($tx['amount']) ?></td>
 <td class="px-2 py-3 text-right whitespace-nowrap">
-<button type="button" class="btn-edit-tx text-[11px] text-stone-300 bg-black/40 border border-white/[0.08] px-2.5 py-1 rounded-full hover:text-white hover:border-white/20 transition mr-1" data-id="<?= (int) $tx['id'] ?>" data-title="<?= e($tx['title']) ?>" data-amount="<?= (float) $tx['amount'] ?>" data-type="<?= e($tx['type']) ?>" data-wallet-id="<?= (int) $tx['wallet_id'] ?>" id="edit-tx-<?= (int) $tx['id'] ?>">Edit</button>
+<button type="button" class="btn-edit-tx text-[11px] text-zinc-200 bg-white/[0.06] border border-white/15 px-2.5 py-1 rounded-full hover:text-white hover:border-white/30 hover:bg-white/10 transition mr-1" data-id="<?= (int) $tx['id'] ?>" data-title="<?= e($tx['title']) ?>" data-amount="<?= (float) $tx['amount'] ?>" data-type="<?= e($tx['type']) ?>" data-wallet-id="<?= (int) $tx['wallet_id'] ?>" id="edit-tx-<?= (int) $tx['id'] ?>">Edit</button>
 <form action="process_transaction.php" method="post" class="inline" onsubmit="return confirm('Hapus transaksi ini? Saldo dompet akan dikembalikan.');">
 <input type="hidden" name="action" value="delete"/>
 <input type="hidden" name="id" value="<?= (int) $tx['id'] ?>"/>
 <input type="hidden" name="return_tab" value="transactions"/>
-<button class="text-[11px] text-stone-400 bg-black/40 border border-white/[0.08] px-2.5 py-1 rounded-full hover:text-rose-300 hover:border-rose-400/30 transition" type="submit" id="delete-tx-<?= (int) $tx['id'] ?>">Hapus</button>
+<button class="text-[11px] text-rose-300 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full hover:text-rose-200 hover:bg-rose-500/20 hover:border-rose-500/30 transition" type="submit" id="delete-tx-<?= (int) $tx['id'] ?>">Hapus</button>
 </form>
 </td>
 </tr>
 <?php endforeach; ?>
 </tbody>
 </table>
-<p class="<?= $transactions ? 'hidden' : '' ?> text-xs text-stone-500 py-10 text-center" id="all-tx-list-empty">Belum ada transaksi.</p>
+<p class="<?= $transactions ? 'hidden' : '' ?> text-xs text-zinc-400 py-10 text-center" id="all-tx-list-empty">Belum ada transaksi.</p>
 </div>
 </div>
 </div>
@@ -791,46 +805,46 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <div id="tab-wallets" class="tab-content hidden flex flex-col gap-6" data-panel="wallets">
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 <!-- Wallet list -->
-<div class="lg:col-span-2 bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6">
+<div class="lg:col-span-2 liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);">
 <div class="flex items-center justify-between mb-5">
 <div>
 <h2 class="text-base font-semibold text-white">My Wallets</h2>
-<p class="text-xs text-stone-400"><?= count($wallets) ?> dompet · Total <?= rupiah($totalBalance) ?></p>
+<p class="text-xs text-zinc-300"><?= count($wallets) ?> dompet · Total <?= rupiah($totalBalance) ?></p>
 </div>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 <?php foreach ($wallets as $i => $w):
     $share = $totalBalance > 0 ? ((float) $w['balance'] / $totalBalance) * 100 : 0;
 ?>
-<div class="bg-black/40 border border-white/[0.05] rounded-2xl p-4 hover:border-mauveAccent/30 transition">
+<div class="bg-black/30 border border-white/10 rounded-2xl p-4 hover:border-mauveAccent/40 hover:bg-white/[0.03] transition">
 <div class="flex items-center justify-between">
-<span class="text-sm font-medium text-stone-200"><?= e($w['wallet_name']) ?></span>
-<span class="text-[10px] text-stone-400 bg-white/[0.04] border border-white/[0.06] px-2 py-0.5 rounded-full"><?= e($w['wallet_type']) ?></span>
+<span class="text-sm font-semibold text-white"><?= e($w['wallet_name']) ?></span>
+<span class="text-[10px] text-zinc-300 bg-white/[0.06] border border-white/10 px-2.5 py-0.5 rounded-full font-medium"><?= e($w['wallet_type']) ?></span>
 </div>
 <p class="text-xl font-bold tracking-tight text-white mt-3"><?= rupiah($w['balance']) ?></p>
-<div class="w-full bg-black/40 h-1 rounded-full mt-3 overflow-hidden border border-white/5">
+<div class="w-full bg-black/40 h-1.5 rounded-full mt-3 overflow-hidden border border-white/10">
 <div class="bg-gradient-to-r from-mauveGlow to-mauveAccent h-full rounded-full" style="width: <?= round($share, 1) ?>%"></div>
 </div>
-<p class="text-[10px] text-stone-500 mt-1.5"><?= round($share, 1) ?>% dari total saldo</p>
+<p class="text-[10px] text-zinc-300 mt-1.5"><?= round($share, 1) ?>% dari total saldo</p>
 </div>
 <?php endforeach; ?>
 </div>
 <?php if (!$wallets): ?>
-<p class="text-xs text-stone-500 py-10 text-center">Belum ada dompet.</p>
+<p class="text-xs text-zinc-400 py-10 text-center">Belum ada dompet.</p>
 <?php endif; ?>
 </div>
 <!-- Add wallet form -->
-<div class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6">
+<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);">
 <h2 class="text-sm font-semibold text-white">+ Tambah Dompet Baru</h2>
-<p class="text-xs text-stone-400 mt-0.5 mb-5">Rekening bank, e-wallet, atau uang tunai</p>
+<p class="text-xs text-zinc-300 mt-0.5 mb-5">Rekening bank, e-wallet, atau uang tunai</p>
 <form action="process_wallet.php" method="post" class="space-y-4" id="wallet-form">
 <div>
-<label class="block text-xs font-medium text-stone-300 mb-1.5" for="wallet-name">Nama Dompet</label>
-<input class="w-full bg-[#1F1B27] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="wallet-name" name="wallet_name" maxlength="50" placeholder="e.g. Bank Mandiri, OVO" required type="text"/>
+<label class="block text-xs font-medium text-zinc-200 mb-1.5" for="wallet-name">Nama Dompet</label>
+<input class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="wallet-name" name="wallet_name" maxlength="50" placeholder="e.g. Bank Mandiri, OVO" required type="text"/>
 </div>
 <div>
-<label class="block text-xs font-medium text-stone-300 mb-1.5" for="wallet-type">Tipe Dompet</label>
-<input class="w-full bg-[#1F1B27] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="wallet-type" name="wallet_type" maxlength="30" list="wallet-type-options" placeholder="e.g. E-Wallet" required type="text"/>
+<label class="block text-xs font-medium text-zinc-200 mb-1.5" for="wallet-type">Tipe Dompet</label>
+<input class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="wallet-type" name="wallet_type" maxlength="30" list="wallet-type-options" placeholder="e.g. E-Wallet" required type="text"/>
 <datalist id="wallet-type-options">
 <?php foreach ($walletTypes as $t): ?>
 <option value="<?= e($t) ?>"></option>
@@ -838,10 +852,10 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </datalist>
 </div>
 <div>
-<label class="block text-xs font-medium text-stone-300 mb-1.5" for="wallet-balance">Saldo Awal (Rp)</label>
+<label class="block text-xs font-medium text-zinc-200 mb-1.5" for="wallet-balance">Saldo Awal (Rp)</label>
 <div class="relative flex items-center">
-<span class="absolute left-3.5 text-xs font-medium text-stone-400 pointer-events-none">Rp</span>
-<input class="money-input w-full bg-[#1F1B27] border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="wallet-balance" name="balance" inputmode="numeric" autocomplete="off" placeholder="0" type="text"/>
+<span class="absolute left-3.5 text-xs font-medium text-zinc-400 pointer-events-none">Rp</span>
+<input class="money-input w-full bg-black/40 border border-white/15 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="wallet-balance" name="balance" inputmode="numeric" autocomplete="off" placeholder="0" type="text"/>
 </div>
 </div>
 <button class="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all" type="submit" id="wallet-submit-btn">
@@ -859,34 +873,34 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <div id="tab-goals" class="tab-content hidden flex flex-col gap-6" data-panel="goals">
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 <!-- Goals list -->
-<div class="lg:col-span-2 bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6">
+<div class="lg:col-span-2 liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);">
 <div class="mb-5">
 <h2 class="text-base font-semibold text-white">Savings Goals</h2>
-<p class="text-xs text-stone-400"><?= count($goals) ?> target tabungan</p>
+<p class="text-xs text-zinc-300"><?= count($goals) ?> target tabungan</p>
 </div>
 <div class="space-y-3">
 <?php foreach ($goals as $g):
     $remaining = max(0, (float) $g['target_amount'] - (float) $g['current_amount']);
 ?>
-<div class="<?= $featuredGoal && $g['id'] === $featuredGoal['id'] ? 'card-purple-ambient border-mauveAccent/20' : 'bg-black/40 border-white/[0.05]' ?> border rounded-2xl p-4 hover:border-mauveAccent/30 transition">
+<div class="<?= $featuredGoal && $g['id'] === $featuredGoal['id'] ? 'card-purple-ambient border-mauveAccent/30' : 'bg-black/30 border-white/10' ?> border rounded-2xl p-4 hover:border-mauveAccent/40 hover:bg-white/[0.03] transition">
 <div class="flex items-center justify-between gap-3">
 <h3 class="text-sm font-semibold text-white"><?= e($g['goal_title']) ?></h3>
-<span class="text-[10px] font-semibold text-mauveAccent bg-mauveAccent/10 px-2 py-0.5 rounded-full border border-mauveAccent/25 whitespace-nowrap"><?= $g['pct'] ?>% Reached</span>
+<span class="text-[10px] font-semibold text-mauveAccent bg-mauveAccent/15 px-2.5 py-0.5 rounded-full border border-mauveAccent/30 whitespace-nowrap"><?= $g['pct'] ?>% Reached</span>
 </div>
-<p class="text-xs text-stone-300/80 mt-1.5"><?= rupiah($g['current_amount']) ?> saved of <?= rupiah($g['target_amount']) ?> target.</p>
-<div class="w-full bg-black/40 h-1.5 rounded-full mt-3 overflow-hidden border border-white/5">
+<p class="text-xs text-zinc-200 mt-1.5 font-medium"><?= rupiah($g['current_amount']) ?> saved <span class="text-zinc-400 font-normal">of <?= rupiah($g['target_amount']) ?> target.</span></p>
+<div class="w-full bg-black/40 h-1.5 rounded-full mt-3 overflow-hidden border border-white/10">
 <div class="bg-gradient-to-r from-mauveGlow to-mauveAccent h-full rounded-full transition-all duration-700" style="width: <?= $g['pct'] ?>%"></div>
 </div>
 <div class="flex items-center justify-between mt-3">
-<span class="text-[10px] text-stone-400"><?= $remaining > 0 ? 'Sisa ' . rupiah($remaining) : 'Target tercapai' ?></span>
-<div class="flex items-center gap-3">
+<span class="text-[10px] text-zinc-300"><?= $remaining > 0 ? 'Sisa ' . rupiah($remaining) : 'Target tercapai' ?></span>
+<div class="flex items-center gap-2">
 <?php if ($g['pct'] < 100): ?>
-<button class="btn-save-goal text-[11px] font-medium text-mauveAccent hover:text-white transition" data-goal-id="<?= (int) $g['id'] ?>" type="button" id="save-goal-<?= (int) $g['id'] ?>">+ Nabung</button>
+<button class="btn-save-goal text-[11px] font-medium text-mauveAccent bg-mauveAccent/10 border border-mauveAccent/20 hover:bg-mauveAccent/25 hover:text-white px-2.5 py-1 rounded-full transition" data-goal-id="<?= (int) $g['id'] ?>" type="button" id="save-goal-<?= (int) $g['id'] ?>">+ Nabung</button>
 <?php endif; ?>
-<button class="btn-edit-goal text-[11px] font-medium text-indigo-400 hover:text-indigo-300 transition" type="button" data-goal-id="<?= (int) $g['id'] ?>" data-goal-title="<?= e($g['goal_title']) ?>" data-goal-target="<?= (float) $g['target_amount'] ?>" id="edit-goal-<?= (int) $g['id'] ?>">Edit</button>
+<button class="btn-edit-goal text-[11px] font-medium text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-500/20 hover:text-white px-2.5 py-1 rounded-full transition" type="button" data-goal-id="<?= (int) $g['id'] ?>" data-goal-title="<?= e($g['goal_title']) ?>" data-goal-target="<?= (float) $g['target_amount'] ?>" id="edit-goal-<?= (int) $g['id'] ?>">Edit</button>
 <form action="delete_goal.php" method="post" class="inline" onsubmit="return confirm('Hapus target tabungan &quot;<?= e($g['goal_title']) ?>&quot;?');">
 <input type="hidden" name="id" value="<?= (int) $g['id'] ?>"/>
-<button class="text-[11px] font-medium text-red-400 hover:text-red-300 transition" type="submit" id="delete-goal-<?= (int) $g['id'] ?>">Hapus</button>
+<button class="text-[11px] font-medium text-rose-300 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 hover:text-rose-200 px-2.5 py-1 rounded-full transition" type="submit" id="delete-goal-<?= (int) $g['id'] ?>">Hapus</button>
 </form>
 </div>
 </div>
@@ -894,30 +908,30 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <?php endforeach; ?>
 </div>
 <?php if (!$goals): ?>
-<p class="text-xs text-stone-500 py-10 text-center">Belum ada target tabungan.</p>
+<p class="text-xs text-zinc-400 py-10 text-center">Belum ada target tabungan.</p>
 <?php endif; ?>
 </div>
 <!-- Add goal form -->
-<div class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6">
+<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);">
 <h2 class="text-sm font-semibold text-white">+ Tambah Target Tabungan Baru</h2>
-<p class="text-xs text-stone-400 mt-0.5 mb-5">Wujudkan wishlist-mu satu per satu</p>
+<p class="text-xs text-zinc-300 mt-0.5 mb-5">Wujudkan wishlist-mu satu per satu</p>
 <form action="process_goal.php" method="post" class="space-y-4" id="goal-form">
 <div>
-<label class="block text-xs font-medium text-stone-300 mb-1.5" for="goal-title">Nama Target</label>
-<input class="w-full bg-[#1F1B27] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="goal-title" name="goal_title" maxlength="100" placeholder="e.g. Liburan ke Jepang" required type="text"/>
+<label class="block text-xs font-medium text-zinc-200 mb-1.5" for="goal-title">Nama Target</label>
+<input class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="goal-title" name="goal_title" maxlength="100" placeholder="e.g. Liburan ke Jepang" required type="text"/>
 </div>
 <div>
-<label class="block text-xs font-medium text-stone-300 mb-1.5" for="goal-target">Nominal Target (Rp)</label>
+<label class="block text-xs font-medium text-zinc-200 mb-1.5" for="goal-target">Nominal Target (Rp)</label>
 <div class="relative flex items-center">
-<span class="absolute left-3.5 text-xs font-medium text-stone-400 pointer-events-none">Rp</span>
-<input class="money-input w-full bg-[#1F1B27] border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="goal-target" name="target_amount" inputmode="numeric" autocomplete="off" placeholder="10.000.000" required type="text"/>
+<span class="absolute left-3.5 text-xs font-medium text-zinc-400 pointer-events-none">Rp</span>
+<input class="money-input w-full bg-black/40 border border-white/15 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="goal-target" name="target_amount" inputmode="numeric" autocomplete="off" placeholder="10.000.000" required type="text"/>
 </div>
 </div>
 <div>
-<label class="block text-xs font-medium text-stone-300 mb-1.5" for="goal-current">Sudah Terkumpul (Rp) <span class="text-stone-500 font-normal">— opsional</span></label>
+<label class="block text-xs font-medium text-zinc-200 mb-1.5" for="goal-current">Sudah Terkumpul (Rp) <span class="text-zinc-400 font-normal">— opsional</span></label>
 <div class="relative flex items-center">
-<span class="absolute left-3.5 text-xs font-medium text-stone-400 pointer-events-none">Rp</span>
-<input class="money-input w-full bg-[#1F1B27] border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="goal-current" name="current_amount" inputmode="numeric" autocomplete="off" placeholder="0" type="text"/>
+<span class="absolute left-3.5 text-xs font-medium text-zinc-400 pointer-events-none">Rp</span>
+<input class="money-input w-full bg-black/40 border border-white/15 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="goal-current" name="current_amount" inputmode="numeric" autocomplete="off" placeholder="0" type="text"/>
 </div>
 </div>
 <button class="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all" type="submit" id="goal-submit-btn">
@@ -935,14 +949,14 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- BEGIN: Add Transaction Modal Popup -->
 <div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="transaction-modal" role="dialog">
 <!-- Modal Card -->
-<div class="bg-[#16141C] border border-white/[0.08] rounded-2xl max-w-md w-full p-6 relative shadow-2xl shadow-black/80 transition-all duration-300 transform scale-95 opacity-0" id="modal-card">
+<div class="liquid-glass bg-[#16141C]/90 backdrop-blur-2xl border border-white/20 rounded-2xl max-w-md w-full p-6 relative transition-all duration-300 transform scale-95 opacity-0" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.7);" id="modal-card">
 <!-- Header -->
 <div class="flex items-start justify-between mb-5">
 <div>
 <h3 class="text-lg font-semibold text-white tracking-tight" id="modal-title">Add Transaction</h3>
-<p class="text-xs text-stone-400 mt-0.5">Log a new cashflow entry</p>
+<p class="text-xs text-zinc-300 mt-0.5">Log a new cashflow entry</p>
 </div>
-<button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-stone-400 hover:text-white flex items-center justify-center border border-white/[0.06] transition text-sm" id="modal-close-btn" type="button">
+<button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 hover:text-white flex items-center justify-center border border-white/10 transition text-sm cursor-pointer" id="modal-close-btn" type="button">
         ✕
       </button>
 </div>
@@ -955,55 +969,55 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <input type="hidden" name="return_tab" id="tx-return-tab" value="dashboard"/>
 <!-- 1. Transaction Title -->
 <div>
-<label class="block text-xs font-medium text-stone-300 mb-1.5" for="tx-title">Transaction Title</label>
-<input class="w-full bg-[#1F1B27] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="tx-title" name="title" maxlength="100" placeholder="e.g. Makan Siang, Beli Kopi" required="" type="text"/>
+<label class="block text-xs font-medium text-zinc-200 mb-1.5" for="tx-title">Transaction Title</label>
+<input class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="tx-title" name="title" maxlength="100" placeholder="e.g. Makan Siang, Beli Kopi" required="" type="text"/>
 </div>
 <!-- 2. Amount in Rupiah -->
 <div>
-<label class="block text-xs font-medium text-stone-300 mb-1.5" for="tx-amount">Amount (Rp)</label>
+<label class="block text-xs font-medium text-zinc-200 mb-1.5" for="tx-amount">Amount (Rp)</label>
 <div class="relative flex items-center">
-<span class="absolute left-3.5 text-xs font-medium text-stone-400 pointer-events-none">Rp</span>
-<input class="money-input w-full bg-[#1F1B27] border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="tx-amount" name="amount" inputmode="numeric" autocomplete="off" placeholder="50.000" required="" type="text"/>
+<span class="absolute left-3.5 text-xs font-medium text-zinc-400 pointer-events-none">Rp</span>
+<input class="money-input w-full bg-black/40 border border-white/15 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="tx-amount" name="amount" inputmode="numeric" autocomplete="off" placeholder="50.000" required="" type="text"/>
 </div>
 </div>
 <!-- 3. Transaction Type Pills -->
 <div>
-<label class="block text-xs font-medium text-stone-300 mb-1.5">Transaction Type</label>
+<label class="block text-xs font-medium text-zinc-200 mb-1.5">Transaction Type</label>
 <div class="grid grid-cols-3 gap-2" id="type-pills">
 <button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent" data-type="expense" type="button" id="type-pill-expense">
             Expense
           </button>
-<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15" data-type="income" type="button" id="type-pill-income">
+<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15" data-type="income" type="button" id="type-pill-income">
             Income
           </button>
-<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15" data-type="goal_saving" type="button" id="type-pill-goal">
+<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15" data-type="goal_saving" type="button" id="type-pill-goal">
             Save to Goal
           </button>
 </div>
 </div>
 <!-- 3b. Goal Target Selector (khusus Save to Goal) -->
 <div class="hidden" id="goal-field">
-<label class="block text-xs font-medium text-stone-300 mb-1.5">Savings Goal</label>
+<label class="block text-xs font-medium text-zinc-200 mb-1.5">Savings Goal</label>
 <?php if ($goals): ?>
 <div class="grid grid-cols-2 gap-2" id="goal-pills">
 <?php foreach ($goals as $g):
     $active = $featuredGoal && $g['id'] === $featuredGoal['id'];
 ?>
-<button class="goal-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate <?= $active ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15' ?>" data-goal-id="<?= (int) $g['id'] ?>" type="button">
+<button class="goal-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate <?= $active ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15' ?>" data-goal-id="<?= (int) $g['id'] ?>" type="button">
             <?= e($g['goal_title']) ?>
           </button>
 <?php endforeach; ?>
 </div>
 <?php else: ?>
-<p class="text-[11px] text-stone-500">Belum ada target tabungan. Tambahkan dulu di tab Savings Goals.</p>
+<p class="text-[11px] text-zinc-400">Belum ada target tabungan. Tambahkan dulu di tab Savings Goals.</p>
 <?php endif; ?>
 </div>
 <!-- 4. Wallet Source Selector -->
 <div>
-<label class="block text-xs font-medium text-stone-300 mb-1.5">Wallet Source</label>
+<label class="block text-xs font-medium text-zinc-200 mb-1.5">Wallet Source</label>
 <div class="grid grid-cols-4 gap-2" id="wallet-pills">
 <?php foreach ($wallets as $i => $w): ?>
-<button class="wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate <?= $i === 0 ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15' ?>" data-wallet-id="<?= (int) $w['id'] ?>" title="<?= e($w['wallet_name']) ?> · <?= rupiah($w['balance']) ?>" type="button">
+<button class="wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate <?= $i === 0 ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15' ?>" data-wallet-id="<?= (int) $w['id'] ?>" title="<?= e($w['wallet_name']) ?> · <?= rupiah($w['balance']) ?>" type="button">
             <?= e($w['wallet_name']) ?>
           </button>
 <?php endforeach; ?>
@@ -1012,10 +1026,10 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <p class="hidden text-[11px] text-rose-300" id="tx-form-error"></p>
 <!-- 5. Action Buttons -->
 <div class="pt-3 flex items-center gap-3">
-<button class="w-1/3 py-2.5 px-4 rounded-xl text-xs font-medium text-stone-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition" id="modal-cancel-btn" type="button">
+<button class="w-1/3 py-2.5 px-4 rounded-xl text-xs font-medium text-zinc-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition cursor-pointer" id="modal-cancel-btn" type="button">
           Cancel
         </button>
-<button class="w-2/3 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all" id="modal-submit-btn" type="submit">
+<button class="w-2/3 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all cursor-pointer" id="modal-submit-btn" type="submit">
           Save Transaction
         </button>
 </div>
@@ -1024,26 +1038,26 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </div>
 <!-- BEGIN: Edit Profile Name Modal Popup -->
 <div aria-labelledby="profile-modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="profile-modal" role="dialog">
-  <div class="bg-[#16141C] border border-white/[0.08] rounded-2xl max-w-sm w-full p-6 relative shadow-2xl shadow-black/80 transition-all duration-300 transform scale-95 opacity-0" id="profile-card">
+  <div class="liquid-glass bg-[#16141C]/90 backdrop-blur-2xl border border-white/20 rounded-2xl max-w-sm w-full p-6 relative transition-all duration-300 transform scale-95 opacity-0" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.7);" id="profile-card">
     <div class="flex items-start justify-between mb-5">
       <div>
         <h3 class="text-lg font-semibold text-white tracking-tight" id="profile-modal-title">Edit Profile Name</h3>
-        <p class="text-xs text-stone-400 mt-0.5">Ubah nama yang ditampilkan di FlowTrack</p>
+        <p class="text-xs text-zinc-300 mt-0.5">Ubah nama yang ditampilkan di FlowTrack</p>
       </div>
-      <button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-stone-400 hover:text-white flex items-center justify-center border border-white/[0.06] transition text-sm" id="profile-close-btn" type="button">
+      <button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 hover:text-white flex items-center justify-center border border-white/10 transition text-sm cursor-pointer" id="profile-close-btn" type="button">
         ✕
       </button>
     </div>
     <form class="space-y-4" id="profile-form" action="update_profile.php" method="post">
       <div>
-        <label class="block text-xs font-medium text-stone-300 mb-1.5" for="profile-user-name">Nama Profil / Pengguna</label>
-        <input class="w-full bg-[#1F1B27] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="profile-user-name" name="user_name" maxlength="100" value="<?= e($userName) ?>" required type="text" placeholder="e.g. Kadek Nata"/>
+        <label class="block text-xs font-medium text-zinc-200 mb-1.5" for="profile-user-name">Nama Profil / Pengguna</label>
+        <input class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="profile-user-name" name="user_name" maxlength="100" value="<?= e($userName) ?>" required type="text" placeholder="e.g. Kadek Nata"/>
       </div>
       <div class="pt-3 flex items-center gap-3">
-        <button class="w-1/3 py-2.5 px-4 rounded-xl text-xs font-medium text-stone-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition" id="profile-cancel-btn" type="button">
+        <button class="w-1/3 py-2.5 px-4 rounded-xl text-xs font-medium text-zinc-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition cursor-pointer" id="profile-cancel-btn" type="button">
           Cancel
         </button>
-        <button class="w-2/3 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all" type="submit">
+        <button class="w-2/3 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all cursor-pointer" type="submit">
           Simpan Nama
         </button>
       </div>
@@ -1052,34 +1066,34 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </div>
 <!-- BEGIN: Edit Savings Goal Modal Popup -->
 <div aria-labelledby="edit-goal-modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="edit-goal-modal" role="dialog">
-  <div class="bg-[#16141C] border border-white/[0.08] rounded-2xl max-w-md w-full p-6 relative shadow-2xl shadow-black/80 transition-all duration-300 transform scale-95 opacity-0" id="edit-goal-card">
+  <div class="liquid-glass bg-[#16141C]/90 backdrop-blur-2xl border border-white/20 rounded-2xl max-w-md w-full p-6 relative transition-all duration-300 transform scale-95 opacity-0" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.7);" id="edit-goal-card">
     <div class="flex items-start justify-between mb-5">
       <div>
         <h3 class="text-lg font-semibold text-white tracking-tight" id="edit-goal-modal-title">Edit Savings Goal</h3>
-        <p class="text-xs text-stone-400 mt-0.5">Perbarui nama dan nominal target tabungan</p>
+        <p class="text-xs text-zinc-300 mt-0.5">Perbarui nama dan nominal target tabungan</p>
       </div>
-      <button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-stone-400 hover:text-white flex items-center justify-center border border-white/[0.06] transition text-sm" id="edit-goal-close-btn" type="button">
+      <button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 hover:text-white flex items-center justify-center border border-white/10 transition text-sm cursor-pointer" id="edit-goal-close-btn" type="button">
         ✕
       </button>
     </div>
     <form class="space-y-4" id="edit-goal-form" action="edit_goal.php" method="post">
       <input type="hidden" name="id" id="edit-goal-id" value=""/>
       <div>
-        <label class="block text-xs font-medium text-stone-300 mb-1.5" for="edit-goal-title">Nama Target</label>
-        <input class="w-full bg-[#1F1B27] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="edit-goal-title" name="goal_title" maxlength="100" required type="text"/>
+        <label class="block text-xs font-medium text-zinc-200 mb-1.5" for="edit-goal-title">Nama Target</label>
+        <input class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="edit-goal-title" name="goal_title" maxlength="100" required type="text"/>
       </div>
       <div>
-        <label class="block text-xs font-medium text-stone-300 mb-1.5" for="edit-goal-target">Nominal Target (Rp)</label>
+        <label class="block text-xs font-medium text-zinc-200 mb-1.5" for="edit-goal-target">Nominal Target (Rp)</label>
         <div class="relative flex items-center">
-          <span class="absolute left-3.5 text-xs font-medium text-stone-400 pointer-events-none">Rp</span>
-          <input class="money-input w-full bg-[#1F1B27] border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="edit-goal-target" name="target_amount" inputmode="numeric" autocomplete="off" required type="text"/>
+          <span class="absolute left-3.5 text-xs font-medium text-zinc-400 pointer-events-none">Rp</span>
+          <input class="money-input w-full bg-black/40 border border-white/15 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="edit-goal-target" name="target_amount" inputmode="numeric" autocomplete="off" required type="text"/>
         </div>
       </div>
       <div class="pt-3 flex items-center gap-3">
-        <button class="w-1/3 py-2.5 px-4 rounded-xl text-xs font-medium text-stone-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition" id="edit-goal-cancel-btn" type="button">
+        <button class="w-1/3 py-2.5 px-4 rounded-xl text-xs font-medium text-zinc-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition cursor-pointer" id="edit-goal-cancel-btn" type="button">
           Cancel
         </button>
-        <button class="w-2/3 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all" type="submit">
+        <button class="w-2/3 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all cursor-pointer" type="submit">
           Update Target
         </button>
       </div>
@@ -1089,13 +1103,13 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 
 <!-- BEGIN: Edit Transaction Modal Popup -->
 <div aria-labelledby="edit-tx-modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="edit-transaction-modal" role="dialog">
-  <div class="bg-[#16141C] border border-white/[0.08] rounded-2xl max-w-md w-full p-6 relative shadow-2xl shadow-black/80 transition-all duration-300 transform scale-95 opacity-0" id="edit-tx-card">
+  <div class="liquid-glass bg-[#16141C]/90 backdrop-blur-2xl border border-white/20 rounded-2xl max-w-md w-full p-6 relative transition-all duration-300 transform scale-95 opacity-0" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.7);" id="edit-tx-card">
     <div class="flex items-start justify-between mb-5">
       <div>
         <h3 class="text-lg font-semibold text-white tracking-tight" id="edit-tx-modal-title">Edit Transaction</h3>
-        <p class="text-xs text-stone-400 mt-0.5">Ubah rincian transaksi &amp; sesuaikan saldo</p>
+        <p class="text-xs text-zinc-300 mt-0.5">Ubah rincian transaksi &amp; sesuaikan saldo</p>
       </div>
-      <button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-stone-400 hover:text-white flex items-center justify-center border border-white/[0.06] transition text-sm" id="edit-tx-close-btn" type="button">
+      <button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 hover:text-white flex items-center justify-center border border-white/10 transition text-sm cursor-pointer" id="edit-tx-close-btn" type="button">
         ✕
       </button>
     </div>
@@ -1107,33 +1121,33 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       <input type="hidden" name="return_tab" value="transactions"/>
 
       <div>
-        <label class="block text-xs font-medium text-stone-300 mb-1.5" for="edit-tx-title">Transaction Title</label>
-        <input class="w-full bg-[#1F1B27] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="edit-tx-title" name="title" maxlength="100" required type="text"/>
+        <label class="block text-xs font-medium text-zinc-200 mb-1.5" for="edit-tx-title">Transaction Title</label>
+        <input class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="edit-tx-title" name="title" maxlength="100" required type="text"/>
       </div>
 
       <div>
-        <label class="block text-xs font-medium text-stone-300 mb-1.5" for="edit-tx-amount">Amount (Rp)</label>
+        <label class="block text-xs font-medium text-zinc-200 mb-1.5" for="edit-tx-amount">Amount (Rp)</label>
         <div class="relative flex items-center">
-          <span class="absolute left-3.5 text-xs font-medium text-stone-400 pointer-events-none">Rp</span>
-          <input class="money-input w-full bg-[#1F1B27] border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition" id="edit-tx-amount" name="amount" inputmode="numeric" autocomplete="off" required type="text"/>
+          <span class="absolute left-3.5 text-xs font-medium text-zinc-400 pointer-events-none">Rp</span>
+          <input class="money-input w-full bg-black/40 border border-white/15 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="edit-tx-amount" name="amount" inputmode="numeric" autocomplete="off" required type="text"/>
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-medium text-stone-300 mb-1.5">Transaction Type</label>
+        <label class="block text-xs font-medium text-zinc-200 mb-1.5">Transaction Type</label>
         <div class="grid grid-cols-3 gap-2" id="edit-type-pills">
           <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent" data-type="expense" type="button">Expense</button>
-          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15" data-type="income" type="button">Income</button>
-          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15" data-type="goal_saving" type="button">Save to Goal</button>
+          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15" data-type="income" type="button">Income</button>
+          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15" data-type="goal_saving" type="button">Save to Goal</button>
         </div>
       </div>
 
       <div class="hidden" id="edit-goal-field">
-        <label class="block text-xs font-medium text-stone-300 mb-1.5">Savings Goal</label>
+        <label class="block text-xs font-medium text-zinc-200 mb-1.5">Savings Goal</label>
         <?php if ($goals): ?>
         <div class="grid grid-cols-2 gap-2" id="edit-goal-pills">
           <?php foreach ($goals as $g): ?>
-          <button class="edit-goal-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15" data-goal-id="<?= (int) $g['id'] ?>" type="button">
+          <button class="edit-goal-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15" data-goal-id="<?= (int) $g['id'] ?>" type="button">
             <?= e($g['goal_title']) ?>
           </button>
           <?php endforeach; ?>
@@ -1142,10 +1156,10 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       </div>
 
       <div>
-        <label class="block text-xs font-medium text-stone-300 mb-1.5">Wallet Source</label>
+        <label class="block text-xs font-medium text-zinc-200 mb-1.5">Wallet Source</label>
         <div class="grid grid-cols-4 gap-2" id="edit-wallet-pills">
           <?php foreach ($wallets as $i => $w): ?>
-          <button class="edit-wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate <?= $i === 0 ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15' ?>" data-wallet-id="<?= (int) $w['id'] ?>" title="<?= e($w['wallet_name']) ?>" type="button">
+          <button class="edit-wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate <?= $i === 0 ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15' ?>" data-wallet-id="<?= (int) $w['id'] ?>" title="<?= e($w['wallet_name']) ?>" type="button">
             <?= e($w['wallet_name']) ?>
           </button>
           <?php endforeach; ?>
@@ -1153,10 +1167,10 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       </div>
 
       <div class="pt-3 flex items-center gap-3">
-        <button class="w-1/3 py-2.5 px-4 rounded-xl text-xs font-medium text-stone-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition" id="edit-tx-cancel-btn" type="button">
+        <button class="w-1/3 py-2.5 px-4 rounded-xl text-xs font-medium text-zinc-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition cursor-pointer" id="edit-tx-cancel-btn" type="button">
           Cancel
         </button>
-        <button class="w-2/3 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all" type="submit">
+        <button class="w-2/3 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all cursor-pointer" type="submit">
           Update Transaction
         </button>
       </div>
@@ -1166,13 +1180,13 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 
 <!-- BEGIN: Edit Spending Ring Categories Modal -->
 <div aria-labelledby="sr-modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="sr-modal" role="dialog">
-  <div class="bg-[#1a1a24]/95 border border-white/10 rounded-2xl max-w-xl w-full p-5 sm:p-6 relative shadow-2xl shadow-black/80 transition-all duration-300 transform scale-95 opacity-0" id="sr-modal-card">
+  <div class="liquid-glass bg-[#1a1a24]/90 backdrop-blur-2xl border border-white/20 rounded-2xl max-w-xl w-full p-5 sm:p-6 relative transition-all duration-300 transform scale-95 opacity-0" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.7);" id="sr-modal-card">
     <div class="flex items-start justify-between pb-4 mb-4 border-b border-white/[0.08]">
       <div>
         <h3 class="text-lg font-semibold text-white tracking-tight" id="sr-modal-title">Edit Kategori &amp; Pengeluaran</h3>
-        <p class="text-xs text-stone-400 mt-0.5">Sesuaikan nama, jumlah nominal, dan warna diagram cincin</p>
+        <p class="text-xs text-zinc-300 mt-0.5">Sesuaikan nama, jumlah nominal, dan warna diagram cincin</p>
       </div>
-      <button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-stone-400 hover:text-white flex items-center justify-center border border-white/[0.06] transition text-sm cursor-pointer" id="sr-modal-close-btn" type="button">
+      <button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 hover:text-white flex items-center justify-center border border-white/10 transition text-sm cursor-pointer" id="sr-modal-close-btn" type="button">
         ✕
       </button>
     </div>
@@ -1195,7 +1209,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       </button>
       
       <div class="flex items-center gap-2.5 w-full sm:w-auto">
-        <button id="sr-modal-cancel-btn" type="button" class="w-1/2 sm:w-auto px-4 py-2 rounded-xl text-xs font-medium text-stone-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition cursor-pointer">
+        <button id="sr-modal-cancel-btn" type="button" class="w-1/2 sm:w-auto px-4 py-2 rounded-xl text-xs font-medium text-zinc-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition cursor-pointer">
           Batal
         </button>
         <button id="sr-modal-save-btn" type="button" class="w-1/2 sm:w-auto px-5 py-2 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all cursor-pointer">
@@ -1335,8 +1349,8 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
               +${formatRp(income)}
             </span>
-            <span class="text-stone-300 font-medium">-${formatRp(expense)}</span>
-            <span class="text-stone-400">this month</span>
+            <span class="text-rose-400 font-medium">-${formatRp(expense)}</span>
+            <span class="text-zinc-300">this month</span>
           `;
         } else if (mode === 'week') {
           labelText = 'This Week';
@@ -1346,7 +1360,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
               Estimasi jatah aman per minggu
             </span>
-            <span class="text-stone-400">(4 minggu)</span>
+            <span class="text-zinc-300">(4 minggu)</span>
           `;
         } else if (mode === 'daily') {
           labelText = 'Today / Daily';
@@ -1356,7 +1370,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
               Estimasi jatah aman per hari
             </span>
-            <span class="text-stone-400">(${remainingDays} hari tersisa)</span>
+            <span class="text-zinc-300">(${remainingDays} hari tersisa)</span>
           `;
         }
 
@@ -1453,7 +1467,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 
     /* ================= FILTER PILLS (All / Income / Expense) ================= */
     const PILL_ACTIVE = 'bg-[#2A2331] text-white px-3 py-1 rounded-full font-medium';
-    const PILL_IDLE   = 'bg-black/30 text-stone-400 hover:text-white px-3 py-1 rounded-full transition';
+    const PILL_IDLE   = 'bg-black/30 text-zinc-300 hover:text-white px-3 py-1 rounded-full transition';
 
     document.querySelectorAll('[data-filter-group]').forEach(group => {
       const listId  = group.dataset.filterGroup;
@@ -1504,7 +1518,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
     const submitBtn  = document.getElementById('modal-submit-btn');
 
     const PILL_SEL   = 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent';
-    const PILL_UNSEL = 'bg-black/40 border border-white/[0.06] text-stone-400 hover:text-white hover:border-white/15';
+    const PILL_UNSEL = 'bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15';
 
     function selectPill(pills, activePill, base) {
       pills.forEach(p => p.className = base + ' ' + PILL_UNSEL);
@@ -2115,7 +2129,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
         if (readoutChange) {
           const chg = current.change ?? 0;
           if (chg === 0) {
-            readoutChange.className = 'mt-1 text-[11px] tabular-nums font-medium text-stone-400';
+            readoutChange.className = 'mt-1 text-[11px] tabular-nums font-medium text-zinc-300';
             readoutChange.textContent = 'Same as last month';
           } else if (chg > 0) {
             readoutChange.className = 'mt-1 text-[11px] tabular-nums font-medium text-rose-400';
@@ -2136,7 +2150,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
           const btn = document.getElementById(`sr-btn-${i}`);
           if (btn) {
             const on = i === index;
-            btn.className = `sr-category-btn flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs transition-all duration-150 border ${on ? 'bg-white/10 text-white border-white/10 shadow-sm' : 'border-transparent text-stone-400 hover:text-white hover:bg-white/[0.04]'}`;
+            btn.className = `sr-category-btn flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs transition-all duration-150 border ${on ? 'bg-white/10 text-white border-white/10 shadow-sm' : 'border-transparent text-zinc-300 hover:text-white hover:bg-white/[0.04]'}`;
           }
         }
       }
@@ -2250,7 +2264,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
               <button
                 type="button"
                 id="sr-btn-${i}"
-                class="sr-category-btn flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs transition-all duration-150 border ${isActive ? 'bg-white/10 text-white border-white/10 shadow-sm' : 'border-transparent text-stone-400 hover:text-white hover:bg-white/[0.04]'}"
+                class="sr-category-btn flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs transition-all duration-150 border ${isActive ? 'bg-white/10 text-white border-white/10 shadow-sm' : 'border-transparent text-zinc-300 hover:text-white hover:bg-white/[0.04]'}"
                 data-index="${i}"
               >
                 <span class="size-2 shrink-0 rounded-full" style="background-color: ${category.color};"></span>
