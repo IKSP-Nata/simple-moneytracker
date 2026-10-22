@@ -340,27 +340,89 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- Column 1: Total Balance Card & Wishlist Goal Saver Card -->
 <div class="flex flex-col gap-6 justify-between h-full">
 <!-- Top Card: Total Balance -->
-<div class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 flex flex-col justify-between" data-purpose="total-balance-card">
-<div class="flex items-center justify-between mb-3">
-<span class="text-xs text-stone-400 font-medium tracking-wide">Total Balance</span>
-<button class="flex items-center gap-1.5 text-xs bg-black/40 text-stone-300 border border-white/[0.08] px-3 py-1 rounded-full hover:border-white/20 transition" type="button">
-<span class="">This Month</span>
-<i class="w-3.5 h-3.5 text-stone-400" data-lucide="chevron-down"></i>
-</button>
-</div>
-<div>
-<div class="text-3xl lg:text-4xl font-bold tracking-tight text-white mb-2" id="total-balance">
-                <?= rupiah($totalBalance) ?>
-              </div>
-<div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
-<span class="inline-flex items-center gap-0.5 text-emerald-400 font-medium">
-<i class="w-3.5 h-3.5" data-lucide="trending-up"></i>
-                  +<?= rupiah($monthTotals['income']) ?>
-                </span>
-<span class="text-stone-300 font-medium">-<?= rupiah($monthTotals['expense']) ?></span>
-<span class="text-stone-400">this month</span>
-</div>
-</div>
+<div class="bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 flex flex-col justify-between relative" data-purpose="total-balance-card">
+  <div class="flex items-center justify-between mb-3">
+    <span class="text-xs text-stone-400 font-medium tracking-wide">Total Balance</span>
+    
+    <!-- Pacing / Budget Allowance Selector Dropdown -->
+    <div class="relative" id="pacing-dropdown-wrapper">
+      <button
+        id="pacing-btn"
+        class="flex items-center gap-1.5 text-xs bg-black/40 text-stone-300 border border-white/[0.08] px-3 py-1 rounded-full hover:border-white/20 hover:text-white transition cursor-pointer select-none"
+        type="button"
+        aria-expanded="false"
+        aria-haspopup="true"
+        title="Ubah mode tampilan saldo &amp; jatah anggaran"
+      >
+        <span id="pacing-label">This Month</span>
+        <svg id="pacing-chevron" class="w-3.5 h-3.5 text-stone-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <!-- Custom Dropdown Menu -->
+      <div
+        id="pacing-menu"
+        class="hidden absolute right-0 mt-1.5 w-52 bg-[#1a1a24] border border-white/10 rounded-xl shadow-2xl py-1 text-xs z-30 transition-all duration-150 transform opacity-0 translate-y-1"
+        role="menu"
+      >
+        <button
+          type="button"
+          class="pacing-option w-full text-left px-3 py-2 flex items-center justify-between text-stone-300 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
+          data-mode="month"
+        >
+          <div class="flex flex-col">
+            <span class="font-medium text-white">This Month</span>
+            <span class="text-[10px] text-stone-400">Total saldo bulanan</span>
+          </div>
+          <span class="pacing-check text-mauveAccent font-bold text-sm">✓</span>
+        </button>
+
+        <button
+          type="button"
+          class="pacing-option w-full text-left px-3 py-2 flex items-center justify-between text-stone-300 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
+          data-mode="week"
+        >
+          <div class="flex flex-col">
+            <span class="font-medium text-stone-200">This Week</span>
+            <span class="text-[10px] text-stone-400">Estimasi jatah per minggu</span>
+          </div>
+          <span class="pacing-check text-mauveAccent font-bold text-sm hidden">✓</span>
+        </button>
+
+        <button
+          type="button"
+          class="pacing-option w-full text-left px-3 py-2 flex items-center justify-between text-stone-300 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
+          data-mode="daily"
+        >
+          <div class="flex flex-col">
+            <span class="font-medium text-stone-200">Today / Daily</span>
+            <span class="text-[10px] text-stone-400">Estimasi jatah per hari</span>
+          </div>
+          <span class="pacing-check text-mauveAccent font-bold text-sm hidden">✓</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div
+      class="text-3xl lg:text-4xl font-bold tracking-tight text-white mb-2 tabular-nums transition-all duration-200"
+      id="total-balance"
+      data-raw-balance="<?= (float)$totalBalance ?>"
+      data-income="<?= (float)$monthTotals['income'] ?>"
+      data-expense="<?= (float)$monthTotals['expense'] ?>"
+    >
+      <?= rupiah($totalBalance) ?>
+    </div>
+    <div id="pacing-subtext" class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs transition-opacity duration-200">
+      <span class="inline-flex items-center gap-0.5 text-emerald-400 font-medium">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+        +<?= rupiah($monthTotals['income']) ?>
+      </span>
+      <span class="text-stone-300 font-medium">-<?= rupiah($monthTotals['expense']) ?></span>
+      <span class="text-stone-400">this month</span>
+    </div>
+  </div>
 </div>
 <!-- Bottom Card: Glowing Goal Card -->
 <div class="card-purple-ambient border border-mauveAccent/20 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden flex-1 min-h-[190px]" data-purpose="wishlist-goal-card">
@@ -1149,6 +1211,185 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- Initialize Lucide Icons, Tabs, Filters & Modal Interactivity -->
 <script data-purpose="icon-initialization">
     lucide.createIcons();
+
+    /* ================= PACING / BUDGET ALLOWANCE SELECTOR ================= */
+    (function initPacingSelector() {
+      const wrapper   = document.getElementById('pacing-dropdown-wrapper');
+      const btn       = document.getElementById('pacing-btn');
+      const label     = document.getElementById('pacing-label');
+      const chevron   = document.getElementById('pacing-chevron');
+      const menu      = document.getElementById('pacing-menu');
+      const balanceEl = document.getElementById('total-balance');
+      const subtextEl = document.getElementById('pacing-subtext');
+      const options   = document.querySelectorAll('.pacing-option');
+
+      if (!wrapper || !btn || !menu || !balanceEl || !subtextEl) return;
+
+      const totalBalance = parseFloat(balanceEl.dataset.rawBalance || '0');
+      const income       = parseFloat(balanceEl.dataset.income || '0');
+      const expense      = parseFloat(balanceEl.dataset.expense || '0');
+
+      let currentVal = totalBalance;
+      let animFrame  = null;
+      let isOpen     = false;
+
+      function formatRp(val) {
+        const isNeg = val < 0;
+        const abs = Math.abs(Math.round(val));
+        return (isNeg ? '-Rp ' : 'Rp ') + abs.toLocaleString('id-ID');
+      }
+
+      function openMenu() {
+        isOpen = true;
+        btn.setAttribute('aria-expanded', 'true');
+        menu.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          menu.classList.remove('opacity-0', 'translate-y-1');
+          menu.classList.add('opacity-100', 'translate-y-0');
+          if (chevron) chevron.classList.add('rotate-180');
+        });
+      }
+
+      function closeMenu() {
+        if (!isOpen) return;
+        isOpen = false;
+        btn.setAttribute('aria-expanded', 'false');
+        menu.classList.remove('opacity-100', 'translate-y-0');
+        menu.classList.add('opacity-0', 'translate-y-1');
+        if (chevron) chevron.classList.remove('rotate-180');
+        setTimeout(() => {
+          if (!isOpen) menu.classList.add('hidden');
+        }, 150);
+      }
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isOpen) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (isOpen && !wrapper.contains(e.target)) {
+          closeMenu();
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isOpen) {
+          closeMenu();
+        }
+      });
+
+      function animateNumber(start, end, duration = 350) {
+        if (animFrame) cancelAnimationFrame(animFrame);
+        const startTime = performance.now();
+        const diff = end - start;
+
+        if (Math.abs(diff) < 1) {
+          balanceEl.textContent = formatRp(end);
+          currentVal = end;
+          return;
+        }
+
+        function step(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          const val = Math.round(start + diff * ease);
+          balanceEl.textContent = formatRp(val);
+
+          if (progress < 1) {
+            animFrame = requestAnimationFrame(step);
+          } else {
+            balanceEl.textContent = formatRp(end);
+            currentVal = end;
+            animFrame = null;
+          }
+        }
+
+        animFrame = requestAnimationFrame(step);
+      }
+
+      function updatePacingMode(mode) {
+        let targetBalance = totalBalance;
+        let subtextHtml = '';
+        let labelText = 'This Month';
+
+        // Calculate days in current month & remaining days
+        const now = new Date();
+        const totalDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        const remainingDays = Math.max(1, totalDaysInMonth - now.getDate() + 1);
+
+        if (mode === 'month') {
+          labelText = 'This Month';
+          targetBalance = totalBalance;
+          subtextHtml = `
+            <span class="inline-flex items-center gap-0.5 text-emerald-400 font-medium">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+              +${formatRp(income)}
+            </span>
+            <span class="text-stone-300 font-medium">-${formatRp(expense)}</span>
+            <span class="text-stone-400">this month</span>
+          `;
+        } else if (mode === 'week') {
+          labelText = 'This Week';
+          targetBalance = Math.round(totalBalance / 4);
+          subtextHtml = `
+            <span class="inline-flex items-center gap-1 text-mauveAccent font-medium">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+              Estimasi jatah aman per minggu
+            </span>
+            <span class="text-stone-400">(4 minggu)</span>
+          `;
+        } else if (mode === 'daily') {
+          labelText = 'Today / Daily';
+          targetBalance = Math.round(totalBalance / remainingDays);
+          subtextHtml = `
+            <span class="inline-flex items-center gap-1 text-sky-400 font-medium">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+              Estimasi jatah aman per hari
+            </span>
+            <span class="text-stone-400">(${remainingDays} hari tersisa)</span>
+          `;
+        }
+
+        // Update button label
+        label.textContent = labelText;
+
+        // Update active checkmarks
+        options.forEach(opt => {
+          const isSelected = opt.dataset.mode === mode;
+          const check = opt.querySelector('.pacing-check');
+          const title = opt.querySelector('.font-medium');
+          if (check) check.classList.toggle('hidden', !isSelected);
+          if (title) {
+            title.className = isSelected ? 'font-medium text-white' : 'font-medium text-stone-200';
+          }
+        });
+
+        // Subtext fade transition
+        subtextEl.style.opacity = '0';
+        setTimeout(() => {
+          subtextEl.innerHTML = subtextHtml;
+          subtextEl.style.opacity = '1';
+        }, 120);
+
+        // Animate balance number
+        animateNumber(currentVal, targetBalance);
+
+        // Close dropdown
+        closeMenu();
+      }
+
+      options.forEach(opt => {
+        opt.addEventListener('click', () => {
+          updatePacingMode(opt.dataset.mode);
+        });
+      });
+    })();
 
     /* ================= TAB NAVIGATION (SPA) ================= */
     const NAV_ACTIVE = 'active-nav-pill flex items-center px-4 py-3 rounded-2xl text-sm font-medium text-white shadow-sm transition-all duration-200';
