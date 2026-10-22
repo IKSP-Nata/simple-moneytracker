@@ -237,7 +237,13 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
     }
   </style>
 </head>
-<body class="w-full min-h-screen bg-[#0f0f13] text-[#E2DFE7] relative overflow-x-hidden selection:bg-mauveAccent/30 selection:text-white">
+<body class="w-full min-h-screen bg-[#0f0f13] text-[#E2DFE7] relative isolate overflow-x-hidden selection:bg-mauveAccent/30 selection:text-white">
+
+<!-- Sonar Grid Fullscreen Canvas Background -->
+<div id="sonar-grid-host" class="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
+  <canvas id="sonar-grid-canvas" class="w-full h-full block"></canvas>
+</div>
+
 <!-- Ambient Light Effects -->
 <div class="fixed inset-0 pointer-events-none ambient-glow-left"></div>
 <div class="fixed inset-0 pointer-events-none ambient-glow-right"></div>
@@ -250,7 +256,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </div>
 
 <!-- BEGIN: MainDashboardContainer (Full Screen, No Outer Border/Margin) -->
-<main class="relative z-10 w-full min-h-screen flex flex-col md:flex-row bg-[#0f0f13]">
+<main class="relative z-10 w-full min-h-screen flex flex-col md:flex-row bg-transparent">
 <!-- BEGIN: LeftSidebar -->
 <aside class="w-full md:w-64 flex-shrink-0 flex flex-col bg-[#14121a] md:min-h-screen p-5 md:p-6 border-b md:border-b-0 md:border-r border-white/5" data-purpose="app-navigation">
 <div class="space-y-8">
@@ -2576,6 +2582,191 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 
       // Initial ring build
       rebuildRing(false);
+    })();
+
+    /* ================= SONAR GRID CANVAS BACKGROUND ================= */
+    (function initSonarGrid() {
+      const host = document.getElementById('sonar-grid-host');
+      const canvas = document.getElementById('sonar-grid-canvas');
+      if (!host || !canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const opts = {
+        spacing: 26,
+        dotRadius: 1.4,
+        baseOpacity: 0.20,
+        color: '#8b5cf6', // Neon violet/indigo accent
+        pingEvery: 2.8,   // Ambient sonar ping every 2.8s
+        speed: 260,
+        ringWidth: 90,
+        amplitude: 2.2,
+        interactive: true,
+        maxRings: 6,
+        seedPing: true,
+        pingArea: [0.15, 0.2, 0.85, 0.8]
+      };
+
+      const MAX_DPR = 2;
+      const TAU = Math.PI * 2;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      let width = 0;
+      let height = 0;
+      let raf = 0;
+      let timer = 0;
+      let seeded = false;
+      let rings = [];
+      let nextPing = performance.now() + opts.pingEvery * 1000;
+
+      const addRing = (x, y, born) => {
+        rings.push({ x, y, born });
+        while (rings.length > opts.maxRings) {
+          rings.shift();
+        }
+      };
+
+      const draw = (now) => {
+        const o = opts;
+        const lifetime = (Math.hypot(width, height) + o.ringWidth) / o.speed;
+        rings = rings.filter((r) => (now - r.born) / 1000 < lifetime);
+        const live = rings.map((r) => {
+          const age = (now - r.born) / 1000;
+          const radius = age * o.speed;
+          return {
+            x: r.x,
+            y: r.y,
+            radius,
+            reach: radius + o.ringWidth,
+            fade: 1 - age / lifetime
+          };
+        });
+
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = o.color;
+
+        const cols = Math.ceil(width / o.spacing) + 1;
+        const rows = Math.ceil(height / o.spacing) + 1;
+        const offsetX = (width - (cols - 1) * o.spacing) / 2;
+        const offsetY = (height - (rows - 1) * o.spacing) / 2;
+
+        // Pass 1: every resting dot in a single path and a single fill.
+        const hot = [];
+        ctx.globalAlpha = o.baseOpacity;
+        ctx.beginPath();
+        for (let i = 0; i < cols; i++) {
+          const cx = offsetX + i * o.spacing;
+          for (let j = 0; j < rows; j++) {
+            const cy = offsetY + j * o.spacing;
+            let energy = 0;
+            for (let rIdx = 0; rIdx < live.length; rIdx++) {
+              const r = live[rIdx];
+              if (Math.abs(cx - r.x) > r.reach || Math.abs(cy - r.y) > r.reach) continue;
+              const dist = Math.abs(Math.hypot(cx - r.x, cy - r.y) - r.radius);
+              if (dist >= o.ringWidth) continue;
+              const t = 1 - dist / o.ringWidth;
+              const k = t * t * (3 - 2 * t) * r.fade; // smoothstep, fading with age
+              if (k > energy) energy = k;
+            }
+            if (energy < 0.01) {
+              ctx.moveTo(cx + o.dotRadius, cy);
+              ctx.arc(cx, cy, o.dotRadius, 0, TAU);
+            } else {
+              hot.push(cx, cy, energy);
+            }
+          }
+        }
+        ctx.fill();
+
+        // Pass 2: only the dots on a wavefront get their own alpha and radius.
+        for (let k = 0; k < hot.length; k += 3) {
+          const energy = hot[k + 2];
+          ctx.globalAlpha = o.baseOpacity + (1 - o.baseOpacity) * energy;
+          ctx.beginPath();
+          ctx.arc(hot[k], hot[k + 1], o.dotRadius * (1 + o.amplitude * energy), 0, TAU);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      };
+
+      const resize = () => {
+        width = Math.max(1, Math.round(window.innerWidth));
+        height = Math.max(1, Math.round(window.innerHeight));
+        const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        if (!seeded) {
+          seeded = true;
+          const [x0, y0, x1, y1] = opts.pingArea;
+          if (opts.seedPing && !reduceMotion.matches) {
+            addRing(width * (x0 + (x1 - x0) * 0.68), height * (y0 + (y1 - y0) * 0.34), performance.now() - 500);
+          }
+        }
+        draw(performance.now());
+      };
+
+      const scheduleIdle = (delay) => {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => tick(performance.now()), Math.max(16, delay));
+      };
+
+      const tick = (now) => {
+        raf = 0;
+        if (document.hidden) return;
+        if (reduceMotion.matches) {
+          rings = [];
+          draw(now);
+          return;
+        }
+        if (opts.pingEvery > 0 && now >= nextPing) {
+          const [x0, y0, x1, y1] = opts.pingArea;
+          addRing(width * (x0 + Math.random() * (x1 - x0)), height * (y0 + Math.random() * (y1 - y0)), now);
+          nextPing = now + opts.pingEvery * 1000;
+        }
+        draw(now);
+        if (rings.length > 0) {
+          raf = requestAnimationFrame(tick);
+        } else if (opts.pingEvery > 0) {
+          scheduleIdle(nextPing - now);
+        }
+      };
+
+      const wake = () => {
+        if (!raf) {
+          window.clearTimeout(timer);
+          raf = requestAnimationFrame(tick);
+        }
+      };
+
+      // Click on background triggers new sonar ring
+      window.addEventListener('pointerdown', (e) => {
+        if (!opts.interactive || reduceMotion.matches) return;
+        if (e.target.closest('button, a, input, select, textarea, [role="button"], [role="slider"], #desktop-pet, #flow-pet-container, #sr-modal, #transaction-modal, #profile-modal, #edit-goal-modal, #edit-transaction-modal')) {
+          return;
+        }
+        addRing(e.clientX, e.clientY, performance.now());
+        wake();
+      }, { passive: true });
+
+      // Pause when tab is inactive, resume when active
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          if (raf) cancelAnimationFrame(raf);
+          window.clearTimeout(timer);
+          raf = 0;
+        } else {
+          wake();
+        }
+      });
+
+      window.addEventListener('resize', resize);
+      reduceMotion.addEventListener('change', wake);
+
+      resize();
+      wake();
     })();
 </script>
 </body>
