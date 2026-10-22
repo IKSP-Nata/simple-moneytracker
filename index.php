@@ -487,6 +487,76 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- END: Column 3 -->
 </div>
 <!-- END: BentoGridTopSection -->
+
+<!-- BEGIN: Kokonut UI Spending Ring Card -->
+<section class="w-full bg-[#1a1a24]/90 border border-white/5 rounded-2xl p-5 md:p-6 shadow-xl relative" id="spending-ring-card">
+  <!-- Card Header -->
+  <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-white/[0.05]">
+    <div>
+      <h2 class="text-base font-semibold text-white tracking-tight flex items-center gap-2">
+        <span>Spending by Category</span>
+        <span class="text-[10px] font-semibold text-mauveAccent bg-mauveAccent/10 px-2 py-0.5 rounded-full border border-mauveAccent/20">Interactive Ring</span>
+      </h2>
+      <p class="text-xs text-stone-400 mt-0.5">Drag or flick the ring to inspect categories, or click any item below</p>
+    </div>
+    <div class="sm:text-right">
+      <span class="text-[10px] uppercase tracking-wider text-stone-500 font-medium block">Total Spending</span>
+      <span class="font-bold text-lg text-white tabular-nums" id="sr-total-display">Rp 0</span>
+    </div>
+  </div>
+
+  <!-- Interactive Ring & Legend Layout -->
+  <div class="flex flex-col lg:flex-row items-center justify-around gap-6 lg:gap-12 mt-6">
+    <!-- Interactive SVG Ring Surface -->
+    <div
+      id="spending-ring-surface"
+      class="relative aspect-square w-full max-w-[240px] touch-none select-none rounded-full outline-none cursor-grab active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-mauveAccent/50"
+      role="slider"
+      tabindex="0"
+      aria-label="Spending by category. Use arrow keys or drag to turn the ring."
+    >
+      <svg
+        aria-hidden="true"
+        class="absolute inset-0 size-full overflow-visible"
+        viewBox="0 0 240 240"
+      >
+        <g id="spending-ring-rotator" transform="rotate(0 120 120)">
+          <!-- Dynamic SVG arc paths will be injected here -->
+        </g>
+        <!-- The top indicator triangle marker -->
+        <path class="fill-white" d="M115 2 L125 2 L120 8 Z" />
+      </svg>
+
+      <!-- Center Readout -->
+      <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+        <div id="sr-readout-content" class="transition-all duration-200 ease-out">
+          <p class="flex items-center justify-center gap-1.5 text-xs text-stone-400 font-medium truncate">
+            <span id="sr-readout-dot" class="size-2 rounded-full bg-sky-400 shrink-0"></span>
+            <span id="sr-readout-name">Housing</span>
+          </p>
+          <p id="sr-readout-amount" class="mt-1 font-bold text-xl sm:text-2xl text-white tabular-nums tracking-tight">
+            Rp 0
+          </p>
+          <p id="sr-readout-share" class="mt-0.5 text-xs text-stone-400 tabular-nums">
+            0% of total
+          </p>
+          <p id="sr-readout-change" class="mt-1 text-[11px] tabular-nums font-medium text-stone-400">
+            Same as last month
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Legend List -->
+    <div class="w-full lg:max-w-md flex-1">
+      <ul id="sr-category-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <!-- Dynamic Category Buttons will be injected here -->
+      </ul>
+    </div>
+  </div>
+</section>
+<!-- END: Kokonut UI Spending Ring Card -->
+
 <!-- BEGIN: BottomWideCard (Cashflow Performance Line Chart) -->
 <section class="w-full bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6 relative" data-purpose="performance-chart-card">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -1546,6 +1616,400 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       }
 
       requestAnimationFrame(animatePet);
+    })();
+
+    /* ================= KOKONUT SPENDING RING ================= */
+    (function initSpendingRing() {
+      const SIZE = 240;
+      const C = SIZE / 2; // 120
+      const R = 90;
+      const STROKE = 22;
+      const GAP = 2.4;
+      const RATE = 11;
+      const DAMPING = 0.78;
+      const PROJECT = 0.2;
+      const TAP_SLOP = 5;
+
+      const CATEGORIES = [
+        {
+          name: "Housing",
+          amount: 3500000,
+          change: 0,
+          color: "#38bdf8",
+          stroke: "stroke-sky-400",
+          dot: "bg-sky-400",
+        },
+        {
+          name: "Groceries",
+          amount: 1850000,
+          change: -6.1,
+          color: "#34d399",
+          stroke: "stroke-emerald-400",
+          dot: "bg-emerald-400",
+        },
+        {
+          name: "Shopping",
+          amount: 1200000,
+          change: 22.4,
+          color: "#fb7185",
+          stroke: "stroke-rose-400",
+          dot: "bg-rose-400",
+        },
+        {
+          name: "Dining out",
+          amount: 850000,
+          change: 12.8,
+          color: "#fbbf24",
+          stroke: "stroke-amber-400",
+          dot: "bg-amber-400",
+        },
+        {
+          name: "Transport",
+          amount: 600000,
+          change: -3.5,
+          color: "#a78bfa",
+          stroke: "stroke-violet-400",
+          dot: "bg-violet-400",
+        },
+        {
+          name: "Subscriptions",
+          amount: 250000,
+          change: 0,
+          color: "#D6A4E8",
+          stroke: "stroke-[#D6A4E8]",
+          dot: "bg-mauveAccent",
+        },
+      ];
+
+      const surfaceEl     = document.getElementById('spending-ring-surface');
+      const rotatorEl     = document.getElementById('spending-ring-rotator');
+      const listEl        = document.getElementById('sr-category-list');
+      const totalDisplay  = document.getElementById('sr-total-display');
+      const readoutDot    = document.getElementById('sr-readout-dot');
+      const readoutName   = document.getElementById('sr-readout-name');
+      const readoutAmount = document.getElementById('sr-readout-amount');
+      const readoutShare  = document.getElementById('sr-readout-share');
+      const readoutChange = document.getElementById('sr-readout-change');
+
+      if (!surfaceEl || !rotatorEl || !listEl) return;
+
+      function formatRp(val) {
+        return 'Rp ' + Math.round(val).toLocaleString('id-ID');
+      }
+
+      const wrap = (deg) => ((((deg + 180) % 360) + 360) % 360) - 180;
+
+      function polar(deg, r = R) {
+        const rad = (deg * Math.PI) / 180;
+        return [C + r * Math.sin(rad), C - r * Math.cos(rad)];
+      }
+
+      function arc(from, to) {
+        const [x0, y0] = polar(from);
+        const [x1, y1] = polar(to);
+        const large = to - from > 180 ? 1 : 0;
+        return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${R} ${R} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+      }
+
+      function sliceAt(spans, deg) {
+        const a = ((deg % 360) + 360) % 360;
+        const index = spans.findIndex((s) => a >= s.from && a < s.to);
+        return index === -1 ? 0 : index;
+      }
+
+      function springStep(state, target, dt) {
+        const slices = Math.ceil(dt / (1 / 240));
+        const h = dt / slices;
+        for (let i = 0; i < slices; i++) {
+          const accel = -RATE * RATE * (state.a - target) - 2 * DAMPING * RATE * state.v;
+          state.v += accel * h;
+          state.a += state.v * h;
+        }
+        return Math.abs(state.a - target) < 0.05 && Math.abs(state.v) < 2;
+      }
+
+      const total = CATEGORIES.reduce((sum, c) => sum + c.amount, 0);
+      if (totalDisplay) {
+        totalDisplay.textContent = formatRp(total);
+      }
+
+      let at = 0;
+      const spans = CATEGORIES.map((c) => {
+        const sweep = total ? (c.amount / total) * 360 : 360 / CATEGORIES.length;
+        const span = { from: at, to: at + sweep, mid: at + sweep / 2 };
+        at += sweep;
+        return span;
+      });
+
+      let selected = 0;
+      let spinning = false;
+
+      const sim = {
+        a: -(spans[0]?.mid ?? 0),
+        v: 0,
+        target: -(spans[0]?.mid ?? 0),
+        raf: 0,
+        last: 0,
+        coast: false,
+        drag: null,
+      };
+
+      // Build SVG Paths
+      rotatorEl.innerHTML = spans.map((span, i) => {
+        const category = CATEGORIES[i];
+        const d = arc(span.from + GAP / 2, span.to - GAP / 2);
+        return `<path
+          id="sr-path-${i}"
+          class="transition-[stroke-width,opacity] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]"
+          d="${d}"
+          fill="none"
+          stroke="${category.color}"
+          stroke-width="${i === 0 ? STROKE + 8 : STROKE}"
+          opacity="${i === 0 ? '1' : '0.45'}"
+        />`;
+      }).join('');
+
+      // Build Legend List Items
+      listEl.innerHTML = CATEGORIES.map((category, i) => {
+        return `
+          <li>
+            <button
+              type="button"
+              id="sr-btn-${i}"
+              class="sr-category-btn flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs transition-all duration-150 border ${i === 0 ? 'bg-white/10 text-white border-white/10 shadow-sm' : 'border-transparent text-stone-400 hover:text-white hover:bg-white/[0.04]'}"
+              data-index="${i}"
+            >
+              <span class="size-2 shrink-0 rounded-full" style="background-color: ${category.color};"></span>
+              <span class="min-w-0 flex-1 truncate font-medium">${category.name}</span>
+              <span class="tabular-nums font-semibold">${formatRp(category.amount)}</span>
+            </button>
+          </li>
+        `;
+      }).join('');
+
+      function updateVisuals(index) {
+        selected = index;
+        const current = CATEGORIES[index];
+        if (!current) return;
+
+        // Update center readout
+        if (readoutDot) {
+          readoutDot.style.backgroundColor = current.color;
+        }
+        if (readoutName) {
+          readoutName.textContent = current.name;
+        }
+        if (readoutAmount) {
+          readoutAmount.textContent = formatRp(current.amount);
+        }
+        if (readoutShare) {
+          const share = total ? (current.amount / total) * 100 : 0;
+          readoutShare.textContent = `${share.toFixed(0)}% of total`;
+        }
+        if (readoutChange) {
+          const chg = current.change ?? 0;
+          if (chg === 0) {
+            readoutChange.className = 'mt-1 text-[11px] tabular-nums font-medium text-stone-400';
+            readoutChange.textContent = 'Same as last month';
+          } else if (chg > 0) {
+            readoutChange.className = 'mt-1 text-[11px] tabular-nums font-medium text-rose-400';
+            readoutChange.textContent = `▲ ${chg.toFixed(1)}% vs last month`;
+          } else {
+            readoutChange.className = 'mt-1 text-[11px] tabular-nums font-medium text-emerald-400';
+            readoutChange.textContent = `▼ ${Math.abs(chg).toFixed(1)}% vs last month`;
+          }
+        }
+
+        // Update SVG stroke-width and opacity
+        for (let i = 0; i < CATEGORIES.length; i++) {
+          const p = document.getElementById(`sr-path-${i}`);
+          if (p) {
+            p.setAttribute('stroke-width', i === index ? (STROKE + 8).toString() : STROKE.toString());
+            p.setAttribute('opacity', i === index ? '1' : '0.45');
+          }
+          const btn = document.getElementById(`sr-btn-${i}`);
+          if (btn) {
+            const on = i === index;
+            btn.className = `sr-category-btn flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs transition-all duration-150 border ${on ? 'bg-white/10 text-white border-white/10 shadow-sm' : 'border-transparent text-stone-400 hover:text-white hover:bg-white/[0.04]'}`;
+          }
+        }
+      }
+
+      function paint() {
+        rotatorEl.setAttribute('transform', `rotate(${sim.a.toFixed(3)} ${C} ${C})`);
+      }
+
+      function track() {
+        const index = sliceAt(spans, -sim.a);
+        if (index !== selected) {
+          updateVisuals(index);
+        }
+      }
+
+      function tick(now) {
+        sim.raf = 0;
+        if (sim.drag) return;
+
+        const dt = sim.last ? Math.min((now - sim.last) / 1000, 1 / 30) : 1 / 60;
+        sim.last = now;
+        const state = { a: sim.a, v: sim.v };
+        const settled = springStep(state, sim.target, dt);
+        sim.a = settled ? sim.target : state.a;
+        sim.v = settled ? 0 : state.v;
+        paint();
+
+        if (sim.coast) {
+          track();
+        }
+
+        if (settled) {
+          sim.last = 0;
+          sim.coast = false;
+          spinning = false;
+          surfaceEl.classList.remove('cursor-grabbing');
+          surfaceEl.classList.add('cursor-grab');
+        } else {
+          sim.raf = requestAnimationFrame(tick);
+        }
+      }
+
+      function turnTo(index, rest = sim.a, coast = false) {
+        const goal = -(spans[index]?.mid ?? 0);
+        sim.target = rest + wrap(goal - rest);
+        sim.coast = coast;
+        if (!coast) {
+          updateVisuals(index);
+        }
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          sim.a = sim.target;
+          sim.v = 0;
+          sim.coast = false;
+          paint();
+          track();
+          return;
+        }
+
+        spinning = true;
+        surfaceEl.classList.remove('cursor-grab');
+        surfaceEl.classList.add('cursor-grabbing');
+
+        if (!sim.raf) {
+          sim.last = 0;
+          sim.raf = requestAnimationFrame(tick);
+        }
+      }
+
+      function pointerAngle(event) {
+        const rect = surfaceEl.getBoundingClientRect();
+        const x = event.clientX - rect.left - rect.width / 2;
+        const y = event.clientY - rect.top - rect.height / 2;
+        return (Math.atan2(x, -y) * 180) / Math.PI;
+      }
+
+      surfaceEl.addEventListener('pointerdown', (e) => {
+        if (sim.drag || (e.pointerType === 'mouse' && e.button !== 0)) return;
+        surfaceEl.setPointerCapture(e.pointerId);
+        cancelAnimationFrame(sim.raf);
+        sim.raf = 0;
+        sim.v = 0;
+        sim.drag = {
+          id: e.pointerId,
+          angle: pointerAngle(e),
+          time: e.timeStamp,
+          moved: 0,
+          x: e.clientX,
+          y: e.clientY,
+        };
+        surfaceEl.classList.remove('cursor-grab');
+        surfaceEl.classList.add('cursor-grabbing');
+      });
+
+      surfaceEl.addEventListener('pointermove', (e) => {
+        const drag = sim.drag;
+        if (!drag || drag.id !== e.pointerId) return;
+
+        drag.moved = Math.max(drag.moved, Math.hypot(e.clientX - drag.x, e.clientY - drag.y));
+        if (drag.moved < TAP_SLOP) return;
+
+        const angle = pointerAngle(e);
+        const delta = wrap(angle - drag.angle);
+        const dt = Math.max((e.timeStamp - drag.time) / 1000, 1 / 240);
+        sim.a += delta;
+        sim.v = sim.v * 0.6 + (delta / dt) * 0.4;
+        drag.angle = angle;
+        drag.time = e.timeStamp;
+        paint();
+        track();
+      });
+
+      function release(e) {
+        const drag = sim.drag;
+        if (!drag || drag.id !== e.pointerId) return;
+
+        sim.drag = null;
+        try {
+          surfaceEl.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+
+        if (drag.moved < TAP_SLOP) {
+          const rect = surfaceEl.getBoundingClientRect();
+          const r = Math.hypot(
+            e.clientX - rect.left - rect.width / 2,
+            e.clientY - rect.top - rect.height / 2
+          );
+          if (r > ((R - STROKE) / SIZE) * rect.width) {
+            turnTo(sliceAt(spans, pointerAngle(e) - sim.a));
+          } else {
+            surfaceEl.classList.remove('cursor-grabbing');
+            surfaceEl.classList.add('cursor-grab');
+          }
+          return;
+        }
+
+        if (e.timeStamp - drag.time > 80) {
+          sim.v = 0;
+        }
+        sim.v = Math.max(-1440, Math.min(1440, sim.v));
+        const rest = sim.a + sim.v * PROJECT;
+        turnTo(sliceAt(spans, -rest), rest, true);
+      }
+
+      surfaceEl.addEventListener('pointerup', release);
+      surfaceEl.addEventListener('pointercancel', release);
+      surfaceEl.addEventListener('lostpointercapture', release);
+
+      surfaceEl.addEventListener('keydown', (e) => {
+        const step = {
+          ArrowRight: 1,
+          ArrowDown: 1,
+          ArrowLeft: -1,
+          ArrowUp: -1,
+        };
+        let next = null;
+        if (e.key in step) {
+          next = (selected + step[e.key] + CATEGORIES.length) % CATEGORIES.length;
+        } else if (e.key === 'Home') {
+          next = 0;
+        } else if (e.key === 'End') {
+          next = CATEGORIES.length - 1;
+        }
+        if (next !== null) {
+          e.preventDefault();
+          turnTo(next);
+        }
+      });
+
+      listEl.querySelectorAll('.sr-category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.index, 10);
+          turnTo(idx);
+        });
+      });
+
+      // Initial state render
+      paint();
+      updateVisuals(0);
     })();
 </script>
 </body>
