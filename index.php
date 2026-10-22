@@ -637,44 +637,42 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- END: Kokonut UI Spending Ring Card -->
 
 <!-- BEGIN: BottomWideCard (Cashflow Performance Line Chart) -->
-<section class="w-full bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6 relative" data-purpose="performance-chart-card">
+<section class="w-full bg-[#17141E] border border-white/[0.07] rounded-3xl p-5 md:p-6 relative" data-purpose="performance-chart-card" id="cashflow-performance-card">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 <div>
 <h2 class="text-base font-semibold text-white">Cashflow Performance</h2>
-<p class="text-xs text-stone-400">Net cashflow (income − expense) per month in <?= date('Y') ?></p>
+<p class="text-xs text-stone-400 transition-opacity duration-200" id="cashflow-subtitle">Net cashflow (income − expense) per month in <?= date('Y') ?></p>
 </div>
 <!-- Timeframe Selector -->
-<div class="flex items-center bg-black/50 border border-white/[0.06] rounded-full p-1 self-start sm:self-auto text-xs">
-<button class="px-3 py-1 rounded-full text-stone-400 hover:text-white transition" type="button">1D</button>
-<button class="px-3 py-1 rounded-full text-stone-400 hover:text-white transition" type="button">1W</button>
-<button class="px-3 py-1 rounded-full text-stone-400 hover:text-white transition" type="button">1M</button>
-<button class="px-3 py-1 rounded-full text-stone-400 hover:text-white transition" type="button">6M</button>
-<button class="px-3 py-1 rounded-full bg-[#352538] text-mauveAccent font-semibold border border-mauveAccent/30 shadow-sm transition" type="button">1Y</button>
+<div class="flex items-center bg-black/50 border border-white/[0.06] rounded-full p-1 self-start sm:self-auto text-xs" id="cashflow-timeframe-group">
+<button class="cashflow-tf-btn px-3 py-1 rounded-full text-stone-400 hover:text-white transition cursor-pointer" data-tf="1D" type="button" id="tf-btn-1D">1D</button>
+<button class="cashflow-tf-btn px-3 py-1 rounded-full text-stone-400 hover:text-white transition cursor-pointer" data-tf="1W" type="button" id="tf-btn-1W">1W</button>
+<button class="cashflow-tf-btn px-3 py-1 rounded-full text-stone-400 hover:text-white transition cursor-pointer" data-tf="1M" type="button" id="tf-btn-1M">1M</button>
+<button class="cashflow-tf-btn px-3 py-1 rounded-full text-stone-400 hover:text-white transition cursor-pointer" data-tf="6M" type="button" id="tf-btn-6M">6M</button>
+<button class="cashflow-tf-btn px-3 py-1 rounded-full bg-[#352538] text-mauveAccent font-semibold border border-mauveAccent/30 shadow-sm transition cursor-pointer" data-tf="1Y" type="button" id="tf-btn-1Y">1Y</button>
 </div>
 </div>
 <!-- Chart Container with SVG Curve -->
 <div class="relative w-full h-56 md:h-64 pt-2">
 <!-- Background Grid Lines -->
-<div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-7">
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-7" id="cf-grid-lines">
 <?php for ($k = 0; $k < 5; $k++): ?>
 <div class="border-b border-white/[0.04] w-full flex items-center justify-between">
-<span class="text-[10px] text-stone-600 pl-1"><?= short_rp($chartMax - $k * ($chartMax - $chartMin) / 4) ?></span>
+<span class="text-[10px] text-stone-600 pl-1 cf-y-axis-val"><?= short_rp($chartMax - $k * ($chartMax - $chartMin) / 4) ?></span>
 </div>
 <?php endfor; ?>
 </div>
-<div class="relative w-full h-[calc(100%-24px)]">
+<div class="relative w-full h-[calc(100%-24px)]" id="cf-chart-stage">
 <!-- Interactive Tooltip Overlay (current month) -->
-<div class="absolute z-20 flex <?= $tipBelow ? 'flex-col-reverse' : 'flex-col' ?> items-center pointer-events-none" style="left: <?= round($tipX, 2) ?>%; top: <?= round($tipY, 2) ?>%; transform: translate(-50%, <?= $tipBelow ? '-6px' : 'calc(-100% + 6px)' ?>);">
+<div id="cf-tooltip" class="absolute z-20 flex <?= $tipBelow ? 'flex-col-reverse' : 'flex-col' ?> items-center pointer-events-none transition-[left,top] duration-300 ease-out" style="left: <?= round($tipX, 2) ?>%; top: <?= round($tipY, 2) ?>%; transform: translate(-50%, <?= $tipBelow ? '-6px' : 'calc(-100% + 6px)' ?>);">
 <div class="bg-[#241C29] border border-mauveAccent/40 shadow-xl shadow-black/60 rounded-xl px-3 py-2 text-center backdrop-blur-md whitespace-nowrap">
 <div class="flex items-center justify-center gap-2">
-<span class="text-[10px] text-stone-300 font-medium"><?= date('M Y') ?></span>
+<span class="text-[10px] text-stone-300 font-medium" id="cf-tooltip-label"><?= date('M Y') ?></span>
 <span class="w-1.5 h-1.5 rounded-full bg-mauveAccent"></span>
 </div>
 <div class="flex items-center gap-1.5 mt-0.5">
-<span class="text-xs font-bold text-white tracking-tight"><?= $curNet < 0 ? '-' : '' ?><?= rupiah(abs($curNet)) ?></span>
-<?php if ($netChange !== null): ?>
-<span class="text-[9px] font-semibold <?= $netChange >= 0 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-rose-300 bg-rose-500/10 border-rose-500/20' ?> px-1 py-0.2 rounded border"><?= $netChange >= 0 ? '+' : '' ?><?= round($netChange) ?>%</span>
-<?php endif; ?>
+<span class="text-xs font-bold text-white tracking-tight" id="cf-tooltip-amount"><?= $curNet < 0 ? '-' : '' ?><?= rupiah(abs($curNet)) ?></span>
+<span id="cf-tooltip-badge" class="text-[9px] font-semibold <?= $netChange !== null && $netChange >= 0 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : ($netChange !== null ? 'text-rose-300 bg-rose-500/10 border-rose-500/20' : 'hidden') ?> px-1 py-0.2 rounded border"><?= $netChange !== null ? ($netChange >= 0 ? '+' : '') . round($netChange) . '%' : '' ?></span>
 </div>
 </div>
 <!-- Vertical Dashed Line -->
@@ -683,7 +681,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <div class="w-3 h-3 rounded-full bg-mauveAccent border-2 border-[#121017] shadow-lg shadow-mauveAccent"></div>
 </div>
 <!-- SVG Smooth Curved Line Chart -->
-<svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 1000 220">
+<svg id="cf-svg" class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 1000 220">
 <defs>
 <!-- Mauve Fill Area Gradient -->
 <linearGradient id="chartGlowArea" x1="0%" x2="0%" y1="0%" y2="100%">
@@ -699,13 +697,13 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </linearGradient>
 </defs>
 <!-- Gradient Area Fill -->
-<path d="<?= $areaPath ?>" fill="url(#chartGlowArea)"></path>
+<path id="cf-area-path" d="<?= $areaPath ?>" fill="url(#chartGlowArea)"></path>
 <!-- Smooth Main Path -->
-<path d="<?= $linePath ?>" fill="none" stroke="url(#chartStroke)" stroke-linecap="round" stroke-width="2.5" vector-effect="non-scaling-stroke"></path>
+<path id="cf-line-path" d="<?= $linePath ?>" fill="none" stroke="url(#chartStroke)" stroke-linecap="round" stroke-width="2.5" vector-effect="non-scaling-stroke"></path>
 </svg>
 </div>
 <!-- Month Labels Jan - Dec -->
-<div class="flex justify-between items-center text-[10px] text-stone-500 pt-3 px-2 font-medium">
+<div id="cf-x-labels" class="flex justify-between items-center text-[10px] text-stone-500 pt-3 px-2 font-medium transition-opacity duration-200">
 <?php foreach (['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] as $mi => $mLabel): ?>
 <span class="<?= $mi + 1 === $curMonth ? 'text-mauveAccent font-semibold' : '' ?>"><?= $mLabel ?></span>
 <?php endforeach; ?>
@@ -2582,6 +2580,367 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 
       // Initial ring build
       rebuildRing(false);
+    })();
+
+    /* ================= CASHFLOW PERFORMANCE TIMEFRAME & CHART ================= */
+    (function initCashflowPerformance() {
+      const cardEl          = document.getElementById('cashflow-performance-card');
+      const subtitleEl      = document.getElementById('cashflow-subtitle');
+      const buttons         = document.querySelectorAll('.cashflow-tf-btn');
+      const gridLinesEl     = document.getElementById('cf-grid-lines');
+      const chartStage      = document.getElementById('cf-chart-stage');
+      const cfTooltip       = document.getElementById('cf-tooltip');
+      const tooltipLabelEl  = document.getElementById('cf-tooltip-label');
+      const tooltipAmountEl = document.getElementById('cf-tooltip-amount');
+      const tooltipBadgeEl  = document.getElementById('cf-tooltip-badge');
+      const cfAreaPath      = document.getElementById('cf-area-path');
+      const cfLinePath      = document.getElementById('cf-line-path');
+      const xLabelsEl       = document.getElementById('cf-x-labels');
+
+      if (!cardEl || !buttons.length || !cfAreaPath || !cfLinePath || !cfTooltip) return;
+
+      const CF_INIT = {
+        year: <?= (int)date('Y') ?>,
+        curMonthIdx: <?= max(0, (int)$curMonth - 1) ?>,
+        curMonthLabel: <?= json_encode(date('M Y')) ?>,
+        monthlyNet: <?= json_encode(array_values($monthlyNet)) ?>,
+        curNet: <?= (float)$curNet ?>,
+        netChange: <?= $netChange !== null ? round($netChange) : 'null' ?>
+      };
+
+      const PRESETS = {
+        '1D': {
+          subtitle: 'Net cashflow today (hourly fluctuation)',
+          labels: ['00:00', '06:00', '12:00', '18:00', '24:00'],
+          values: [0, -35000, 180000, 95000, 140000],
+          activeIdx: 3,
+          tooltipLabel: 'Today, 18:00',
+          tooltipAmount: 95000,
+          netChange: 12
+        },
+        '1W': {
+          subtitle: 'Net cashflow this week (daily fluctuation)',
+          labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+          values: [120000, -45000, 280000, -20000, 420000, -85000, 210000],
+          activeIdx: 4,
+          tooltipLabel: 'Jumat, Week 42',
+          tooltipAmount: 420000,
+          netChange: 24
+        },
+        '1M': {
+          subtitle: 'Net cashflow this month (weekly breakdown)',
+          labels: ['W1', 'W2', 'W3', 'W4'],
+          values: [280000, 190000, 520000, 310000],
+          activeIdx: 2,
+          tooltipLabel: 'Minggu 3 (Okt)',
+          tooltipAmount: 520000,
+          netChange: 18
+        },
+        '6M': {
+          subtitle: 'Net cashflow last 6 months',
+          labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+          values: [380000, 520000, -120000, 750000, 340000, Math.round(CF_INIT.curNet) || 605000],
+          activeIdx: 5,
+          tooltipLabel: CF_INIT.curMonthLabel,
+          tooltipAmount: Math.round(CF_INIT.curNet) || 605000,
+          netChange: 15
+        },
+        '1Y': {
+          subtitle: `Net cashflow (income − expense) per month in ${CF_INIT.year}`,
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          values: CF_INIT.monthlyNet,
+          activeIdx: CF_INIT.curMonthIdx,
+          tooltipLabel: CF_INIT.curMonthLabel,
+          tooltipAmount: Math.round(CF_INIT.curNet),
+          netChange: CF_INIT.netChange
+        }
+      };
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function formatShortRp(v) {
+        const sign = v < 0 ? '-' : '';
+        const a = Math.abs(v);
+        if (a >= 1000000) {
+          let s = (a / 1000000).toFixed(1).replace('.', ',');
+          s = s.replace(/,0$/, '');
+          return sign + s + 'jt';
+        }
+        if (a >= 1000) {
+          return sign + Math.round(a / 1000) + 'k';
+        }
+        return sign + Math.round(a);
+      }
+
+      function formatRupiah(v) {
+        return 'Rp ' + Math.round(Math.abs(v)).toLocaleString('id-ID');
+      }
+
+      function generatePaths(values) {
+        const n = values.length;
+        if (n === 0) return { linePath: '', areaPath: '', points: [], chartMin: 0, chartMax: 0 };
+
+        let chartMin = Math.min(0, ...values);
+        let chartMax = Math.max(0, ...values);
+        chartMax += (chartMax - chartMin) * 0.1;
+        if (chartMax - chartMin < 1) {
+          chartMax = chartMin + 100000;
+        }
+
+        const points = [];
+        for (let i = 0; i < n; i++) {
+          const x = n === 1 ? 500 : i * (1000 / (n - 1));
+          const y = 10 + (1 - (values[i] - chartMin) / (chartMax - chartMin)) * 190;
+          points.push([x, y]);
+        }
+
+        let linePath = `M ${points[0][0].toFixed(1)} ${points[0][1].toFixed(1)}`;
+        for (let i = 0; i < n - 1; i++) {
+          const p0 = points[i - 1] || points[i];
+          const p1 = points[i];
+          const p2 = points[i + 1];
+          const p3 = points[i + 2] || p2;
+          const lo = Math.min(p1[1], p2[1]);
+          const hi = Math.max(p1[1], p2[1]);
+
+          const cp1x = p1[0] + (p2[0] - p0[0]) / 6;
+          const cp1y = Math.max(lo, Math.min(hi, p1[1] + (p2[1] - p0[1]) / 6));
+          const cp2x = p2[0] - (p3[0] - p1[0]) / 6;
+          const cp2y = Math.max(lo, Math.min(hi, p2[1] - (p3[1] - p1[1]) / 6));
+
+          linePath += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+        }
+
+        const areaPath = `${linePath} L 1000 220 L 0 220 Z`;
+        return { linePath, areaPath, points, chartMin, chartMax };
+      }
+
+      function sampleCurve(points, count = 25) {
+        const sampled = [];
+        const n = points.length;
+        for (let k = 0; k < count; k++) {
+          const targetX = (k / (count - 1)) * 1000;
+          let idx = 0;
+          while (idx < n - 2 && points[idx + 1][0] < targetX) {
+            idx++;
+          }
+          const p1 = points[idx];
+          const p2 = points[idx + 1] || p1;
+          const span = p2[0] - p1[0];
+          const ratio = span > 0 ? (targetX - p1[0]) / span : 0;
+          const y = p1[1] + ratio * (p2[1] - p1[1]);
+          sampled.push([targetX, y]);
+        }
+        return sampled;
+      }
+
+      function buildBezier(points) {
+        const n = points.length;
+        let linePath = `M ${points[0][0].toFixed(1)} ${points[0][1].toFixed(1)}`;
+        for (let i = 0; i < n - 1; i++) {
+          const p0 = points[i - 1] || points[i];
+          const p1 = points[i];
+          const p2 = points[i + 1];
+          const p3 = points[i + 2] || p2;
+          const lo = Math.min(p1[1], p2[1]);
+          const hi = Math.max(p1[1], p2[1]);
+
+          const cp1x = p1[0] + (p2[0] - p0[0]) / 6;
+          const cp1y = Math.max(lo, Math.min(hi, p1[1] + (p2[1] - p0[1]) / 6));
+          const cp2x = p2[0] - (p3[0] - p1[0]) / 6;
+          const cp2y = Math.max(lo, Math.min(hi, p2[1] - (p3[1] - p1[1]) / 6));
+
+          linePath += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+        }
+        const areaPath = `${linePath} L 1000 220 L 0 220 Z`;
+        return { linePath, areaPath };
+      }
+
+      let currentTf = '1Y';
+      let animRaf = 0;
+      const initialPaths = generatePaths(PRESETS['1Y'].values);
+      let currentSampled = sampleCurve(initialPaths.points, 25);
+      let activePresetData = {
+        preset: PRESETS['1Y'],
+        points: initialPaths.points,
+        paths: initialPaths
+      };
+
+      function updateTooltip(idx, preset, chartPoints) {
+        const pt = chartPoints[idx];
+        if (!pt) return;
+        const xPercent = Math.max(7, Math.min(93, pt[0] / 10));
+        const yPercent = (pt[1] / 220) * 100;
+        const tipBelow = yPercent < 45;
+
+        cfTooltip.style.left = `${xPercent.toFixed(2)}%`;
+        cfTooltip.style.top = `${yPercent.toFixed(2)}%`;
+        cfTooltip.style.transform = `translate(-50%, ${tipBelow ? '-6px' : 'calc(-100% + 6px)'})`;
+        cfTooltip.className = `absolute z-20 flex ${tipBelow ? 'flex-col-reverse' : 'flex-col'} items-center pointer-events-none transition-[left,top] duration-300 ease-out`;
+
+        const val = preset.values[idx] || 0;
+        const lbl = preset.labels[idx] || '';
+        const isPresetActive = idx === preset.activeIdx;
+
+        tooltipLabelEl.textContent = isPresetActive ? preset.tooltipLabel : lbl;
+        tooltipAmountEl.textContent = (val < 0 ? '-' : (val > 0 ? '+' : '')) + formatRupiah(Math.abs(val));
+
+        if (preset.netChange !== null && isPresetActive) {
+          tooltipBadgeEl.classList.remove('hidden');
+          const isPos = preset.netChange >= 0;
+          tooltipBadgeEl.className = `text-[9px] font-semibold px-1 py-0.2 rounded border ${isPos ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-rose-300 bg-rose-500/10 border-rose-500/20'}`;
+          tooltipBadgeEl.textContent = `${isPos ? '+' : ''}${Math.round(preset.netChange)}%`;
+        } else {
+          tooltipBadgeEl.classList.add('hidden');
+        }
+      }
+
+      function morphCurve(fromSampled, toSampled, finalLinePath, finalAreaPath, onDone) {
+        if (animRaf) cancelAnimationFrame(animRaf);
+        const startTime = performance.now();
+        const duration = 280;
+
+        function step(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(1, elapsed / duration);
+          const ease = 1 - Math.pow(1 - progress, 3); // cubic ease out
+
+          const current = [];
+          for (let i = 0; i < fromSampled.length; i++) {
+            const x = fromSampled[i][0];
+            const y = fromSampled[i][1] + (toSampled[i][1] - fromSampled[i][1]) * ease;
+            current.push([x, y]);
+          }
+
+          const paths = buildBezier(current);
+          cfLinePath.setAttribute('d', paths.linePath);
+          cfAreaPath.setAttribute('d', paths.areaPath);
+
+          if (progress < 1) {
+            animRaf = requestAnimationFrame(step);
+          } else {
+            animRaf = 0;
+            cfLinePath.setAttribute('d', finalLinePath);
+            cfAreaPath.setAttribute('d', finalAreaPath);
+            currentSampled = toSampled;
+            if (onDone) onDone();
+          }
+        }
+        animRaf = requestAnimationFrame(step);
+      }
+
+      const BTN_ACTIVE = 'cashflow-tf-btn px-3 py-1 rounded-full bg-[#352538] text-mauveAccent font-semibold border border-mauveAccent/30 shadow-sm transition cursor-pointer';
+      const BTN_IDLE   = 'cashflow-tf-btn px-3 py-1 rounded-full text-stone-400 hover:text-white transition cursor-pointer border-transparent';
+
+      function setTimeframe(tfKey) {
+        if (tfKey === currentTf) return;
+        currentTf = tfKey;
+
+        // 1. Update button active / idle styles
+        buttons.forEach(btn => {
+          btn.className = btn.dataset.tf === tfKey ? BTN_ACTIVE : BTN_IDLE;
+        });
+
+        const preset = PRESETS[tfKey];
+        if (!preset) return;
+
+        // 2. Update subtitle text
+        if (subtitleEl) {
+          subtitleEl.style.opacity = '0';
+          setTimeout(() => {
+            subtitleEl.textContent = preset.subtitle;
+            subtitleEl.style.opacity = '1';
+          }, 120);
+        }
+
+        // 3. Generate new curve paths
+        const newPaths = generatePaths(preset.values);
+        const toSampled = sampleCurve(newPaths.points, 25);
+
+        // 4. Update Y-axis grid values
+        if (gridLinesEl) {
+          const ySpans = gridLinesEl.querySelectorAll('.cf-y-axis-val');
+          for (let k = 0; k < 5 && k < ySpans.length; k++) {
+            const val = newPaths.chartMax - k * (newPaths.chartMax - newPaths.chartMin) / 4;
+            ySpans[k].textContent = formatShortRp(val);
+          }
+        }
+
+        // 5. Update X-axis labels
+        if (xLabelsEl) {
+          xLabelsEl.style.opacity = '0';
+          setTimeout(() => {
+            xLabelsEl.innerHTML = preset.labels.map((lbl, idx) => {
+              const isAct = idx === preset.activeIdx;
+              return `<span class="${isAct ? 'text-mauveAccent font-semibold' : ''} transition-colors">${escapeHtml(lbl)}</span>`;
+            }).join('');
+            xLabelsEl.style.opacity = '1';
+          }, 120);
+        }
+
+        // 6. Smooth SVG Curve Morphing
+        morphCurve(currentSampled, toSampled, newPaths.linePath, newPaths.areaPath, () => {
+          activePresetData = { preset, points: newPaths.points, paths: newPaths };
+        });
+
+        // 7. Update tooltip position & readout
+        activePresetData = { preset, points: newPaths.points, paths: newPaths };
+        updateTooltip(preset.activeIdx, preset, newPaths.points);
+      }
+
+      // Click event on timeframe buttons
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          setTimeframe(btn.dataset.tf);
+        });
+      });
+
+      // Hover / pointer interaction across chart
+      if (chartStage) {
+        chartStage.addEventListener('pointermove', (e) => {
+          if (!activePresetData || !activePresetData.points.length) return;
+          const rect = chartStage.getBoundingClientRect();
+          const mouseX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+          const targetX = (mouseX / rect.width) * 1000;
+
+          let bestIdx = 0;
+          let minDist = Infinity;
+          for (let i = 0; i < activePresetData.points.length; i++) {
+            const dist = Math.abs(activePresetData.points[i][0] - targetX);
+            if (dist < minDist) {
+              minDist = dist;
+              bestIdx = i;
+            }
+          }
+          updateTooltip(bestIdx, activePresetData.preset, activePresetData.points);
+
+          if (xLabelsEl) {
+            const xSpans = xLabelsEl.querySelectorAll('span');
+            xSpans.forEach((sp, i) => {
+              sp.className = (i === bestIdx) ? 'text-mauveAccent font-semibold transition-colors' : 'transition-colors';
+            });
+          }
+        });
+
+        chartStage.addEventListener('pointerleave', () => {
+          if (!activePresetData) return;
+          updateTooltip(activePresetData.preset.activeIdx, activePresetData.preset, activePresetData.points);
+          if (xLabelsEl) {
+            const xSpans = xLabelsEl.querySelectorAll('span');
+            xSpans.forEach((sp, i) => {
+              sp.className = (i === activePresetData.preset.activeIdx) ? 'text-mauveAccent font-semibold transition-colors' : 'transition-colors';
+            });
+          }
+        });
+      }
     })();
 
     /* ================= SONAR GRID CANVAS BACKGROUND ================= */
