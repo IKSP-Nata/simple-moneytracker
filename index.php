@@ -493,9 +493,20 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
   <!-- Card Header -->
   <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-white/[0.05]">
     <div>
-      <h2 class="text-base font-semibold text-white tracking-tight flex items-center gap-2">
+      <h2 class="text-base font-semibold text-white tracking-tight flex flex-wrap items-center gap-2">
         <span>Spending by Category</span>
         <span class="text-[10px] font-semibold text-mauveAccent bg-mauveAccent/10 px-2 py-0.5 rounded-full border border-mauveAccent/20">Interactive Ring</span>
+        <button
+          type="button"
+          id="sr-open-modal-btn"
+          class="text-xs px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300 hover:text-white transition inline-flex items-center gap-1.5 cursor-pointer ml-0.5"
+          title="Edit Kategori &amp; Pengeluaran"
+        >
+          <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+          </svg>
+          <span>Edit Kategori</span>
+        </button>
       </h2>
       <p class="text-xs text-stone-400 mt-0.5">Drag or flick the ring to inspect categories, or click any item below</p>
     </div>
@@ -1086,6 +1097,50 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
     </form>
   </div>
 </div>
+
+<!-- BEGIN: Edit Spending Ring Categories Modal -->
+<div aria-labelledby="sr-modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="sr-modal" role="dialog">
+  <div class="bg-[#1a1a24]/95 border border-white/10 rounded-2xl max-w-xl w-full p-5 sm:p-6 relative shadow-2xl shadow-black/80 transition-all duration-300 transform scale-95 opacity-0" id="sr-modal-card">
+    <div class="flex items-start justify-between pb-4 mb-4 border-b border-white/[0.08]">
+      <div>
+        <h3 class="text-lg font-semibold text-white tracking-tight" id="sr-modal-title">Edit Kategori &amp; Pengeluaran</h3>
+        <p class="text-xs text-stone-400 mt-0.5">Sesuaikan nama, jumlah nominal, dan warna diagram cincin</p>
+      </div>
+      <button aria-label="Close modal" class="w-8 h-8 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-stone-400 hover:text-white flex items-center justify-center border border-white/[0.06] transition text-sm cursor-pointer" id="sr-modal-close-btn" type="button">
+        ✕
+      </button>
+    </div>
+
+    <!-- Category Rows List -->
+    <div id="sr-modal-rows" class="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+      <!-- Dynamic category edit rows will be rendered here -->
+    </div>
+
+    <!-- Error message display -->
+    <div id="sr-modal-error" class="hidden text-xs text-rose-400 font-medium mt-3 bg-rose-500/10 border border-rose-500/20 rounded-xl px-3 py-2"></div>
+
+    <!-- Actions -->
+    <div class="mt-4 pt-3 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3">
+      <button id="sr-modal-add-row-btn" type="button" class="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs font-medium text-mauveAccent bg-mauveAccent/10 hover:bg-mauveAccent/20 border border-mauveAccent/20 transition flex items-center justify-center gap-1.5 cursor-pointer">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Tambah Kategori</span>
+      </button>
+      
+      <div class="flex items-center gap-2.5 w-full sm:w-auto">
+        <button id="sr-modal-cancel-btn" type="button" class="w-1/2 sm:w-auto px-4 py-2 rounded-xl text-xs font-medium text-stone-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition cursor-pointer">
+          Batal
+        </button>
+        <button id="sr-modal-save-btn" type="button" class="w-1/2 sm:w-auto px-5 py-2 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all cursor-pointer">
+          Simpan Perubahan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END: Edit Spending Ring Categories Modal -->
+
 <!-- Subtle Success Toast Notification -->
 <div class="fixed bottom-6 right-6 z-50 pointer-events-none transform translate-y-12 opacity-0 transition-all duration-300 bg-[#1F1923] border border-mauveAccent/30 rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3" id="tx-toast" <?= $flashMsg !== null ? 'data-show="1"' : '' ?>>
 <div class="w-6 h-6 rounded-full <?= $flashError ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-400' ?> flex items-center justify-center text-xs"><?= $flashError ? '!' : '✓' ?></div>
@@ -1630,54 +1685,54 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       const PROJECT = 0.2;
       const TAP_SLOP = 5;
 
-      const CATEGORIES = [
+      const STORAGE_KEY = 'flowtrack_spending_ring_data';
+
+      const COLOR_OPTIONS = [
+        { name: 'Sky', hex: '#38bdf8' },
+        { name: 'Emerald', hex: '#34d399' },
+        { name: 'Rose', hex: '#fb7185' },
+        { name: 'Amber', hex: '#fbbf24' },
+        { name: 'Violet', hex: '#a78bfa' },
+        { name: 'Pink', hex: '#f472b6' },
+        { name: 'Zinc', hex: '#a1a1aa' },
+      ];
+
+      const DEFAULT_CATEGORIES = [
         {
           name: "Housing",
           amount: 3500000,
           change: 0,
           color: "#38bdf8",
-          stroke: "stroke-sky-400",
-          dot: "bg-sky-400",
         },
         {
           name: "Groceries",
           amount: 1850000,
           change: -6.1,
           color: "#34d399",
-          stroke: "stroke-emerald-400",
-          dot: "bg-emerald-400",
         },
         {
           name: "Shopping",
           amount: 1200000,
           change: 22.4,
           color: "#fb7185",
-          stroke: "stroke-rose-400",
-          dot: "bg-rose-400",
         },
         {
           name: "Dining out",
           amount: 850000,
           change: 12.8,
           color: "#fbbf24",
-          stroke: "stroke-amber-400",
-          dot: "bg-amber-400",
         },
         {
           name: "Transport",
           amount: 600000,
           change: -3.5,
           color: "#a78bfa",
-          stroke: "stroke-violet-400",
-          dot: "bg-violet-400",
         },
         {
           name: "Subscriptions",
           amount: 250000,
           change: 0,
           color: "#D6A4E8",
-          stroke: "stroke-[#D6A4E8]",
-          dot: "bg-mauveAccent",
         },
       ];
 
@@ -1691,11 +1746,66 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       const readoutShare  = document.getElementById('sr-readout-share');
       const readoutChange = document.getElementById('sr-readout-change');
 
+      // Modal Elements
+      const modalEl       = document.getElementById('sr-modal');
+      const modalCardEl   = document.getElementById('sr-modal-card');
+      const openBtnEl     = document.getElementById('sr-open-modal-btn');
+      const closeBtnEl    = document.getElementById('sr-modal-close-btn');
+      const cancelBtnEl   = document.getElementById('sr-modal-cancel-btn');
+      const saveBtnEl     = document.getElementById('sr-modal-save-btn');
+      const addRowBtnEl   = document.getElementById('sr-modal-add-row-btn');
+      const rowsContainer = document.getElementById('sr-modal-rows');
+      const errorEl       = document.getElementById('sr-modal-error');
+
       if (!surfaceEl || !rotatorEl || !listEl) return;
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
 
       function formatRp(val) {
         return 'Rp ' + Math.round(val).toLocaleString('id-ID');
       }
+
+      function loadCategories() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              return parsed.map(c => ({
+                name: String(c.name || '').trim() || 'Kategori',
+                amount: Math.max(0, parseInt(c.amount, 10) || 0),
+                change: typeof c.change === 'number' ? c.change : 0,
+                color: c.color || '#38bdf8',
+              }));
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to load spending ring data from localStorage:', e);
+        }
+        return JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+      }
+
+      function saveCategories(data) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+          console.error('Failed to save to localStorage:', e);
+        }
+      }
+
+      let categories = loadCategories();
+      let total = 0;
+      let spans = [];
+      let selected = 0;
+      let spinning = false;
 
       const wrap = (deg) => ((((deg + 180) % 360) + 360) % 360) - 180;
 
@@ -1711,9 +1821,9 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
         return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${R} ${R} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
       }
 
-      function sliceAt(spans, deg) {
+      function sliceAt(spansList, deg) {
         const a = ((deg % 360) + 360) % 360;
-        const index = spans.findIndex((s) => a >= s.from && a < s.to);
+        const index = spansList.findIndex((s) => a >= s.from && a < s.to);
         return index === -1 ? 0 : index;
       }
 
@@ -1728,68 +1838,19 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
         return Math.abs(state.a - target) < 0.05 && Math.abs(state.v) < 2;
       }
 
-      const total = CATEGORIES.reduce((sum, c) => sum + c.amount, 0);
-      if (totalDisplay) {
-        totalDisplay.textContent = formatRp(total);
-      }
-
-      let at = 0;
-      const spans = CATEGORIES.map((c) => {
-        const sweep = total ? (c.amount / total) * 360 : 360 / CATEGORIES.length;
-        const span = { from: at, to: at + sweep, mid: at + sweep / 2 };
-        at += sweep;
-        return span;
-      });
-
-      let selected = 0;
-      let spinning = false;
-
       const sim = {
-        a: -(spans[0]?.mid ?? 0),
+        a: 0,
         v: 0,
-        target: -(spans[0]?.mid ?? 0),
+        target: 0,
         raf: 0,
         last: 0,
         coast: false,
         drag: null,
       };
 
-      // Build SVG Paths
-      rotatorEl.innerHTML = spans.map((span, i) => {
-        const category = CATEGORIES[i];
-        const d = arc(span.from + GAP / 2, span.to - GAP / 2);
-        return `<path
-          id="sr-path-${i}"
-          class="transition-[stroke-width,opacity] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]"
-          d="${d}"
-          fill="none"
-          stroke="${category.color}"
-          stroke-width="${i === 0 ? STROKE + 8 : STROKE}"
-          opacity="${i === 0 ? '1' : '0.45'}"
-        />`;
-      }).join('');
-
-      // Build Legend List Items
-      listEl.innerHTML = CATEGORIES.map((category, i) => {
-        return `
-          <li>
-            <button
-              type="button"
-              id="sr-btn-${i}"
-              class="sr-category-btn flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs transition-all duration-150 border ${i === 0 ? 'bg-white/10 text-white border-white/10 shadow-sm' : 'border-transparent text-stone-400 hover:text-white hover:bg-white/[0.04]'}"
-              data-index="${i}"
-            >
-              <span class="size-2 shrink-0 rounded-full" style="background-color: ${category.color};"></span>
-              <span class="min-w-0 flex-1 truncate font-medium">${category.name}</span>
-              <span class="tabular-nums font-semibold">${formatRp(category.amount)}</span>
-            </button>
-          </li>
-        `;
-      }).join('');
-
       function updateVisuals(index) {
         selected = index;
-        const current = CATEGORIES[index];
+        const current = categories[index];
         if (!current) return;
 
         // Update center readout
@@ -1821,7 +1882,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
         }
 
         // Update SVG stroke-width and opacity
-        for (let i = 0; i < CATEGORIES.length; i++) {
+        for (let i = 0; i < categories.length; i++) {
           const p = document.getElementById(`sr-path-${i}`);
           if (p) {
             p.setAttribute('stroke-width', i === index ? (STROKE + 8).toString() : STROKE.toString());
@@ -1874,7 +1935,8 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       }
 
       function turnTo(index, rest = sim.a, coast = false) {
-        const goal = -(spans[index]?.mid ?? 0);
+        if (!spans[index]) return;
+        const goal = -(spans[index].mid ?? 0);
         sim.target = rest + wrap(goal - rest);
         sim.coast = coast;
         if (!coast) {
@@ -1898,6 +1960,77 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
           sim.last = 0;
           sim.raf = requestAnimationFrame(tick);
         }
+      }
+
+      function rebuildRing(preserveSelection = false) {
+        total = categories.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
+        if (totalDisplay) {
+          totalDisplay.textContent = formatRp(total);
+        }
+
+        let at = 0;
+        spans = categories.map((c) => {
+          const amt = Number(c.amount) || 0;
+          const sweep = total ? (amt / total) * 360 : 360 / categories.length;
+          const span = { from: at, to: at + sweep, mid: at + sweep / 2 };
+          at += sweep;
+          return span;
+        });
+
+        if (!preserveSelection || selected >= categories.length || selected < 0) {
+          selected = 0;
+        }
+
+        // Build SVG Paths
+        rotatorEl.innerHTML = spans.map((span, i) => {
+          const category = categories[i];
+          const d = arc(span.from + GAP / 2, span.to - GAP / 2);
+          const isActive = (i === selected);
+          return `<path
+            id="sr-path-${i}"
+            class="transition-[stroke-width,opacity] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]"
+            d="${d}"
+            fill="none"
+            stroke="${category.color}"
+            stroke-width="${isActive ? STROKE + 8 : STROKE}"
+            opacity="${isActive ? '1' : '0.45'}"
+          />`;
+        }).join('');
+
+        // Build Legend List Items
+        listEl.innerHTML = categories.map((category, i) => {
+          const isActive = (i === selected);
+          return `
+            <li>
+              <button
+                type="button"
+                id="sr-btn-${i}"
+                class="sr-category-btn flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs transition-all duration-150 border ${isActive ? 'bg-white/10 text-white border-white/10 shadow-sm' : 'border-transparent text-stone-400 hover:text-white hover:bg-white/[0.04]'}"
+                data-index="${i}"
+              >
+                <span class="size-2 shrink-0 rounded-full" style="background-color: ${category.color};"></span>
+                <span class="min-w-0 flex-1 truncate font-medium">${escapeHtml(category.name)}</span>
+                <span class="tabular-nums font-semibold">${formatRp(category.amount)}</span>
+              </button>
+            </li>
+          `;
+        }).join('');
+
+        // Re-attach button click listeners
+        listEl.querySelectorAll('.sr-category-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.dataset.index, 10);
+            turnTo(idx);
+          });
+        });
+
+        // Reset rotator transform & center readout
+        const goal = -(spans[selected]?.mid ?? 0);
+        sim.a = goal;
+        sim.v = 0;
+        sim.target = goal;
+        paint();
+        updateVisuals(selected);
       }
 
       function pointerAngle(event) {
@@ -1988,11 +2121,11 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
         };
         let next = null;
         if (e.key in step) {
-          next = (selected + step[e.key] + CATEGORIES.length) % CATEGORIES.length;
+          next = (selected + step[e.key] + categories.length) % categories.length;
         } else if (e.key === 'Home') {
           next = 0;
         } else if (e.key === 'End') {
-          next = CATEGORIES.length - 1;
+          next = categories.length - 1;
         }
         if (next !== null) {
           e.preventDefault();
@@ -2000,16 +2133,208 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
         }
       });
 
-      listEl.querySelectorAll('.sr-category-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const idx = parseInt(btn.dataset.index, 10);
-          turnTo(idx);
+      /* ================= MODAL EDIT KATEGORI LOGIC ================= */
+      function showError(msg) {
+        if (!errorEl) return;
+        errorEl.textContent = msg;
+        errorEl.classList.remove('hidden');
+      }
+
+      function hideError() {
+        if (!errorEl) return;
+        errorEl.textContent = '';
+        errorEl.classList.add('hidden');
+      }
+
+      function openModal() {
+        if (!modalEl || !modalCardEl) return;
+        hideError();
+        renderRows(categories);
+        modalEl.classList.remove('pointer-events-none', 'opacity-0');
+        modalCardEl.classList.remove('scale-95', 'opacity-0');
+        modalCardEl.classList.add('scale-100', 'opacity-100');
+        document.body.classList.add('overflow-hidden');
+      }
+
+      function closeModal() {
+        if (!modalEl || !modalCardEl) return;
+        modalCardEl.classList.remove('scale-100', 'opacity-100');
+        modalCardEl.classList.add('scale-95', 'opacity-0');
+        modalEl.classList.add('opacity-0', 'pointer-events-none');
+        document.body.classList.remove('overflow-hidden');
+      }
+
+      function createRowElement(item, index) {
+        const row = document.createElement('div');
+        row.className = 'sr-edit-row flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 p-3 rounded-xl bg-black/40 border border-white/[0.06] hover:border-white/10 transition';
+
+        const currentColor = (item.color || '#38bdf8').toLowerCase();
+        const optionsHtml = COLOR_OPTIONS.map(opt => {
+          const isSelected = opt.hex.toLowerCase() === currentColor || 
+            (opt.name === 'Pink' && currentColor === '#d6a4e8');
+          return `<option value="${opt.hex}" ${isSelected ? 'selected' : ''}>${opt.name}</option>`;
+        }).join('');
+
+        const selectedOpt = COLOR_OPTIONS.find(opt => 
+          opt.hex.toLowerCase() === currentColor || (opt.name === 'Pink' && currentColor === '#d6a4e8')
+        );
+        const dotColor = selectedOpt ? selectedOpt.hex : (item.color || '#38bdf8');
+
+        row.innerHTML = `
+          <div class="flex-1 min-w-[130px]">
+            <input
+              type="text"
+              class="sr-row-name w-full bg-[#1F1B27] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition"
+              placeholder="Nama Kategori"
+              value="${escapeHtml(item.name || '')}"
+              maxlength="40"
+              required
+            />
+          </div>
+          <div class="w-full sm:w-36 relative flex items-center">
+            <span class="absolute left-3 text-xs text-stone-500 pointer-events-none font-medium">Rp</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              class="sr-row-amount w-full bg-[#1F1B27] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-[#C49BBB] focus:ring-1 focus:ring-[#C49BBB] transition"
+              placeholder="0"
+              value="${Number(item.amount || 0).toLocaleString('id-ID')}"
+              required
+            />
+          </div>
+          <div class="flex items-center gap-2 shrink-0 justify-between sm:justify-start">
+            <div class="flex items-center gap-1.5 bg-[#1F1B27] border border-white/10 rounded-xl px-2.5 py-1.5">
+              <span class="sr-row-color-dot size-3.5 rounded-full border border-white/20 shrink-0 shadow-sm" style="background-color: ${dotColor};"></span>
+              <select class="sr-row-color bg-transparent text-xs text-white focus:outline-none cursor-pointer pr-1">
+                ${optionsHtml}
+              </select>
+            </div>
+            <button
+              type="button"
+              class="sr-row-delete-btn p-2 text-stone-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl transition cursor-pointer"
+              title="Hapus Kategori"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        `;
+
+        const colorSelect = row.querySelector('.sr-row-color');
+        const colorDot = row.querySelector('.sr-row-color-dot');
+        colorSelect.addEventListener('change', () => {
+          colorDot.style.backgroundColor = colorSelect.value;
         });
+
+        const amountInput = row.querySelector('.sr-row-amount');
+        amountInput.addEventListener('input', () => {
+          const digits = amountInput.value.replace(/\D/g, '');
+          amountInput.value = digits ? Number(digits).toLocaleString('id-ID') : '';
+        });
+
+        const deleteBtn = row.querySelector('.sr-row-delete-btn');
+        deleteBtn.addEventListener('click', () => {
+          const rows = rowsContainer.querySelectorAll('.sr-edit-row');
+          if (rows.length <= 1) {
+            showError('Minimal harus ada 1 kategori aktif.');
+            return;
+          }
+          row.remove();
+          hideError();
+        });
+
+        return row;
+      }
+
+      function renderRows(data) {
+        if (!rowsContainer) return;
+        rowsContainer.innerHTML = '';
+        data.forEach((cat, idx) => {
+          rowsContainer.appendChild(createRowElement(cat, idx));
+        });
+      }
+
+      if (openBtnEl) openBtnEl.addEventListener('click', openModal);
+      if (closeBtnEl) closeBtnEl.addEventListener('click', closeModal);
+      if (cancelBtnEl) cancelBtnEl.addEventListener('click', closeModal);
+      if (modalEl) {
+        modalEl.addEventListener('click', (e) => {
+          if (e.target === modalEl) closeModal();
+        });
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalEl && !modalEl.classList.contains('pointer-events-none')) {
+          closeModal();
+        }
       });
 
-      // Initial state render
-      paint();
-      updateVisuals(0);
+      if (addRowBtnEl) {
+        addRowBtnEl.addEventListener('click', () => {
+          const currentCount = rowsContainer.querySelectorAll('.sr-edit-row').length;
+          const nextColor = COLOR_OPTIONS[currentCount % COLOR_OPTIONS.length].hex;
+          const newRow = createRowElement({
+            name: '',
+            amount: 500000,
+            change: 0,
+            color: nextColor
+          }, currentCount);
+          rowsContainer.appendChild(newRow);
+          hideError();
+          rowsContainer.scrollTop = rowsContainer.scrollHeight;
+          const nameInput = newRow.querySelector('.sr-row-name');
+          if (nameInput) {
+            nameInput.focus();
+          }
+        });
+      }
+
+      if (saveBtnEl) {
+        saveBtnEl.addEventListener('click', () => {
+          const rowEls = rowsContainer.querySelectorAll('.sr-edit-row');
+          if (rowEls.length === 0) {
+            showError('Minimal harus ada 1 kategori aktif.');
+            return;
+          }
+
+          const newCategories = [];
+          rowEls.forEach((row, i) => {
+            const nameInput = row.querySelector('.sr-row-name');
+            const amountInput = row.querySelector('.sr-row-amount');
+            const colorSelect = row.querySelector('.sr-row-color');
+
+            const name = (nameInput.value || '').trim() || `Kategori ${i + 1}`;
+            const rawDigits = amountInput.value.replace(/\D/g, '');
+            const amount = rawDigits ? parseInt(rawDigits, 10) : 0;
+            const color = colorSelect.value || '#38bdf8';
+
+            const oldCat = categories.find(c => c.name.toLowerCase() === name.toLowerCase());
+            const change = oldCat && typeof oldCat.change === 'number' ? oldCat.change : 0;
+
+            newCategories.push({
+              name,
+              amount,
+              change,
+              color
+            });
+          });
+
+          const totalAmt = newCategories.reduce((s, c) => s + c.amount, 0);
+          if (totalAmt <= 0) {
+            showError('Total nominal pengeluaran harus lebih besar dari 0.');
+            return;
+          }
+
+          saveCategories(newCategories);
+          categories = newCategories;
+          rebuildRing(false);
+          closeModal();
+        });
+      }
+
+      // Initial ring build
+      rebuildRing(false);
     })();
 </script>
 </body>
