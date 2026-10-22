@@ -240,7 +240,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <body class="w-full min-h-screen bg-[#0f0f13] text-[#E2DFE7] relative isolate overflow-x-hidden selection:bg-mauveAccent/30 selection:text-white">
 
 <!-- Sonar Grid Fullscreen Canvas Background -->
-<div id="sonar-grid-host" class="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
+<div id="sonar-grid-host" class="fixed inset-0 w-screen h-screen pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
   <canvas id="sonar-grid-canvas" class="w-full h-full block"></canvas>
 </div>
 
@@ -258,7 +258,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- BEGIN: MainDashboardContainer (Full Screen, No Outer Border/Margin) -->
 <main class="relative z-10 w-full min-h-screen flex flex-col md:flex-row bg-transparent">
 <!-- BEGIN: LeftSidebar -->
-<aside class="w-full md:w-64 flex-shrink-0 flex flex-col bg-[#14121a] md:min-h-screen p-5 md:p-6 border-b md:border-b-0 md:border-r border-white/5" data-purpose="app-navigation">
+<aside class="relative z-20 w-full md:w-64 flex-shrink-0 flex flex-col bg-transparent md:bg-black/10 backdrop-blur-[2px] md:min-h-screen p-5 md:p-6 border-b md:border-b-0 md:border-r border-white/5" data-purpose="app-navigation">
 <div class="space-y-8">
 <!-- Logo & Brand Name -->
 <div class="flex items-center gap-3 px-2">
@@ -285,7 +285,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </aside>
 <!-- END: LeftSidebar -->
 <!-- BEGIN: DashboardBody -->
-<div class="flex-1 flex flex-col gap-6 p-4 sm:p-6 lg:p-8 min-w-0 overflow-y-auto">
+<div class="relative z-10 flex-1 flex flex-col gap-6 p-4 sm:p-6 lg:p-8 min-w-0 overflow-y-auto">
 <!-- BEGIN: TopHeader -->
 <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
 <!-- User Greeting & Subtitle -->
@@ -2741,14 +2741,18 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
         }
       };
 
-      // Click on background triggers new sonar ring
+      // Click on background triggers new sonar ring (active across entire screen including sidebar)
       window.addEventListener('pointerdown', (e) => {
         if (!opts.interactive || reduceMotion.matches) return;
         if (e.target.closest('button, a, input, select, textarea, [role="button"], [role="slider"], #desktop-pet, #flow-pet-container, #sr-modal, #transaction-modal, #profile-modal, #edit-goal-modal, #edit-transaction-modal')) {
           return;
         }
-        addRing(e.clientX, e.clientY, performance.now());
-        wake();
+        const x = e.clientX;
+        const y = e.clientY;
+        if (x >= 0 && x <= width && y >= 0 && y <= height) {
+          addRing(x, y, performance.now());
+          wake();
+        }
       }, { passive: true });
 
       // Pause when tab is inactive, resume when active
