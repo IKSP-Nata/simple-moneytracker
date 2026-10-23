@@ -239,12 +239,6 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       border-radius: 9999px;
     }
 
-    /* Interactive Mascot / Pet */
-    @media (hover: none) or (pointer: coarse) {
-      #flow-pet-container {
-        display: none !important;
-      }
-    }
     .pixelated {
       image-rendering: -moz-crisp-edges;
       image-rendering: pixelated;
@@ -253,21 +247,12 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </head>
 <body class="w-full min-h-screen bg-[#0f0f13] text-[#E2DFE7] relative isolate overflow-x-hidden selection:bg-mauveAccent/30 selection:text-white">
 
-<!-- Sonar Grid Fullscreen Canvas Background -->
-<div id="sonar-grid-host" class="fixed inset-0 w-screen h-screen pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
-  <canvas id="sonar-grid-canvas" class="w-full h-full block"></canvas>
-</div>
+<!-- Fluid Particles Background Canvas -->
+<canvas id="fluid-canvas" class="fixed inset-0 w-screen h-screen pointer-events-none -z-10 bg-[#0a0a10]"></canvas>
 
 <!-- Ambient Light Effects -->
 <div class="fixed inset-0 pointer-events-none ambient-glow-left"></div>
 <div class="fixed inset-0 pointer-events-none ambient-glow-right"></div>
-
-<!-- Interactive Mascot / Pet -->
-<div id="flow-pet-container" class="hidden md:block fixed pointer-events-none z-50 select-none transition-opacity duration-300 opacity-0" style="top: 0; left: 0; will-change: transform;">
-  <div id="flow-pet-sprite" class="w-12 h-12 flex items-center justify-center transform transition-transform duration-75 ease-out">
-    <img id="flow-pet-img" src="assets/pet/Action.png" alt="Pet Mascot" class="w-12 h-12 object-contain pixelated pointer-events-none select-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]" draggable="false" />
-  </div>
-</div>
 
 <!-- BEGIN: MainDashboardContainer (Full Screen, No Outer Border/Margin) -->
 <main class="relative z-10 w-full min-h-screen flex flex-col md:flex-row bg-transparent">
@@ -312,15 +297,15 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
             Here's your personal financial overview today
           </p>
 </div>
-<!-- Right Header Items: Add Transaction Button & Profile -->
+<!-- Right Header Items: Add Transaction Button & Profile (Aligned Horizontally) -->
 <div class="flex items-center gap-3 flex-shrink-0">
-<!-- Add Transaction Button -->
-<button class="btn-add-transaction flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-semibold bg-gradient-to-r from-[#C49BBB] to-[#A374A0] text-[#0D0B10] shadow-md shadow-[#C49BBB]/20 hover:opacity-95 active:scale-[0.98] transition-all" type="button" id="header-add-btn">
-<svg class="w-3.5 h-3.5" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+<!-- Add Transaction Button (Single Primary Button) -->
+<button class="btn-add-transaction inline-flex items-center justify-center gap-2 px-4 h-11 rounded-2xl text-xs font-semibold bg-gradient-to-r from-[#C49BBB] to-[#A374A0] text-[#0D0B10] shadow-md shadow-[#C49BBB]/20 hover:opacity-95 active:scale-[0.98] transition-all cursor-pointer" type="button" id="header-add-btn">
+<svg class="w-3.5 h-3.5" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" width="16"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
 <span>Add Transaction</span>
 </button>
 <!-- User Profile Badge (Clickable to Edit Name) -->
-<button type="button" id="profile-btn" class="flex items-center gap-2.5 px-3.5 py-2 bg-[#17141E] border border-white/[0.07] hover:border-mauveAccent/40 rounded-2xl transition cursor-pointer text-left group" title="Klik untuk mengubah nama profil">
+<button type="button" id="profile-btn" class="inline-flex items-center gap-2.5 px-3.5 h-11 bg-[#12121c]/80 backdrop-blur-md border border-white/[0.08] hover:border-mauveAccent/40 rounded-2xl transition cursor-pointer text-left group" title="Klik untuk mengubah nama profil">
 <div class="w-7 h-7 rounded-full bg-mauveAccent/15 border border-mauveAccent/30 flex items-center justify-center text-mauveAccent text-xs font-semibold">
 <?= strtoupper(mb_substr($userName, 0, 1)) ?>
 </div>
@@ -337,30 +322,12 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
      TAB: DASHBOARD
      ================================================================ -->
 <div id="tab-dashboard" class="tab-content flex flex-col gap-6" data-panel="dashboard">
-<!-- Secondary Filter Pills Row -->
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-2">
-<button class="px-5 py-1.5 rounded-full text-xs font-medium bg-black/60 text-white border border-white/10 hover:border-mauveAccent/40 transition" data-goto="dashboard" type="button" id="pill-overview">
-          Overview
-        </button>
-<button class="px-5 py-1.5 rounded-full text-xs font-medium bg-[#1F1923] text-mauveAccent border border-mauveAccent/20 hover:bg-[#251D2A] transition" data-goto="wallets" type="button" id="pill-wallets">
-          Wallets
-        </button>
-<button class="px-5 py-1.5 rounded-full text-xs font-medium bg-black/40 text-stone-400 border border-white/[0.06] hover:text-white transition" data-goto="goals" type="button" id="pill-goals">
-          Goals
-        </button>
-</div>
-<!-- Inline Quick Add Transaction trigger -->
-<button class="btn-add-transaction hidden sm:flex items-center gap-1.5 text-xs text-mauveAccent hover:text-white transition font-medium" type="button" id="inline-add-btn">
-<span class="text-stone-400 hover:text-stone-200">+ Add Transaction</span>
-</button>
-</div>
 <!-- BEGIN: BentoGridTopSection -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full items-stretch">
 <!-- Column 1: Total Balance Card & Wishlist Goal Saver Card -->
 <div class="flex flex-col gap-6 justify-between h-full">
 <!-- Top Card: Total Balance -->
-<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 flex flex-col justify-between relative transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);" data-purpose="total-balance-card">
+<div class="bg-[#12121c]/80 backdrop-blur-md border border-white/[0.08] shadow-xl shadow-black/40 rounded-2xl p-5 flex flex-col justify-between relative transition-all duration-300 hover:border-white/[0.15]" data-purpose="total-balance-card">
   <div class="flex items-center justify-between mb-3">
     <span class="text-xs text-zinc-300 font-medium tracking-wide">Total Balance</span>
     
@@ -445,17 +412,25 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
   </div>
 </div>
 <!-- Bottom Card: Wishlist Goal Saver Card -->
-<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden flex-1 min-h-[190px] transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);" data-purpose="wishlist-goal-card">
+<div class="bg-[#12121c]/80 backdrop-blur-md border border-white/[0.08] shadow-xl shadow-black/40 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden flex-1 min-h-[190px] transition-all duration-300 hover:border-white/[0.15]" data-purpose="wishlist-goal-card">
 <div class="relative z-10">
 <div class="flex items-center justify-between">
-<h3 class="text-base font-semibold text-white tracking-wide">Wishlist Goal Saver</h3>
+<div class="flex items-center gap-2.5">
+  <!-- Mascot in Header (Proportional w-9 h-9, never clipped) -->
+  <div class="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center overflow-hidden flex-shrink-0 group/mascot cursor-pointer" id="card-mascot-box" title="FlowTrack Mascot">
+    <img id="card-mascot-img" src="assets/pet/Action.png" alt="Pet Mascot" class="w-8 h-8 object-contain pixelated transition-transform duration-200 group-hover/mascot:scale-110" />
+  </div>
+  <div>
+    <h3 class="text-base font-semibold text-white tracking-wide">Wishlist Goal Saver</h3>
+  </div>
+</div>
 <?php if ($featuredGoal): ?>
 <span class="text-[10px] font-semibold text-mauveAccent bg-mauveAccent/15 px-2.5 py-0.5 rounded-full border border-mauveAccent/30"><?= $featuredGoal['pct'] ?>% Reached</span>
 <?php endif; ?>
 </div>
 <?php if ($featuredGoal): ?>
-<p class="text-xs text-zinc-300 mt-1.5 leading-relaxed font-normal">
-  <?= e($featuredGoal['goal_title']) ?> — <span class="text-white font-medium"><?= rupiah($featuredGoal['current_amount']) ?></span> saved of <?= rupiah($featuredGoal['target_amount']) ?> target.
+<p class="text-xs text-zinc-300 mt-2.5 leading-relaxed font-normal">
+  <?= e($featuredGoal['goal_title']) ?> — <span class="text-white font-semibold tabular-nums"><?= rupiah($featuredGoal['current_amount']) ?></span> saved of <span class="text-white font-semibold tabular-nums"><?= rupiah($featuredGoal['target_amount']) ?></span> target.
 </p>
 <!-- Subtle Progress Track -->
 <div class="w-full bg-black/40 h-1.5 rounded-full mt-4 overflow-hidden border border-white/10">
@@ -465,11 +440,11 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <p class="text-[10px] text-zinc-300 mt-2 font-medium">+<?= count($goals) - 1 ?> other goal<?= count($goals) > 2 ? 's' : '' ?> in progress</p>
 <?php endif; ?>
 <?php else: ?>
-<p class="text-xs text-zinc-300 mt-1.5 leading-relaxed font-normal">Belum ada target tabungan. Buat target pertamamu untuk mulai menabung.</p>
+<p class="text-xs text-zinc-300 mt-2 leading-relaxed font-normal">Belum ada target tabungan. Buat target pertamamu untuk mulai menabung.</p>
 <?php endif; ?>
 </div>
 <div class="relative z-10 mt-5 flex justify-center">
-<button class="w-full max-w-[210px] py-2 px-4 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-[#AF77A4] to-[#C991BE] shadow-lg shadow-[#8E5281]/40 hover:opacity-95 transition-opacity active:scale-[0.98]" data-goto="goals" type="button" id="explore-goals-btn">
+<button class="w-full max-w-[210px] py-2 px-4 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-[#AF77A4] to-[#C991BE] shadow-lg shadow-[#8E5281]/40 hover:opacity-95 transition-opacity active:scale-[0.98] cursor-pointer" data-goto="goals" type="button" id="explore-goals-btn">
   <?= $featuredGoal ? 'Explore Goals' : 'Create Goal' ?>
 </button>
 </div>
@@ -477,11 +452,11 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </div>
 <!-- END: Column 1 -->
 <!-- Column 2: Recent Transactions List -->
-<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 flex flex-col justify-between h-full transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);" data-purpose="transactions-list-card">
+<div class="bg-[#12121c]/80 backdrop-blur-md border border-white/[0.08] shadow-xl shadow-black/40 rounded-2xl p-5 flex flex-col justify-between h-full transition-all duration-300 hover:border-white/[0.15]" data-purpose="transactions-list-card">
 <div>
 <div class="flex items-center justify-between mb-4">
 <h2 class="text-sm font-semibold text-white">Recent Transactions</h2>
-<button class="btn-add-transaction flex items-center gap-1 text-[11px] text-mauveAccent hover:text-white transition font-medium" type="button" id="recent-add-btn">
+<button class="btn-add-transaction flex items-center gap-1 text-[11px] text-mauveAccent hover:text-white transition font-medium cursor-pointer" type="button" id="recent-add-btn">
 <span>+ Add</span>
 </button>
 </div>
@@ -499,16 +474,17 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <?php foreach ($recentTransactions as $tx):
     $isIncome = $tx['type'] === 'income';
     $isGoal   = $tx['type'] === 'goal_saving';
-    $amtClass = $isIncome ? 'text-emerald-400' : ($isGoal ? 'text-mauveAccent' : 'text-rose-400');
     $subClass = $isIncome ? 'text-emerald-400/90 font-medium' : 'text-zinc-300';
 ?>
-<div class="flex items-center justify-between text-xs py-1 border-b border-white/[0.06]" data-type="<?= e($tx['type']) ?>">
+<div class="flex items-center justify-between text-xs py-1.5 border-b border-white/[0.06]" data-type="<?= e($tx['type']) ?>">
 <div class="min-w-0 pr-3">
 <p class="font-medium text-white truncate"><?= e($tx['title']) ?></p>
 <p class="text-[10px] text-zinc-300"><?= e($tx['wallet_name']) ?><?= $isGoal ? ' · Goal Saving' : '' ?></p>
 </div>
 <div class="text-right flex-shrink-0">
-<p class="font-semibold <?= $amtClass ?>"><?= $isIncome ? '+' : '-' ?><?= rupiah($tx['amount']) ?></p>
+<p class="font-semibold text-white tracking-tight tabular-nums">
+  <span class="<?= $isIncome ? 'text-emerald-400' : ($isGoal ? 'text-mauveAccent' : 'text-rose-400') ?> mr-0.5"><?= $isIncome ? '+' : '-' ?></span><?= rupiah($tx['amount']) ?>
+</p>
 <p class="text-[10px] <?= $subClass ?>"><?= date('d M', strtotime($tx['created_at'])) ?> · <?= $tx['source'] === 'bot' ? 'Bot' : 'Web' ?></p>
 </div>
 </div>
@@ -520,11 +496,11 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </div>
 <!-- END: Column 2 -->
 <!-- Column 3: 2x2 Mini Grid - My Wallets -->
-<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 flex flex-col justify-between h-full transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);" data-purpose="wallets-grid-card">
+<div class="bg-[#12121c]/80 backdrop-blur-md border border-white/[0.08] shadow-xl shadow-black/40 rounded-2xl p-5 flex flex-col justify-between h-full transition-all duration-300 hover:border-white/[0.15]" data-purpose="wallets-grid-card">
 <div>
 <div class="flex items-center justify-between mb-4">
 <h2 class="text-sm font-semibold text-white">My Wallets</h2>
-<button class="flex items-center gap-1 text-[11px] bg-white/[0.06] text-zinc-200 border border-white/15 px-2.5 py-1 rounded-full hover:border-white/30 hover:bg-white/10 hover:text-white transition" data-goto="wallets" type="button" id="wallets-see-all">
+<button class="flex items-center gap-1 text-[11px] bg-white/[0.06] text-zinc-200 border border-white/15 px-2.5 py-1 rounded-full hover:border-white/30 hover:bg-white/10 hover:text-white transition cursor-pointer" data-goto="wallets" type="button" id="wallets-see-all">
 <span class="">See all</span>
 <i class="w-3 h-3 text-zinc-300" data-lucide="arrow-up-right"></i>
 </button>
@@ -538,9 +514,9 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
     $isPrimary = strtolower($w['wallet_type']) === 'primary';
     $share     = $totalBalance > 0 ? round(((float) $w['balance'] / $totalBalance) * 100, 1) : 0;
 ?>
-<div class="bg-black/30 border border-white/10 rounded-2xl p-3 flex flex-col justify-between hover:border-mauveAccent/40 hover:bg-white/[0.03] transition">
+<div class="bg-black/40 border border-white/[0.06] rounded-xl p-3 flex flex-col justify-between hover:border-mauveAccent/40 hover:bg-white/[0.02] transition">
 <div>
-<p class="text-[11px] font-semibold text-white tracking-tight"><?= rupiah($w['balance']) ?></p>
+<p class="text-xs font-semibold text-white tracking-tight tabular-nums"><?= rupiah($w['balance']) ?></p>
 <?php if ($isPrimary): ?>
 <p class="text-[9px] text-emerald-400 mt-0.5 font-medium"><?= $share ?>% of total</p>
 <?php else: ?>
@@ -571,7 +547,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- END: BentoGridTopSection -->
 
 <!-- BEGIN: Kokonut UI Spending Ring Card -->
-<section class="liquid-glass w-full bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 relative transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);" id="spending-ring-card">
+<section class="bg-[#12121c]/80 backdrop-blur-md border border-white/[0.08] shadow-xl shadow-black/40 rounded-2xl w-full p-5 md:p-6 relative transition-all duration-300 hover:border-white/[0.15]" id="spending-ring-card">
   <!-- Card Header -->
   <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-white/[0.08]">
     <div>
@@ -594,7 +570,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
     </div>
     <div class="sm:text-right">
       <span class="text-[10px] uppercase tracking-wider text-zinc-400 font-medium block">Total Spending</span>
-      <span class="font-bold text-lg text-white tabular-nums" id="sr-total-display">Rp 0</span>
+      <span class="font-semibold text-lg text-white tabular-nums" id="sr-total-display">Rp 0</span>
     </div>
   </div>
 
@@ -627,7 +603,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
             <span id="sr-readout-dot" class="size-2 rounded-full bg-sky-400 shrink-0"></span>
             <span id="sr-readout-name">Housing</span>
           </p>
-          <p id="sr-readout-amount" class="mt-1 font-bold text-xl sm:text-2xl text-white tabular-nums tracking-tight">
+          <p id="sr-readout-amount" class="mt-1 font-semibold text-xl sm:text-2xl text-white tabular-nums tracking-tight">
             Rp 0
           </p>
           <p id="sr-readout-share" class="mt-0.5 text-xs text-zinc-300 tabular-nums">
@@ -651,7 +627,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- END: Kokonut UI Spending Ring Card -->
 
 <!-- BEGIN: BottomWideCard (Cashflow Performance Line Chart) -->
-<section class="liquid-glass w-full bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 relative transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);" data-purpose="performance-chart-card" id="cashflow-performance-card">
+<section class="bg-[#12121c]/80 backdrop-blur-md border border-white/[0.08] shadow-xl shadow-black/40 rounded-2xl w-full p-5 md:p-6 relative transition-all duration-300 hover:border-white/[0.15]" data-purpose="performance-chart-card" id="cashflow-performance-card">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 <div>
 <h2 class="text-base font-semibold text-white">Cashflow Performance</h2>
@@ -685,7 +661,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <span class="w-1.5 h-1.5 rounded-full bg-mauveAccent"></span>
 </div>
 <div class="flex items-center gap-1.5 mt-0.5">
-<span class="text-xs font-bold text-white tracking-tight" id="cf-tooltip-amount"><?= $curNet < 0 ? '-' : '' ?><?= rupiah(abs($curNet)) ?></span>
+<span class="text-xs font-semibold text-white tracking-tight tabular-nums" id="cf-tooltip-amount"><?= $curNet < 0 ? '-' : '' ?><?= rupiah(abs($curNet)) ?></span>
 <span id="cf-tooltip-badge" class="text-[9px] font-semibold <?= $netChange !== null && $netChange >= 0 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : ($netChange !== null ? 'text-rose-300 bg-rose-500/10 border-rose-500/20' : 'hidden') ?> px-1 py-0.2 rounded border"><?= $netChange !== null ? ($netChange >= 0 ? '+' : '') . round($netChange) . '%' : '' ?></span>
 </div>
 </div>
@@ -732,7 +708,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
      TAB: TRANSACTIONS
      ================================================================ -->
 <div id="tab-transactions" class="tab-content hidden flex flex-col gap-6" data-panel="transactions">
-<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);">
+<div class="bg-[#12121c]/80 backdrop-blur-md border border-white/[0.08] shadow-xl shadow-black/40 rounded-2xl p-5 md:p-6 transition-all duration-300 hover:border-white/[0.15]">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
 <div>
 <h2 class="text-base font-semibold text-white">Transaction History</h2>
@@ -745,7 +721,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <button class="bg-black/30 text-zinc-300 hover:text-white px-3 py-1 rounded-full transition" data-filter="expense" type="button" id="tx-filter-expense">Expense</button>
 <button class="bg-black/30 text-zinc-300 hover:text-white px-3 py-1 rounded-full transition" data-filter="goal_saving" type="button" id="tx-filter-goal">Goal</button>
 </div>
-<button class="btn-add-transaction flex items-center gap-1 text-[11px] text-mauveAccent hover:text-white transition font-medium" type="button" id="tx-tab-add-btn">
+<button class="btn-add-transaction flex items-center gap-1 text-[11px] text-mauveAccent hover:text-white transition font-medium cursor-pointer" type="button" id="tx-tab-add-btn">
 <span>+ Add</span>
 </button>
 </div>
@@ -779,14 +755,14 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <td class="px-2 py-3 text-zinc-200"><?= e($tx['wallet_name']) ?></td>
 <td class="px-2 py-3"><span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border <?= $badge[1] ?>"><?= $badge[0] ?></span></td>
 <td class="px-2 py-3 text-zinc-300"><?= $tx['source'] === 'bot' ? 'Bot' : 'Web' ?></td>
-<td class="px-2 py-3 text-right font-semibold whitespace-nowrap <?= $isIncome ? 'text-emerald-400' : ($isGoal ? 'text-mauveAccent' : 'text-rose-400') ?>"><?= $isIncome ? '+' : '-' ?><?= rupiah($tx['amount']) ?></td>
+<td class="px-2 py-3 text-right font-semibold whitespace-nowrap text-white tabular-nums"><span class="<?= $isIncome ? 'text-emerald-400' : ($isGoal ? 'text-mauveAccent' : 'text-rose-400') ?> mr-0.5"><?= $isIncome ? '+' : '-' ?></span><?= rupiah($tx['amount']) ?></td>
 <td class="px-2 py-3 text-right whitespace-nowrap">
-<button type="button" class="btn-edit-tx text-[11px] text-zinc-200 bg-white/[0.06] border border-white/15 px-2.5 py-1 rounded-full hover:text-white hover:border-white/30 hover:bg-white/10 transition mr-1" data-id="<?= (int) $tx['id'] ?>" data-title="<?= e($tx['title']) ?>" data-amount="<?= (float) $tx['amount'] ?>" data-type="<?= e($tx['type']) ?>" data-wallet-id="<?= (int) $tx['wallet_id'] ?>" id="edit-tx-<?= (int) $tx['id'] ?>">Edit</button>
+<button type="button" class="btn-edit-tx text-[11px] text-zinc-200 bg-white/[0.06] border border-white/15 px-2.5 py-1 rounded-full hover:text-white hover:border-white/30 hover:bg-white/10 transition mr-1 cursor-pointer" data-id="<?= (int) $tx['id'] ?>" data-title="<?= e($tx['title']) ?>" data-amount="<?= (float) $tx['amount'] ?>" data-type="<?= e($tx['type']) ?>" data-wallet-id="<?= (int) $tx['wallet_id'] ?>" id="edit-tx-<?= (int) $tx['id'] ?>">Edit</button>
 <form action="process_transaction.php" method="post" class="inline" onsubmit="return confirm('Hapus transaksi ini? Saldo dompet akan dikembalikan.');">
 <input type="hidden" name="action" value="delete"/>
 <input type="hidden" name="id" value="<?= (int) $tx['id'] ?>"/>
 <input type="hidden" name="return_tab" value="transactions"/>
-<button class="text-[11px] text-rose-300 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full hover:text-rose-200 hover:bg-rose-500/20 hover:border-rose-500/30 transition" type="submit" id="delete-tx-<?= (int) $tx['id'] ?>">Hapus</button>
+<button class="text-[11px] text-rose-300 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-full hover:text-rose-200 hover:bg-rose-500/20 hover:border-rose-500/30 transition cursor-pointer" type="submit" id="delete-tx-<?= (int) $tx['id'] ?>">Hapus</button>
 </form>
 </td>
 </tr>
@@ -805,23 +781,23 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <div id="tab-wallets" class="tab-content hidden flex flex-col gap-6" data-panel="wallets">
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 <!-- Wallet list -->
-<div class="lg:col-span-2 liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);">
+<div class="lg:col-span-2 bg-[#12121c]/80 backdrop-blur-md border border-white/[0.08] shadow-xl shadow-black/40 rounded-2xl p-5 md:p-6 transition-all duration-300 hover:border-white/[0.15]">
 <div class="flex items-center justify-between mb-5">
 <div>
 <h2 class="text-base font-semibold text-white">My Wallets</h2>
-<p class="text-xs text-zinc-300"><?= count($wallets) ?> dompet · Total <?= rupiah($totalBalance) ?></p>
+<p class="text-xs text-zinc-300"><?= count($wallets) ?> dompet · Total <span class="text-white font-semibold"><?= rupiah($totalBalance) ?></span></p>
 </div>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 <?php foreach ($wallets as $i => $w):
     $share = $totalBalance > 0 ? ((float) $w['balance'] / $totalBalance) * 100 : 0;
 ?>
-<div class="bg-black/30 border border-white/10 rounded-2xl p-4 hover:border-mauveAccent/40 hover:bg-white/[0.03] transition">
+<div class="bg-black/40 border border-white/[0.06] rounded-xl p-4 hover:border-mauveAccent/40 hover:bg-white/[0.02] transition">
 <div class="flex items-center justify-between">
 <span class="text-sm font-semibold text-white"><?= e($w['wallet_name']) ?></span>
 <span class="text-[10px] text-zinc-300 bg-white/[0.06] border border-white/10 px-2.5 py-0.5 rounded-full font-medium"><?= e($w['wallet_type']) ?></span>
 </div>
-<p class="text-xl font-bold tracking-tight text-white mt-3"><?= rupiah($w['balance']) ?></p>
+<p class="text-xl font-semibold text-white tracking-tight mt-3 tabular-nums"><?= rupiah($w['balance']) ?></p>
 <div class="w-full bg-black/40 h-1.5 rounded-full mt-3 overflow-hidden border border-white/10">
 <div class="bg-gradient-to-r from-mauveGlow to-mauveAccent h-full rounded-full" style="width: <?= round($share, 1) ?>%"></div>
 </div>
@@ -834,7 +810,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <?php endif; ?>
 </div>
 <!-- Add wallet form -->
-<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);">
+<div class="bg-[#12121c]/80 backdrop-blur-md border border-white/[0.08] shadow-xl shadow-black/40 rounded-2xl p-5 md:p-6 transition-all duration-300 hover:border-white/[0.15]">
 <h2 class="text-sm font-semibold text-white">+ Tambah Dompet Baru</h2>
 <p class="text-xs text-zinc-300 mt-0.5 mb-5">Rekening bank, e-wallet, atau uang tunai</p>
 <form action="process_wallet.php" method="post" class="space-y-4" id="wallet-form">
@@ -858,7 +834,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <input class="money-input w-full bg-black/40 border border-white/15 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="wallet-balance" name="balance" inputmode="numeric" autocomplete="off" placeholder="0" type="text"/>
 </div>
 </div>
-<button class="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all" type="submit" id="wallet-submit-btn">
+<button class="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all cursor-pointer" type="submit" id="wallet-submit-btn">
           Simpan Dompet
         </button>
 </form>
@@ -873,7 +849,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <div id="tab-goals" class="tab-content hidden flex flex-col gap-6" data-panel="goals">
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 <!-- Goals list -->
-<div class="lg:col-span-2 liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);">
+<div class="lg:col-span-2 bg-[#12121c]/80 backdrop-blur-md border border-white/[0.08] shadow-xl shadow-black/40 rounded-2xl p-5 md:p-6 transition-all duration-300 hover:border-white/[0.15]">
 <div class="mb-5">
 <h2 class="text-base font-semibold text-white">Savings Goals</h2>
 <p class="text-xs text-zinc-300"><?= count($goals) ?> target tabungan</p>
@@ -882,12 +858,12 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <?php foreach ($goals as $g):
     $remaining = max(0, (float) $g['target_amount'] - (float) $g['current_amount']);
 ?>
-<div class="<?= $featuredGoal && $g['id'] === $featuredGoal['id'] ? 'card-purple-ambient border-mauveAccent/30' : 'bg-black/30 border-white/10' ?> border rounded-2xl p-4 hover:border-mauveAccent/40 hover:bg-white/[0.03] transition">
+<div class="<?= $featuredGoal && $g['id'] === $featuredGoal['id'] ? 'card-purple-ambient border-mauveAccent/30' : 'bg-black/40 border-white/[0.06]' ?> border rounded-xl p-4 hover:border-mauveAccent/40 hover:bg-white/[0.02] transition">
 <div class="flex items-center justify-between gap-3">
 <h3 class="text-sm font-semibold text-white"><?= e($g['goal_title']) ?></h3>
 <span class="text-[10px] font-semibold text-mauveAccent bg-mauveAccent/15 px-2.5 py-0.5 rounded-full border border-mauveAccent/30 whitespace-nowrap"><?= $g['pct'] ?>% Reached</span>
 </div>
-<p class="text-xs text-zinc-200 mt-1.5 font-medium"><?= rupiah($g['current_amount']) ?> saved <span class="text-zinc-400 font-normal">of <?= rupiah($g['target_amount']) ?> target.</span></p>
+<p class="text-xs text-zinc-200 mt-1.5 font-normal"><span class="text-white font-semibold tabular-nums"><?= rupiah($g['current_amount']) ?></span> saved <span class="text-zinc-400 font-normal">of <span class="text-white font-semibold tabular-nums"><?= rupiah($g['target_amount']) ?></span> target.</span></p>
 <div class="w-full bg-black/40 h-1.5 rounded-full mt-3 overflow-hidden border border-white/10">
 <div class="bg-gradient-to-r from-mauveGlow to-mauveAccent h-full rounded-full transition-all duration-700" style="width: <?= $g['pct'] ?>%"></div>
 </div>
@@ -895,12 +871,12 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <span class="text-[10px] text-zinc-300"><?= $remaining > 0 ? 'Sisa ' . rupiah($remaining) : 'Target tercapai' ?></span>
 <div class="flex items-center gap-2">
 <?php if ($g['pct'] < 100): ?>
-<button class="btn-save-goal text-[11px] font-medium text-mauveAccent bg-mauveAccent/10 border border-mauveAccent/20 hover:bg-mauveAccent/25 hover:text-white px-2.5 py-1 rounded-full transition" data-goal-id="<?= (int) $g['id'] ?>" type="button" id="save-goal-<?= (int) $g['id'] ?>">+ Nabung</button>
+<button class="btn-save-goal text-[11px] font-medium text-mauveAccent bg-mauveAccent/10 border border-mauveAccent/20 hover:bg-mauveAccent/25 hover:text-white px-2.5 py-1 rounded-full transition cursor-pointer" data-goal-id="<?= (int) $g['id'] ?>" type="button" id="save-goal-<?= (int) $g['id'] ?>">+ Nabung</button>
 <?php endif; ?>
-<button class="btn-edit-goal text-[11px] font-medium text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-500/20 hover:text-white px-2.5 py-1 rounded-full transition" type="button" data-goal-id="<?= (int) $g['id'] ?>" data-goal-title="<?= e($g['goal_title']) ?>" data-goal-target="<?= (float) $g['target_amount'] ?>" id="edit-goal-<?= (int) $g['id'] ?>">Edit</button>
+<button class="btn-edit-goal text-[11px] font-medium text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-500/20 hover:text-white px-2.5 py-1 rounded-full transition cursor-pointer" type="button" data-goal-id="<?= (int) $g['id'] ?>" data-goal-title="<?= e($g['goal_title']) ?>" data-goal-target="<?= (float) $g['target_amount'] ?>" id="edit-goal-<?= (int) $g['id'] ?>">Edit</button>
 <form action="delete_goal.php" method="post" class="inline" onsubmit="return confirm('Hapus target tabungan &quot;<?= e($g['goal_title']) ?>&quot;?');">
 <input type="hidden" name="id" value="<?= (int) $g['id'] ?>"/>
-<button class="text-[11px] font-medium text-rose-300 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 hover:text-rose-200 px-2.5 py-1 rounded-full transition" type="submit" id="delete-goal-<?= (int) $g['id'] ?>">Hapus</button>
+<button class="text-[11px] font-medium text-rose-300 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 hover:text-rose-200 px-2.5 py-1 rounded-full transition cursor-pointer" type="submit" id="delete-goal-<?= (int) $g['id'] ?>">Hapus</button>
 </form>
 </div>
 </div>
@@ -912,7 +888,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <?php endif; ?>
 </div>
 <!-- Add goal form -->
-<div class="liquid-glass bg-white/[0.04] backdrop-blur-xl border border-white/15 rounded-3xl p-5 md:p-6 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.06]" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 20px 40px -15px rgba(0, 0, 0, 0.5);">
+<div class="bg-[#12121c]/80 backdrop-blur-md border border-white/[0.08] shadow-xl shadow-black/40 rounded-2xl p-5 md:p-6 transition-all duration-300 hover:border-white/[0.15]">
 <h2 class="text-sm font-semibold text-white">+ Tambah Target Tabungan Baru</h2>
 <p class="text-xs text-zinc-300 mt-0.5 mb-5">Wujudkan wishlist-mu satu per satu</p>
 <form action="process_goal.php" method="post" class="space-y-4" id="goal-form">
@@ -934,7 +910,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <input class="money-input w-full bg-black/40 border border-white/15 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-mauveAccent focus:ring-1 focus:ring-mauveAccent transition" id="goal-current" name="current_amount" inputmode="numeric" autocomplete="off" placeholder="0" type="text"/>
 </div>
 </div>
-<button class="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all" type="submit" id="goal-submit-btn">
+<button class="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-[#0D0B10] bg-gradient-to-r from-[#C49BBB] to-[#A374A0] hover:opacity-90 active:scale-[0.98] shadow-lg shadow-[#C49BBB]/20 transition-all cursor-pointer" type="submit" id="goal-submit-btn">
           Simpan Target
         </button>
 </form>
@@ -949,7 +925,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <!-- BEGIN: Add Transaction Modal Popup -->
 <div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="transaction-modal" role="dialog">
 <!-- Modal Card -->
-<div class="liquid-glass bg-[#16141C]/90 backdrop-blur-2xl border border-white/20 rounded-2xl max-w-md w-full p-6 relative transition-all duration-300 transform scale-95 opacity-0" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.7);" id="modal-card">
+<div class="bg-[#12121c]/95 backdrop-blur-2xl border border-white/[0.08] shadow-2xl rounded-2xl max-w-md w-full p-6 relative transition-all duration-300 transform scale-95 opacity-0" id="modal-card">
 <!-- Header -->
 <div class="flex items-start justify-between mb-5">
 <div>
@@ -984,13 +960,13 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <div>
 <label class="block text-xs font-medium text-zinc-200 mb-1.5">Transaction Type</label>
 <div class="grid grid-cols-3 gap-2" id="type-pills">
-<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent" data-type="expense" type="button" id="type-pill-expense">
+<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent cursor-pointer" data-type="expense" type="button" id="type-pill-expense">
             Expense
           </button>
-<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15" data-type="income" type="button" id="type-pill-income">
+<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15 cursor-pointer" data-type="income" type="button" id="type-pill-income">
             Income
           </button>
-<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15" data-type="goal_saving" type="button" id="type-pill-goal">
+<button class="type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15 cursor-pointer" data-type="goal_saving" type="button" id="type-pill-goal">
             Save to Goal
           </button>
 </div>
@@ -1003,7 +979,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <?php foreach ($goals as $g):
     $active = $featuredGoal && $g['id'] === $featuredGoal['id'];
 ?>
-<button class="goal-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate <?= $active ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15' ?>" data-goal-id="<?= (int) $g['id'] ?>" type="button">
+<button class="goal-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate cursor-pointer <?= $active ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15' ?>" data-goal-id="<?= (int) $g['id'] ?>" type="button">
             <?= e($g['goal_title']) ?>
           </button>
 <?php endforeach; ?>
@@ -1017,7 +993,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 <label class="block text-xs font-medium text-zinc-200 mb-1.5">Wallet Source</label>
 <div class="grid grid-cols-4 gap-2" id="wallet-pills">
 <?php foreach ($wallets as $i => $w): ?>
-<button class="wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate <?= $i === 0 ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15' ?>" data-wallet-id="<?= (int) $w['id'] ?>" title="<?= e($w['wallet_name']) ?> · <?= rupiah($w['balance']) ?>" type="button">
+<button class="wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate cursor-pointer <?= $i === 0 ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15' ?>" data-wallet-id="<?= (int) $w['id'] ?>" title="<?= e($w['wallet_name']) ?> · <?= rupiah($w['balance']) ?>" type="button">
             <?= e($w['wallet_name']) ?>
           </button>
 <?php endforeach; ?>
@@ -1038,7 +1014,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </div>
 <!-- BEGIN: Edit Profile Name Modal Popup -->
 <div aria-labelledby="profile-modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="profile-modal" role="dialog">
-  <div class="liquid-glass bg-[#16141C]/90 backdrop-blur-2xl border border-white/20 rounded-2xl max-w-sm w-full p-6 relative transition-all duration-300 transform scale-95 opacity-0" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.7);" id="profile-card">
+  <div class="bg-[#12121c]/95 backdrop-blur-2xl border border-white/[0.08] shadow-2xl rounded-2xl max-w-sm w-full p-6 relative transition-all duration-300 transform scale-95 opacity-0" id="profile-card">
     <div class="flex items-start justify-between mb-5">
       <div>
         <h3 class="text-lg font-semibold text-white tracking-tight" id="profile-modal-title">Edit Profile Name</h3>
@@ -1066,7 +1042,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 </div>
 <!-- BEGIN: Edit Savings Goal Modal Popup -->
 <div aria-labelledby="edit-goal-modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="edit-goal-modal" role="dialog">
-  <div class="liquid-glass bg-[#16141C]/90 backdrop-blur-2xl border border-white/20 rounded-2xl max-w-md w-full p-6 relative transition-all duration-300 transform scale-95 opacity-0" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.7);" id="edit-goal-card">
+  <div class="bg-[#12121c]/95 backdrop-blur-2xl border border-white/[0.08] shadow-2xl rounded-2xl max-w-md w-full p-6 relative transition-all duration-300 transform scale-95 opacity-0" id="edit-goal-card">
     <div class="flex items-start justify-between mb-5">
       <div>
         <h3 class="text-lg font-semibold text-white tracking-tight" id="edit-goal-modal-title">Edit Savings Goal</h3>
@@ -1103,7 +1079,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 
 <!-- BEGIN: Edit Transaction Modal Popup -->
 <div aria-labelledby="edit-tx-modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="edit-transaction-modal" role="dialog">
-  <div class="liquid-glass bg-[#16141C]/90 backdrop-blur-2xl border border-white/20 rounded-2xl max-w-md w-full p-6 relative transition-all duration-300 transform scale-95 opacity-0" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.7);" id="edit-tx-card">
+  <div class="bg-[#12121c]/95 backdrop-blur-2xl border border-white/[0.08] shadow-2xl rounded-2xl max-w-md w-full p-6 relative transition-all duration-300 transform scale-95 opacity-0" id="edit-tx-card">
     <div class="flex items-start justify-between mb-5">
       <div>
         <h3 class="text-lg font-semibold text-white tracking-tight" id="edit-tx-modal-title">Edit Transaction</h3>
@@ -1136,9 +1112,9 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       <div>
         <label class="block text-xs font-medium text-zinc-200 mb-1.5">Transaction Type</label>
         <div class="grid grid-cols-3 gap-2" id="edit-type-pills">
-          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent" data-type="expense" type="button">Expense</button>
-          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15" data-type="income" type="button">Income</button>
-          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15" data-type="goal_saving" type="button">Save to Goal</button>
+          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent cursor-pointer" data-type="expense" type="button">Expense</button>
+          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15 cursor-pointer" data-type="income" type="button">Income</button>
+          <button class="edit-type-pill px-3 py-2 rounded-xl text-xs font-medium text-center transition bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15 cursor-pointer" data-type="goal_saving" type="button">Save to Goal</button>
         </div>
       </div>
 
@@ -1147,7 +1123,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
         <?php if ($goals): ?>
         <div class="grid grid-cols-2 gap-2" id="edit-goal-pills">
           <?php foreach ($goals as $g): ?>
-          <button class="edit-goal-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15" data-goal-id="<?= (int) $g['id'] ?>" type="button">
+          <button class="edit-goal-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate cursor-pointer bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15" data-goal-id="<?= (int) $g['id'] ?>" type="button">
             <?= e($g['goal_title']) ?>
           </button>
           <?php endforeach; ?>
@@ -1159,7 +1135,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
         <label class="block text-xs font-medium text-zinc-200 mb-1.5">Wallet Source</label>
         <div class="grid grid-cols-4 gap-2" id="edit-wallet-pills">
           <?php foreach ($wallets as $i => $w): ?>
-          <button class="edit-wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate <?= $i === 0 ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15' ?>" data-wallet-id="<?= (int) $w['id'] ?>" title="<?= e($w['wallet_name']) ?>" type="button">
+          <button class="edit-wallet-pill px-2 py-2 rounded-xl text-xs font-medium text-center transition truncate cursor-pointer <?= $i === 0 ? 'bg-[#281F2B] border border-mauveAccent/30 text-mauveAccent' : 'bg-black/40 border border-white/[0.06] text-zinc-300 hover:text-white hover:border-white/15' ?>" data-wallet-id="<?= (int) $w['id'] ?>" title="<?= e($w['wallet_name']) ?>" type="button">
             <?= e($w['wallet_name']) ?>
           </button>
           <?php endforeach; ?>
@@ -1180,7 +1156,7 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
 
 <!-- BEGIN: Edit Spending Ring Categories Modal -->
 <div aria-labelledby="sr-modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 opacity-0 pointer-events-none transition-all duration-300" id="sr-modal" role="dialog">
-  <div class="liquid-glass bg-[#1a1a24]/90 backdrop-blur-2xl border border-white/20 rounded-2xl max-w-xl w-full p-5 sm:p-6 relative transition-all duration-300 transform scale-95 opacity-0" style="box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 2px 0 rgba(168, 85, 247, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.7);" id="sr-modal-card">
+  <div class="bg-[#12121c]/95 backdrop-blur-2xl border border-white/[0.08] shadow-2xl rounded-2xl max-w-xl w-full p-5 sm:p-6 relative transition-all duration-300 transform scale-95 opacity-0" id="sr-modal-card">
     <div class="flex items-start justify-between pb-4 mb-4 border-b border-white/[0.08]">
       <div>
         <h3 class="text-lg font-semibold text-white tracking-tight" id="sr-modal-title">Edit Kategori &amp; Pengeluaran</h3>
@@ -1784,18 +1760,11 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
     // Initialize active tab from URL hash
     switchTab(location.hash.slice(1) || 'dashboard', false);
 
-    /* ================= INTERACTIVE MASCOT / PET ================= */
-    (function initMascotPet() {
-      // Disable on touch devices & mobile screens
-      if (window.matchMedia('(hover: none) or (pointer: coarse)').matches) {
-        return;
-      }
-
-      const petContainer = document.getElementById('flow-pet-container');
-      const petSprite    = document.getElementById('flow-pet-sprite');
-      const petImg       = document.getElementById('flow-pet-img');
-
-      if (!petContainer || !petSprite || !petImg) return;
+    /* ================= CARD HEADER MASCOT INTERACTION ================= */
+    (function initCardMascot() {
+      const mascotImg = document.getElementById('card-mascot-img');
+      const mascotBox = document.getElementById('card-mascot-box');
+      if (!mascotImg) return;
 
       const SPRITES = {
         action: 'assets/pet/Action.png',
@@ -1809,127 +1778,43 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
         img.src = src;
       });
 
-      let mouseX = window.innerWidth / 2;
-      let mouseY = window.innerHeight / 2;
-      let petX = mouseX;
-      let petY = mouseY;
-      let facingRight = true;
-      let petState = 'idle'; // 'idle' | 'moving'
-      let isBlinking = false;
-      let blinkTimeout = null;
-      let nextBlinkTimer = null;
-      let hasInteracted = false;
+      let blinkTimer = null;
+      let isHovered = false;
 
-      function setSprite(src) {
-        if (petImg.getAttribute('src') !== src) {
-          petImg.src = src;
-        }
-      }
-
-      function scheduleNextBlink() {
-        clearTimeout(nextBlinkTimer);
-        if (petState !== 'idle') return;
-
-        // Random delay between 3000ms and 5000ms (3-5 seconds)
-        const delay = Math.floor(Math.random() * 2000) + 3000;
-        nextBlinkTimer = setTimeout(() => {
-          if (petState === 'idle') {
-            isBlinking = true;
-            setSprite(SPRITES.blink);
-
-            clearTimeout(blinkTimeout);
-            blinkTimeout = setTimeout(() => {
-              isBlinking = false;
-              if (petState === 'idle') {
-                setSprite(SPRITES.action);
-              }
-              scheduleNextBlink();
-            }, 200); // 200ms blink duration
+      function scheduleBlink() {
+        clearTimeout(blinkTimer);
+        const delay = Math.floor(Math.random() * 2500) + 3500;
+        blinkTimer = setTimeout(() => {
+          if (!isHovered) {
+            mascotImg.src = SPRITES.blink;
+            setTimeout(() => {
+              if (!isHovered) mascotImg.src = SPRITES.action;
+              scheduleBlink();
+            }, 220);
+          } else {
+            scheduleBlink();
           }
         }, delay);
       }
 
-      window.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-
-        if (!hasInteracted) {
-          hasInteracted = true;
-          petX = mouseX + 24;
-          petY = mouseY + 24;
-          petContainer.classList.remove('opacity-0');
-          scheduleNextBlink();
-        }
-      }, { passive: true });
-
-      function animatePet(time) {
-        if (hasInteracted) {
-          // Follow cursor slightly offset so it doesn't obstruct mouse clicks
-          const targetOffsetX = facingRight ? 24 : -24;
-          const targetOffsetY = 24;
-          const targetX = mouseX + targetOffsetX;
-          const targetY = mouseY + targetOffsetY;
-
-          // Smooth lerp easing
-          const ease = 0.085;
-          const dx = targetX - petX;
-          const dy = targetY - petY;
-          const stepX = dx * ease;
-          const stepY = dy * ease;
-          petX += stepX;
-          petY += dy * stepY;
-
-          // Horizontal movement & flip orientation
-          if (dx > 2) {
-            facingRight = true;
-          } else if (dx < -2) {
-            facingRight = false;
-          }
-
-          // Speed calculation
-          const speed = Math.hypot(stepX, stepY);
-
-          // State switching
-          if (speed > 0.5) {
-            // Moving state: chase mouse and switch to Bark.png
-            if (petState !== 'moving') {
-              petState = 'moving';
-              clearTimeout(nextBlinkTimer);
-              clearTimeout(blinkTimeout);
-              isBlinking = false;
-              setSprite(SPRITES.bark);
-            }
-          } else {
-            // Idle state: near cursor, switch to Action.png and start blink timer
-            if (petState !== 'idle') {
-              petState = 'idle';
-              isBlinking = false;
-              setSprite(SPRITES.action);
-              scheduleNextBlink();
-            }
-          }
-
-          // Orient transform: scaleX(1) or scaleX(-1)
-          const scaleX = facingRight ? 1 : -1;
-
-          if (petState === 'moving') {
-            // Playful bobbing when chasing
-            const bobY = Math.sin(time * 0.018) * 3;
-            petSprite.style.transform = `scaleX(${scaleX}) translateY(${bobY}px)`;
-          } else {
-            // Gentle breathing when idle
-            const breatheY = Math.sin(time * 0.003) * 2;
-            petSprite.style.transform = `scaleX(${scaleX}) translateY(${breatheY}px)`;
-          }
-
-          // GPU-accelerated container positioning (offset 24px so center is aligned with 48x48 sprite)
-          petContainer.style.transform = `translate3d(${petX - 24}px, ${petY - 24}px, 0)`;
-        }
-
-        requestAnimationFrame(animatePet);
+      if (mascotBox) {
+        mascotBox.addEventListener('mouseenter', () => {
+          isHovered = true;
+          mascotImg.src = SPRITES.bark;
+        });
+        mascotBox.addEventListener('mouseleave', () => {
+          isHovered = false;
+          mascotImg.src = SPRITES.action;
+        });
+        mascotBox.addEventListener('click', () => {
+          mascotImg.src = SPRITES.bark;
+          setTimeout(() => {
+            if (!isHovered) mascotImg.src = SPRITES.action;
+          }, 500);
+        });
       }
 
-      requestAnimationFrame(animatePet);
+      scheduleBlink();
     })();
 
     /* ================= KOKONUT SPENDING RING ================= */
@@ -2957,253 +2842,186 @@ unset($_SESSION['flash_msg'], $_SESSION['flash_error']);
       }
     })();
 
-    /* ================= SONAR GRID CANVAS BACKGROUND ================= */
-    (function initSonarGrid() {
-      const host = document.getElementById('sonar-grid-host');
-      const canvas = document.getElementById('sonar-grid-canvas');
-      if (!host || !canvas) return;
+    /* ================= FLUID PARTICLES CANVAS (PERLIN NOISE) ================= */
+    (function initFluidParticles() {
+      const canvas = document.getElementById('fluid-canvas');
+      if (!canvas) return;
 
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { alpha: true });
       if (!ctx) return;
 
-      const opts = {
-        spacing: 26,
-        dotRadius: 1.4,
-        baseOpacity: 0.20,
-        color: '#8b5cf6', // Neon violet/indigo accent
-        pingEvery: 2.8,   // Ambient sonar ping every 2.8s
-        speed: 260,
-        ringWidth: 90,
-        amplitude: 2.2,
-        interactive: true,
-        maxRings: 6,
-        seedPing: true,
-        pingArea: [0.15, 0.2, 0.85, 0.8]
-      };
+      // Helper function for Perlin Noise (Simplex3)
+      function createNoise() {
+        const permutation = [
+          151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140,
+          36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120,
+          234, 75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33,
+          88, 237, 149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, 74, 165, 71,
+          134, 139, 48, 27, 166, 77, 146, 158, 231, 83, 111, 229, 122, 60, 211, 133,
+          230, 220, 105, 92, 41, 55, 46, 245, 40, 244, 102, 143, 54, 65, 25, 63, 161,
+          1, 216, 80, 73, 209, 76, 132, 187, 208, 89, 18, 169, 200, 196, 135, 130,
+          116, 188, 159, 86, 164, 100, 109, 198, 173, 186, 3, 64, 52, 217, 226, 250,
+          124, 123, 5, 202, 38, 147, 118, 126, 255, 82, 85, 212, 207, 206, 59, 227,
+          47, 16, 58, 17, 182, 189, 28, 42, 223, 183, 170, 213, 119, 248, 152, 2, 44,
+          154, 163, 70, 221, 153, 101, 155, 167, 43, 172, 9, 129, 22, 39, 253, 19, 98,
+          108, 110, 79, 113, 224, 232, 178, 185, 112, 104, 218, 246, 97, 228, 251, 34,
+          242, 193, 238, 210, 144, 12, 191, 179, 162, 241, 81, 51, 145, 235, 249, 14,
+          239, 107, 49, 192, 214, 31, 181, 199, 106, 157, 184, 84, 204, 176, 115, 121,
+          50, 45, 127, 4, 150, 254, 138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243,
+          141, 128, 195, 78, 66, 215, 61, 156, 180,
+        ];
 
-      const MAX_DPR = 2;
-      const TAU = Math.PI * 2;
+        const p = new Array(512);
+        for (let i = 0; i < 256; i++) p[256 + i] = p[i] = permutation[i];
+
+        function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+        function lerp(t, a, b) { return a + t * (b - a); }
+        function grad(hash, x, y, z) {
+          const h = hash & 15;
+          const u = h < 8 ? x : y;
+          const v = h < 4 ? y : h === 12 || h === 14 ? x : z;
+          return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
+        }
+
+        return {
+          simplex3: (x, y, z) => {
+            const X = Math.floor(x) & 255;
+            const Y = Math.floor(y) & 255;
+            const Z = Math.floor(z) & 255;
+
+            x -= Math.floor(x);
+            y -= Math.floor(y);
+            z -= Math.floor(z);
+
+            const u = fade(x);
+            const v = fade(y);
+            const w = fade(z);
+
+            const A = p[X] + Y;
+            const AA = p[A] + Z;
+            const AB = p[A + 1] + Z;
+            const B = p[X + 1] + Y;
+            const BA = p[B] + Z;
+            const BB = p[B + 1] + Z;
+
+            return lerp(
+              w,
+              lerp(
+                v,
+                lerp(u, grad(p[AA], x, y, z), grad(p[BA], x - 1, y, z)),
+                lerp(u, grad(p[AB], x, y - 1, z), grad(p[BB], x - 1, y - 1, z))
+              ),
+              lerp(
+                v,
+                lerp(
+                  u,
+                  grad(p[AA + 1], x, y, z - 1),
+                  grad(p[BA + 1], x - 1, y, z - 1)
+                ),
+                lerp(
+                  u,
+                  grad(p[AB + 1], x, y - 1, z - 1),
+                  grad(p[BB + 1], x - 1, y - 1, z - 1)
+                )
+              )
+            );
+          }
+        };
+      }
+
+      const noise = createNoise();
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const particleCount = 1200;
+      const noiseIntensity = 0.0028;
+      const particleSize = { min: 0.6, max: 1.8 };
 
       let width = 0;
       let height = 0;
-      let raf = 0;
-      let timer = 0;
-      let seeded = false;
-      let rings = [];
-      let nextPing = performance.now() + opts.pingEvery * 1000;
+      let rafId = null;
 
-      const addRing = (x, y, born) => {
-        rings.push({ x, y, born });
-        while (rings.length > opts.maxRings) {
-          rings.shift();
-        }
+      const resizeCanvas = () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
       };
+      resizeCanvas();
 
-      const draw = (now) => {
-        const o = opts;
-        const lifetime = (Math.hypot(width, height) + o.ringWidth) / o.speed;
-        rings = rings.filter((r) => (now - r.born) / 1000 < lifetime);
-        const live = rings.map((r) => {
-          const age = (now - r.born) / 1000;
-          const radius = age * o.speed;
-          return {
-            x: r.x,
-            y: r.y,
-            radius,
-            reach: radius + o.ringWidth,
-            fade: 1 - age / lifetime
-          };
-        });
+      const particles = Array.from({ length: particleCount }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        size: Math.random() * (particleSize.max - particleSize.min) + particleSize.min,
+        velocity: { x: 0, y: 0 },
+        life: Math.random() * 100,
+        maxLife: 100 + Math.random() * 60,
+      }));
 
-        ctx.clearRect(0, 0, width, height);
-        ctx.fillStyle = o.color;
+      const animate = () => {
+        if (document.hidden) return;
 
-        const cols = Math.ceil(width / o.spacing) + 1;
-        const rows = Math.ceil(height / o.spacing) + 1;
-        const offsetX = (width - (cols - 1) * o.spacing) / 2;
-        const offsetY = (height - (rows - 1) * o.spacing) / 2;
+        // Semi-transparent background trail (opacity 0.12 over dark canvas)
+        ctx.fillStyle = 'rgba(10, 10, 16, 0.12)';
+        ctx.fillRect(0, 0, width, height);
 
-        // Pass 1: every resting dot in a single path and a single fill.
-        const hot = [];
-        ctx.globalAlpha = o.baseOpacity;
-        ctx.beginPath();
-        for (let i = 0; i < cols; i++) {
-          const cx = offsetX + i * o.spacing;
-          for (let j = 0; j < rows; j++) {
-            const cy = offsetY + j * o.spacing;
-            let energy = 0;
-            for (let rIdx = 0; rIdx < live.length; rIdx++) {
-              const r = live[rIdx];
-              if (Math.abs(cx - r.x) > r.reach || Math.abs(cy - r.y) > r.reach) continue;
-              const dist = Math.abs(Math.hypot(cx - r.x, cy - r.y) - r.radius);
-              if (dist >= o.ringWidth) continue;
-              const t = 1 - dist / o.ringWidth;
-              const k = t * t * (3 - 2 * t) * r.fade; // smoothstep, fading with age
-              if (k > energy) energy = k;
-            }
-            if (energy < 0.01) {
-              ctx.moveTo(cx + o.dotRadius, cy);
-              ctx.arc(cx, cy, o.dotRadius, 0, TAU);
-            } else {
-              hot.push(cx, cy, energy);
-            }
+        if (reduceMotion.matches) return;
+
+        const time = Date.now() * 0.00008;
+
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.life += 1;
+          if (p.life > p.maxLife) {
+            p.life = 0;
+            p.x = Math.random() * width;
+            p.y = Math.random() * height;
           }
-        }
-        ctx.fill();
 
-        // Pass 2: only the dots on a wavefront get their own alpha and radius.
-        for (let k = 0; k < hot.length; k += 3) {
-          const energy = hot[k + 2];
-          ctx.globalAlpha = o.baseOpacity + (1 - o.baseOpacity) * energy;
+          // Fade in and out smoothly
+          const opacity = Math.sin((p.life / p.maxLife) * Math.PI) * 0.16;
+
+          // Smooth Perlin flow direction
+          const n = noise.simplex3(
+            p.x * noiseIntensity,
+            p.y * noiseIntensity,
+            time
+          );
+
+          const angle = n * Math.PI * 4;
+          p.velocity.x = Math.cos(angle) * 1.35;
+          p.velocity.y = Math.sin(angle) * 1.35;
+
+          p.x += p.velocity.x;
+          p.y += p.velocity.y;
+
+          // Wrap particles around screen edges
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          if (p.y > height) p.y = 0;
+
+          // Draw particle in elegant soft mauve/white
+          ctx.fillStyle = `rgba(214, 164, 232, ${opacity})`;
           ctx.beginPath();
-          ctx.arc(hot[k], hot[k + 1], o.dotRadius * (1 + o.amplitude * energy), 0, TAU);
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fill();
         }
-        ctx.globalAlpha = 1;
+
+        rafId = requestAnimationFrame(animate);
       };
 
-      const resize = () => {
-        width = Math.max(1, Math.round(window.innerWidth));
-        height = Math.max(1, Math.round(window.innerHeight));
-        const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-        canvas.width = Math.round(width * dpr);
-        canvas.height = Math.round(height * dpr);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      animate();
 
-        if (!seeded) {
-          seeded = true;
-          const [x0, y0, x1, y1] = opts.pingArea;
-          if (opts.seedPing && !reduceMotion.matches) {
-            addRing(width * (x0 + (x1 - x0) * 0.68), height * (y0 + (y1 - y0) * 0.34), performance.now() - 500);
-          }
-        }
-        draw(performance.now());
-      };
-
-      const scheduleIdle = (delay) => {
-        window.clearTimeout(timer);
-        timer = window.setTimeout(() => tick(performance.now()), Math.max(16, delay));
-      };
-
-      const tick = (now) => {
-        raf = 0;
-        if (document.hidden) return;
-        if (reduceMotion.matches) {
-          rings = [];
-          draw(now);
-          return;
-        }
-        if (opts.pingEvery > 0 && now >= nextPing) {
-          const [x0, y0, x1, y1] = opts.pingArea;
-          addRing(width * (x0 + Math.random() * (x1 - x0)), height * (y0 + Math.random() * (y1 - y0)), now);
-          nextPing = now + opts.pingEvery * 1000;
-        }
-        draw(now);
-        if (rings.length > 0) {
-          raf = requestAnimationFrame(tick);
-        } else if (opts.pingEvery > 0) {
-          scheduleIdle(nextPing - now);
-        }
-      };
-
-      const wake = () => {
-        if (!raf) {
-          window.clearTimeout(timer);
-          raf = requestAnimationFrame(tick);
-        }
-      };
-
-      // Click on background triggers new sonar ring (active across entire screen including sidebar)
-      window.addEventListener('pointerdown', (e) => {
-        if (!opts.interactive || reduceMotion.matches) return;
-        if (e.target.closest('button, a, input, select, textarea, [role="button"], [role="slider"], #desktop-pet, #flow-pet-container, #sr-modal, #transaction-modal, #profile-modal, #edit-goal-modal, #edit-transaction-modal')) {
-          return;
-        }
-        const x = e.clientX;
-        const y = e.clientY;
-        if (x >= 0 && x <= width && y >= 0 && y <= height) {
-          addRing(x, y, performance.now());
-          wake();
-        }
-      }, { passive: true });
-
-      // Pause when tab is inactive, resume when active
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-          if (raf) cancelAnimationFrame(raf);
-          window.clearTimeout(timer);
-          raf = 0;
-        } else {
-          wake();
-        }
+      window.addEventListener('resize', () => {
+        resizeCanvas();
       });
 
-      window.addEventListener('resize', resize);
-      reduceMotion.addEventListener('change', wake);
-
-      resize();
-      wake();
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          if (rafId) cancelAnimationFrame(rafId);
+          rafId = null;
+        } else if (!rafId) {
+          animate();
+        }
+      });
     })();
 </script>
 </body>
-<!-- Interactive Mascot / Pet -->
-<div id="desktop-pet" class="fixed pointer-events-none z-[9999] select-none" style="top: 150px; left: 150px; width: 48px; height: 48px;">
-  <img id="pet-avatar" src="assets/pet/Action.png" alt="Pet" class="w-full h-full object-contain" style="image-rendering: pixelated;" />
-</div>
-
-<script>
-  (function () {
-    const pet = document.getElementById('desktop-pet');
-    const avatar = document.getElementById('pet-avatar');
-    if (!pet || !avatar) return;
-
-    let posX = 150, posY = 150;
-    let targetX = 150, targetY = 150;
-    let isMoving = false;
-    let blinkTimeout = null;
-
-    window.addEventListener('mousemove', (e) => {
-      targetX = e.clientX - 24;
-      targetY = e.clientY - 24;
-    });
-
-    function loop() {
-      const dx = targetX - posX;
-      const dy = targetY - posY;
-      const dist = Math.hypot(dx, dy);
-
-      posX += dx * 0.08;
-      posY += dy * 0.08;
-
-      pet.style.left = `${posX}px`;
-      pet.style.top = `${posY}px`;
-
-      if (dist > 3) {
-        if (!isMoving) {
-          isMoving = true;
-          avatar.src = 'assets/pet/Bark.png';
-        }
-        pet.style.transform = dx < 0 ? 'scaleX(-1)' : 'scaleX(1)';
-      } else {
-        if (isMoving) {
-          isMoving = false;
-          avatar.src = 'assets/pet/Action.png';
-        }
-      }
-
-      requestAnimationFrame(loop);
-    }
-    loop();
-
-    setInterval(() => {
-      if (!isMoving) {
-        avatar.src = 'assets/pet/Blink.png';
-        clearTimeout(blinkTimeout);
-        blinkTimeout = setTimeout(() => {
-          if (!isMoving) avatar.src = 'assets/pet/Action.png';
-        }, 250);
-      }
-    }, 4000);
-  })();
-</script></html>
+</html>
