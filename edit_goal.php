@@ -28,7 +28,6 @@ if ($target <= 0) {
     redirect_back('Nominal target tabungan harus lebih dari 0.', 'goals', true);
 }
 
-// --- Update Database ---
 try {
     $stmt = $pdo->prepare('UPDATE savings_goals SET goal_title = ?, target_amount = ? WHERE id = ?');
     $stmt->execute([$title, $target, $id]);
